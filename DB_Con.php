@@ -39,7 +39,7 @@ class DB_Con {
 	
 	function changeConfig($conf_file){ // throws Exception
 		// include config
-		include $conf_file;
+		include($conf_file);
 		// check validity
 		if(isset($cDB_ADDRESS) && 
 		isset($cDB_SCHEMA_NAME) && 
@@ -362,55 +362,120 @@ class DB_Con {
 	}
 	
 	
-	function interesseWerbungZuweisungUpdaten(Werbung $werbung){
-		$success=true;
-		$interessenIds="";		
-		$abf=$this->selectQuery(DB_TB_WERBUNG_INTERESSEN, DB_F_WERBUNG_INTERESSEN_PK_INTERESSEN, DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$werbung->getNummer()."\"");
-		$interessenIdsAltArr=array();
-		while($row = mysqli_fetch_row($abf)){
-			array_push($interessenIdsAltArr,$row->{DB_F_WERBUNG_INTERESSEN_PK_INTERESSEN});
-		}
+	function werbungUpdaten(Werbung $werbung){
+		$success = true;
+		$werbung_alt=$this->getWerbung($werbung->getNummer());
+		$interessenIds_alt = array();
+		foreach ($werbung_alt->getInteressen() as $interesse_alt)
+			array_push($interessenIds_alt,$interesse_alt->getId());
+		$interessen_neu="";
 		foreach ($werbung->getInteressen() as $interesse){
 			if($interesse instanceof Interesse){
-				$interessenIds = $interessenIds.", ".$interesse->getId();
-				if(!in_array($interesse->getId(),$interessenIdsAltArr)){
+				$interessen_neu = $interesen_neu.", \"".$interesse->getId()."\"";
+				if(!in_array($interesse->getId(),$interessenIds_alt))
 					$success=$success?$this->interesseWerbungZuweisen($interesse, $werbung):$success;
-				}
 			}
 		}
-		$interessenIds=substr($interessenIds,2);
-		$success=$success?$this->query("DELETE FROM ".DB_TB_WERBUNG_INTERESSEN." WHERE ".DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$werbung->getNummer()."\" AND ".DB_F_WERBUNG_INTERESSEN_PK_INTERESSEN." NOT IN( ".$interessenIds." )")===TRUE:$success;
+		$interessen_neu = substr($interessen_neu,2);
+		$success=$success?$this->query("DELETE FROM ".DB_TB_WERBUNG_INTERESSEN." WHERE ".DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$werbung->getNummer()."\" AND (".DB_F_WERBUNG_INTERESSEN_PK_INTERESSEN." NOT IN(".$interessen_neu."))"):$success;
 		return $success;
 	}
-	
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 	function arbeitsplatzUpdaten(Arbeitsplatz $arbeitsplatz){
-		$success = $this->query("INSERT INTO ".DB_TB_ARBEITSPLATZRESSOURCEN." (".DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER.", ".DB_F_ARBEITSPLATZRESSOURCEN_NAME.") VALUES (\"".$arbeitsplatz->getNummer()."\", \"".mysqli_escape_string($this->con,$arbeitsplatz->getName())."\")")===TRUE;
+		$success = true;
+		$arbeitsplatz_alt=$this->getArbeitsplatz($arbeitsplatz->getNummer());
+		$ausstattungenIds_alt = array();
+		foreach ($werbung_alt->getInteressen() as $interesse_alt)
+			array_push($interessenIds_alt,$interesse_alt->getId());
+		$ausstattungen_neu="";
 		foreach ($arbeitsplatz->getAusstattung() as $ausstattung){
-			if($ausstattung instanceof Arbeitsplatzausstattung)
-				$success=$success?$this->arbeitsplatzausstattungArbeitsplatzZuweisen($ausstattung, $arbeitsplatz):$success;
+			if($ausstattung instanceof Arbeitsplatzausstattung){
+				$ausstattungen_neu = $ausstattungen_neu.", \"".$ausstattung->getId()."\"";
+				if(!in_array($ausstattung->getId(),$ausstattungenIds_alt))
+					$success=$success?$this->arbeitsplatzausstattungArbeitsplatzZuweisen($ausstattung, $arbeitsplatz):$success;
+			}
 		}
+		$ausstattungen_neu = substr($ausstattungen_neu,2);
+		$success=$success?$this->query("DELETE FROM ".DB_TB_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN." WHERE ".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZRESSOURCEN." = \"".$arbeitsplatz->getNummer()."\" AND (".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN." NOT IN(".$ausstattungen_neu."))"):$success;
 		return $success;
 	}
+
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 	function mitarbeiterUpdaten(Mitarbeiter $mitarbeiter){
-		$success = $this->query("INSERT INTO ".DB_TB_MITARBEITER." (".DB_F_MITARBEITER_SVNR.", ".DB_F_MITARBEITER_VORNAME.", ".DB_F_MITARBEITER_NACHNAME.", ".DB_F_MITARBEITER_ADMIN.") VALUES (\"".$mitarbeiter->getSvnr()."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getVorname())."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getNachname())."\", \"".$mitarbeiter->getAdmin()."\")")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_NACHNAME." = \"" .mysqli_escape_string($this->con, $mitarbeiter->getNachname())."\", ".DB_F_MITARBEITER_VORNAME." = \"".mysqli_escape_string($this->con, $mitarbeiter->getVorname())."\", ".DB_F_MITARBEITER_ADMIN." = ".$mitarbeiter->getAdmin()." WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
+		$mitarbeiter_alt=$this->getMitarbeiter($mitarbeiter->getSvnr());
+		
+		$skillsIds_alt = array();
+		
+		foreach ($mitarbeiter_alt->getSkills() as $skill_alt)
+			array_push($skillsIds_alt,$skill_alt->getId());
+		
+		$skills_neu="";
+		
 		foreach ($mitarbeiter->getSkills() as $skill){
-			if($skill instanceof Skill)
-				$success=$success?$this->skillMitarbeiterZuweisen($skill, $mitarbeiter):$success;
+			if($skill instanceof Skill){
+				$skills_neu = $skills_neu.", \"".$skill->getId()."\"";
+				if(!in_array($skill->getId(),$skillsIds_alt))
+					$success=$success?$this->skillMitarbeiterZuweisen($skill, $mitarbeiter):$success;
+			}
 		}
-		foreach ($mitarbeiter->getUrlaube() as $urlaub){
-			if($urlaub instanceof Urlaub)
-				$success=$success?$this->urlaubUpdaten($urlaub, $mitarbeiter):$success;
+		$skills_neu = substr($skills_neu,2);
+		$success=$success?$this->query("DELETE FROM ".DB_TB_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN." WHERE ".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZRESSOURCEN." = \"".$arbeitsplatz->getNummer()."\" AND (".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN." NOT IN(".$ausstattungen_neu."))"):$success;
+		
+		$urlaube_del=array();
+		$urlaube_add=array();
+		foreach ($mitarbeiter_alt->getUrlaube() as $urlaub_alt){
+			$vorhanden = false;
+			foreach ($mitarbeiter->getUrlaube() as $urlaub_neu)
+			if ((strcmp($urlaub_neu->getBeginn()->format(DB_FORMAT_DATETIME),$urlaub_alt->getBeginn()->format(DB_FORMAT_DATETIME))==0) && (strcmp($urlaub_neu->getEnde()->format(DB_FORMAT_DATETIME),$urlaub_alt->getEnde()->format(DB_FORMAT_DATETIME))==0))
+				$vorhanden=true;
+			if (!$vorhanden)
+				array_push($urlaube_del, $urlaub_alt);
+		}
+		foreach ($mitarbeiter->getUrlaube() as $urlaub_neu){
+			$vorhanden = false;
+			foreach ($mitarbeiter_alt->getUrlaube() as $urlaub_alt)
+				if ((strcmp($urlaub_neu->getBeginn()->format(DB_FORMAT_DATETIME),$urlaub_alt->getBeginn()->format(DB_FORMAT_DATETIME))==0) && (strcmp($urlaub_neu->getEnde()->format(DB_FORMAT_DATETIME),$urlaub_alt->getEnde()->format(DB_FORMAT_DATETIME))==0))
+					$vorhanden=true;
+			if (!$vorhanden)
+				array_push($urlaube_add, $urlaub_neu);
+		}
+		foreach ($urlaube_del as $urlaub)
+			$success=$success?$this->urlaubEntfernen($urlaub, $mitarbeiter):$success;
+		foreach ($urlaube_add as $urlaub)
+			$success=$success?$this->urlaubEintragen($urlaub, $mitarbeiter):$success;
+		
+		$dienstzeiten_del=array();
+		$dienstzeiten_add=array();
+		foreach ($mitarbeiter_alt->getDienstzeiten() as $dienstzeit_alt){
+			$vorhanden = false;
+			foreach ($mitarbeiter->getDienstzeiten() as $dienstzeit_neu)
+				if (strcmp($dienstzeit_alt->getWochentag()->getKuerzel(),$dienstzeit_neu->getWochentag()->getKuerzel())==0)
+					$vorhanden=true;
+			if (!$vorhanden)
+				array_push($dienstzeiten_del, $dienstzeit_alt);
+		}
+		foreach ($mitarbeiter->getDienstzeiten() as $dienstzeit_neu){
+			$vorhanden = false;
+			foreach ($mitarbeiter_alt->getDienstzeiten() as $dienstzeit_alt)
+				if (strcmp($dienstzeit_alt->getWochentag()->getKuerzel(),$dienstzeit_neu->getWochentag()->getKuerzel())==0)
+					$vorhanden=true;
+			if (!$vorhanden)
+				array_push($dienstzeiten_add, $dienstzeit_neu);
 		}
 		foreach ($mitarbeiter->getDienstzeiten() as $dienstzeit){
-			if($dienstzeit instanceof Dienstzeit)
+			if (!in_array($dienstzeit, $dienstzeiten_add))
 				$success=$success?$this->dienstzeitUpdaten($dienstzeit, $mitarbeiter):$success;
 		}
+		foreach ($dienstzeiten_del as $dienstzeit)
+			$success=$success?$this->dienstzeitEntfernen($dienstzeit, $mitarbeiter):$success;
+		foreach ($dienstzeiten_add as $dienstzeit)
+			$success=$success?$this->dienstzeitEintragen($dienstzeit, $mitarbeiter):$success;
 		return $success;
 	}
-	
+
+	//!!!
 	function kundeUpdaten(Kunde $kunde){
 		$success = $this->query("INSERT INTO ".DB_TB_KUNDEN." (".DB_F_KUNDEN_EMAIL.", ".DB_F_KUNDEN_VORNAME.", ".DB_F_KUNDEN_NACHNAME.", ".DB_F_KUNDEN_TELNR.", ".DB_F_KUNDEN_FREISCHALTUNG.", ".DB_F_KUNDEN_FOTO.") VALUES (\"".mysqli_escape_string($this->con,$kunde->getEmail())."\", \"".mysqli_escape_string($this->con,$kunde->getVorname())."\", \"".mysqli_escape_string($this->con,$kunde->getNachname())."\", \"".mysqli_escape_string($this->con,$kunde->getTelNr())."\", \"".$kunde->getFreischaltung()."\", \"".mysqli_escape_string($this->con,$kunde->getFoto())."\")")===TRUE;
 		foreach ($kunde->getInteressen() as $interesse){
@@ -456,127 +521,127 @@ class DB_Con {
 	
 	
 	function getWochentag($kuerzel){
-		$row = mysqli_fetch_row($this->selectQuery(DB_TB_WOCHENTAGE, "*", DB_F_WOCHENTAGE_PK_KUERZEL." = \"".$kuerzel."\""));
+		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_WOCHENTAGE, "*", DB_F_WOCHENTAGE_PK_KUERZEL." = \"".$kuerzel."\""));
 		
-		return new Wochentag($row->{DB_F_WOCHENTAGE_PK_KUERZEL},$row->{DB_F_WOCHENTAGE_BEZEICHNUNG});
+		return new Wochentag($row[DB_F_WOCHENTAGE_PK_KUERZEL],$row[DB_F_WOCHENTAGE_BEZEICHNUNG]);
 	}
 	
 	function getInteresse($id){
-		$row = mysqli_fetch_row($this->selectQuery(DB_TB_INTERESSEN, "*", DB_F_INTERESSEN_PK_ID." = \"".$id."\""));
+		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_INTERESSEN, "*", DB_F_INTERESSEN_PK_ID." = \"".$id."\""));
 		
-		return new Interesse($row->{DB_F_INTERESSEN_PK_ID}, $row->{DB_F_INTERESSEN_BEZEICHNUNG});
+		return new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]);
 	}
 	
 	function getProdukt($id){
-		$row = mysqli_fetch_row($this->selectQuery(DB_TB_PRODUKTE, "*", DB_F_PRODUKTE_PK_ID." = \"".$id."\""));
+		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_PRODUKTE, "*", DB_F_PRODUKTE_PK_ID." = \"".$id."\""));
 		
-		return new Produkt($row->{DB_F_PRODUKTE_PK_ID}, $row->{DB_F_PRODUKTE_NAME}, $row->{DB_F_PRODUKTE_HERSTELLER}, $row->{DB_F_PRODUKTE_BESCHREIBUNG}, $row->{DB_F_PRODUKTE_PREIS}, $row->{DB_F_PRODUKTE_BESTAND});
+		return new Produkt($row[DB_F_PRODUKTE_PK_ID], $row[DB_F_PRODUKTE_NAME], $row[DB_F_PRODUKTE_HERSTELLER], $row[DB_F_PRODUKTE_BESCHREIBUNG], $row[DB_F_PRODUKTE_PREIS], $row[DB_F_PRODUKTE_BESTAND]);
 	}
 	
 	function getHaartyp($kuerzel){
-		$row = mysqli_fetch_row($this->selectQuery(DB_TB_HAARTYPEN, "*", DB_F_HAARTYPEN_PK_KUERZEL." = \"".$kuerzel."\""));
+		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_HAARTYPEN, "*", DB_F_HAARTYPEN_PK_KUERZEL." = \"".$kuerzel."\""));
 		
-		return new Haartyp($row->{DB_F_HAARTYPEN_PK_KUERZEL}, $row->{DB_F_HAARTYPEN_BEZEICHNUNG});
+		return new Haartyp($row[DB_F_HAARTYPEN_PK_KUERZEL], $row[DB_F_HAARTYPEN_BEZEICHNUNG]);
 	}
 	
 	function getArbeitsplatzausstattung($id){
-		$row = mysqli_fetch_row($this->selectQuery(DB_TB_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID." = \"".$id."\""));
+		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID." = \"".$id."\""));
 		
-		return new Arbeitsplatzausstattung($row->{DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID}, $row->{DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME});
+		return new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]);
 	}
 
 	function getSkill($id){
-		$row = mysqli_fetch_row($this->selectQuery(DB_TB_SKILLS, "*", DB_F_SKILLS_PK_ID." = \"".$id."\""));
+		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_SKILLS, "*", DB_F_SKILLS_PK_ID." = \"".$id."\""));
 		
-		return new Skill($row->{DB_F_SKILLS_PK_ID}, $row->{DB_F_SKILLS_BESCHREIBUNG});
+		return new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]);
 	}
 	
 	
 	function getArbeitsplatz($nummer){
-		$main = mysqli_fetch_row($this->selectQuery(DB_TB_ARBEITSPLATZRESSOURCEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER." = \"".$nummer."\""));
+		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_ARBEITSPLATZRESSOURCEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER." = \"".$nummer."\""));
 		
 		$abf = $this->selectQuery(DB_VIEW_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZRESSOURCEN." = \"".$nummer."\"");
 		$ausstattungen = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($ausstattungen, new Arbeitsplatzausstattung($row->{DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID}, $ausstattung->{DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME}));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
 		}
 		
 		return new Arbeitsplatz($nummer, $main->{DB_F_ARBEITSPLATZRESSOURCEN_NAME}, $ausstattung);
 	}
 	
 	function getDienstleistung($kuerzel,Haartyp $haartyp){
-		$main = mysqli_fetch_row($this->selectQuery(DB_TB_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".$kuerzel."\" AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".$haartyp->getKuerzel()."\""));
+		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".$kuerzel."\" AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".$haartyp->getKuerzel()."\""));
 		
 		$abf = $this->selectQuery(DB_VIEW_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
 		$ausstattungen = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($ausstattungen, new Arbeitsplatzausstattung($row->{DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID}, $ausstattung->{DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME}));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
 		}
 		
 		$abf = $this->selectQuery(DB_VIEW_DIENSTLEISTUNGEN_SKILLS, "*", DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
 		$skills = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($skills, new Skill($row->{DB_F_SKILLS_PK_ID}, $row->{DB_F_SKILLS_BESCHREIBUNG}));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($skills, new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]));
 		}
 		
 		return new Dienstleistung($kuerzel, $haartyp, $main->{DB_F_DIENSTLEISTUNGEN_NAME}, $main->{DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN}, $main->{DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN}, $skills, $ausstattungen, $main->{DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG});
 	}
 	
 	function getDienstzeit(Mitarbeiter $mitarbeiter, Wochentag $wochentag){
-		$main = mysqli_fetch_row($this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\" AND ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".$wochentag->getKuerzel()."\""));
+		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\" AND ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".$wochentag->getKuerzel()."\""));
 		return new Dienstzeit($wochentag, new DateTime($main->{DB_F_DIENSTZEITEN_BEGINN}), new DateTime($main->{DB_F_DIENSTZEITEN_ENDE}));
 	}
 	
 	function getKunde($email){
-		$main = mysqli_fetch_row($this->selectQuery(DB_TB_KUNDEN, "*", DB_F_KUNDEN_PK_EMAIL." = \"".$email."\""));
+		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_KUNDEN, "*", DB_F_KUNDEN_PK_EMAIL." = \"".$email."\""));
 		
 		$abf = $this->selectQuery(DB_VIEW_KUNDEN_INTERESSEN, "*", DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$email."\"");
 		$interessen = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($interessen, new Interesse($row->{DB_F_INTERESSEN_PK_ID}, $row->{DB_F_INTERESSEN_BEZEICHNUNG}));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
 		}
 		
 		return new Kunde($email, $main->{DB_F_KUNDEN_VORNAME}, $main->{DB_F_KUNDEN_NACHNAME}, $main->{DB_F_KUNDEN_TELNR}, $main->{DB_F_KUNDEN_FREISCHALTUNG}, $main->{DB_F_KUNDEN_FOTO}, $interessen);
 	}
 	
 	function getMitarbeiter($svnr){
-		$main = mysqli_fetch_row($this->selectQuery(DB_TB_MITARBEITER, "*", DB_F_MITARBEITER_PK_SVNR." = \"".$svnr."\""));
+		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_MITARBEITER, "*", DB_F_MITARBEITER_PK_SVNR." = \"".$svnr."\""));
 		
 		$abf = $this->selectQuery(DB_VIEW_MITARBEITER_SKILLS, "*", DB_F_MITARBEITER_SKILLS_PK_MITARBEITER." = \"".$svnr."\"");
 		$skills = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($skills, new Skill($row->{DB_F_SKILLS_PK_ID}, $row->{DB_F_SKILLS_BESCHREIBUNG}));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($skills, new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]));
 		}
 		
 		$abf = $this->selectQuery(DB_TB_URLAUBE, "*", DB_F_URLAUBE_PK_MITARBEITER." = \"".$svnr."\"");
 		$urlaube = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($urlaube, new Urlaub($row->{DB_F_URLAUBE_PK_BEGINN}, $row->{DB_F_URLAUBE_ENDE}));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($urlaube, new Urlaub($row[DB_F_URLAUBE_PK_BEGINN], $row[DB_F_URLAUBE_ENDE]));
 		}
 		
 		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\"");
 		$dienstzeiten = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($dienstzeiten, new Dienstzeit($this->getWochentag($row->{DB_F_DIENSTZEITEN_PK_WOCHENTAGE}),new DateTime($row->{DB_F_DIENSTZEITEN_BEGINN}) , new DateTime($row->{DB_F_DIENSTZEITEN_ENDE})));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($dienstzeiten, new Dienstzeit($this->getWochentag($row[DB_F_DIENSTZEITEN_PK_WOCHENTAGE]),new DateTime($row[DB_F_DIENSTZEITEN_BEGINN]) , new DateTime($row[DB_F_DIENSTZEITEN_ENDE])));
 		}
 		
 		return new Mitarbeiter($svnr, $main->{DB_F_MITARBEITER_VORNAME}, $main->{DB_F_MITARBEITER_NACHNAME}, $skills, $main->{DB_F_MITARBEITER_ADMIN}, $urlaube, $dienstzeiten);
 	}
 	
 	function getWerbung($nummer){
-		$main = mysqli_fetch_row($this->selectQuery(DB_TB_WERBUNG, "*", DB_F_WERBUNG_PK_NUMMER." = \"".$nummer."\""));
+		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_WERBUNG, "*", DB_F_WERBUNG_PK_NUMMER." = \"".$nummer."\""));
 		
 		$abf = $this->selectQuery(DB_VIEW_WERBUNG_INTERESSEN, "*", DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$nummer."\"");
 		$interessen = array();
-		while ($row = mysqli_fetch_row($abf)){
-			array_push($interessen, new Interesse($row->{DB_F_INTERESSEN_PK_ID}, $row->{DB_F_INTERESSEN_BEZEICHNUNG}));
+		while ($row = mysqli_fetch_assoc($abf)){
+			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
 		}
 		
 		return new Werbung($nummer, $interessen);
 	}
 	
 	function getTermin(DateTime $zeitstempel, Mitarbeiter $mitarbeiter){
-		$main = mysqli_fetch_row($this->selectQuery(DB_TB_ZEITTABELLE, "*", DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." = \"".$zeitstempel->format(DB_FORMAT_DATETIME)."\" AND ".DB_F_ZEITTABELLE_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"")); 
+		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_ZEITTABELLE, "*", DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." = \"".$zeitstempel->format(DB_FORMAT_DATETIME)."\" AND ".DB_F_ZEITTABELLE_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"")); 
 		
 		return new Termin($zeitstempel, $mitarbeiter, $this->getArbeitsplatz($main->{DB_F_ZEITTABELLE_ARBEITSPLATZ}), $this->getKunde($main->{DB_F_ZEITTABELLE_KUNDE}), $main->{DB_F_ZEITTABELLE_FRISURWUNSCH}, $this->getDienstleistung($main->{DB_F_ZEITTABELLE_DIENSTLEISTUNG}, $this->getHaartyp($main->{DB_F_ZEITTABELLE_DIENSTLEISTUNG_HAARTYP})));
 	}

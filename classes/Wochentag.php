@@ -25,11 +25,11 @@ class Wochentag{
 	
 	
 	function getKuerzel(){
-		$this->kuerzel;
+		return $this->kuerzel;
 	}
 	
 	function getBezeichnung(){
-		$this->bezeichnung;
+		return $this->bezeichnung;
 	}
 		
 }
