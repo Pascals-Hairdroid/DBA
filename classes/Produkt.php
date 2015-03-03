@@ -19,6 +19,10 @@ class Produkt{
 	
 	
 	function setId($id){
+		try{
+			$id=(int)$id;
+		}
+		catch(Exception $e){}
 		if(is_int($id))
 			$this->id = $id;
 		else
@@ -47,6 +51,10 @@ class Produkt{
 	}
 	
 	function setPreis($preis){
+		try{
+			$preis=(double)$preis;
+		}
+		catch(Exception $e){}
 		if(is_double($preis))
 			$this->preis = $preis;
 		else
@@ -55,6 +63,10 @@ class Produkt{
 	
 	
 	function setBestand($bestand){
+		try{
+			$bestand=(int)$bestand;
+		}
+		catch(Exception $e){}
 		if(is_int($bestand))
 			$this->bestand = $bestand;
 		else

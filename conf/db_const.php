@@ -124,7 +124,7 @@ const DB_F_VIEW_ZEITTABELE_ARBEITSPLATZRESSOURCEN_NAME = "Arbeitsplatz";
 
 const DB_VIEW_DIENSTLEISTUNGEN_SKILLS = "View_Dienstleistungen_Skills";
 
-const DB_VIEW_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN= "View_Dienstleistungen_Arbeitsplatzausstattung";
+const DB_VIEW_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN= "view_dienstleistungen_arbeitplatzausstattung";
 
 const DB_VIEW_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN = "View_Arbeitsplatzressourcen_Arbeitsplatzausstattung";
 
@@ -134,13 +134,13 @@ const DB_VIEW_MITARBEITER_SKILLS = "View_MitarbeiterSkills";
 
 const DB_VIEW_KUNDEN_INTERESSEN = "View_Kunden_Interessen";
 
-const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN = "View_Arbeitsplatzausstattung_Dienstleistungen";
+const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN = "view_arbeitplatzausstattung_dienstleistungen";
 
 const DB_VIEW_INTERESSEN_WERBUNG = "View_Interessen_Werbung";
 
 const DB_VIEW_MITARBEITERSKILLS = "View_MitarbeiterSkills";
 
-const DB_VIEW_SKILLS_DIENSTLEISTUNGEN = "View_Skills_Dienstleistungen";
+const DB_VIEW_SKILLS_DIENSTLEISTUNGEN = "view_skills_dienstleistungen";
 
 const DB_VIEW_SKILLS_MITARBEITER = "View_Skills_Mitarbeiter";
 

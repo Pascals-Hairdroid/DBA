@@ -7,5 +7,5 @@
 	$cDB_USER_PASSWORD = "P@ssw0rd";
 	// Admin
 	$cDB_ADMIN_NAME = "root";
-	$cDB_ADMIN_PASSWORD = "root";
+	$cDB_ADMIN_PASSWORD = "";
 ?>

@@ -42,6 +42,10 @@ class Dienstleistung{
 	}
 	
 	function setBenoetigteEinheiten($benoetigteEinheiten){
+		try{
+			$benoetigteEinheiten=(int)$benoetigteEinheiten;
+		}
+		catch(Exception $e){}
 		if(is_int($benoetigteEinheiten))
 			$this->benoetigteEinheiten = $benoetigteEinheiten;
 		else
@@ -49,6 +53,10 @@ class Dienstleistung{
 	}
 	
 	function setPausenEinheiten($pausenEinheiten){
+		try{
+			$pausenEinheiten=(int)$pausenEinheiten;
+		}
+		catch(Exception $e){}
 		if(is_int($pausenEinheiten))
 			$this->pausenEinheiten = $pausenEinheiten;
 		else
@@ -70,6 +78,10 @@ class Dienstleistung{
 	}
 	
 	function setGruppierung($gruppierung){
+		try{
+			$gruppierung=(int)$gruppierung;
+		}
+		catch(Exception $e){}
 		if(is_int($gruppierung))
 			$this->gruppierung = $gruppierung;
 		else

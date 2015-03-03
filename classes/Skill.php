@@ -10,6 +10,10 @@ class Skill {
 	
 	
 	function setId($id){
+		try{
+			$id=(int)$id;
+		}
+		catch(Exception $e){}
 		if(is_int($id))
 			$this->id = $id;
 		else 

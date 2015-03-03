@@ -22,6 +22,10 @@ class Mitarbeiter {
 	}
 	
 	function setSvnr($svnr){
+		try{
+			$svnr=(int)$svnr;
+		}
+		catch(Exception $e){}
 		if(is_int($svnr))
 			$this->svnr = $svnr;
 		else

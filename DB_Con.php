@@ -30,12 +30,17 @@ class DB_Con {
 	private $con;
 	
 	
-	function __construct($conf_file, $admin){
+	function __construct($conf_file, $admin, $charset="latin1"){
 		// include config
 		$this->changeConfig($conf_file);
 		$this->connect($admin);
+		var_dump($this->setCharset($charset));
+		echo $this->con->character_set_name();
 	}
 	
+	function setCharset($charset){
+		return $this->con->set_charset($charset)===TRUE;
+	}
 	
 	function changeConfig($conf_file){ // throws Exception
 		// include config
@@ -572,19 +577,19 @@ class DB_Con {
 	function getDienstleistung($kuerzel,Haartyp $haartyp){
 		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".$kuerzel."\" AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".$haartyp->getKuerzel()."\""));
 		
-		$abf = $this->selectQuery(DB_VIEW_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
+		$abf = $this->selectQuery(DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
 		$ausstattungen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
 		}
 		
-		$abf = $this->selectQuery(DB_VIEW_DIENSTLEISTUNGEN_SKILLS, "*", DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
+		$abf = $this->selectQuery(DB_VIEW_SKILLS_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
 		$skills = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($skills, new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]));
 		}
 		
-		return new Dienstleistung($kuerzel, $haartyp, $main->{DB_F_DIENSTLEISTUNGEN_NAME}, $main->{DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN}, $main->{DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN}, $skills, $ausstattungen, $main->{DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG});
+		return new Dienstleistung($kuerzel, $haartyp, $main[DB_F_DIENSTLEISTUNGEN_NAME], $main[DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN], $main[DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN], $skills, $ausstattungen, $main[DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG]);
 	}
 	
 	function getDienstzeit(Mitarbeiter $mitarbeiter, Wochentag $wochentag){

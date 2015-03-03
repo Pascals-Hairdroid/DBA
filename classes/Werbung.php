@@ -11,6 +11,10 @@ class Werbung {
 	
 
 	function setNummer($nummer){
+		try{
+			$nummer=(int)$nummer;
+		}
+		catch(Exception $e){}
 		if(is_int($nummer))
 			$this->nummer = $nummer;
 		else
