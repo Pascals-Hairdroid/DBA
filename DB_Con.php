@@ -97,7 +97,6 @@ class DB_Con {
 	}
 	
 	
-	
 	function skillEntfernen(Skill $skill){
 		return $this->query("DELETE FROM ".DB_TB_SKILLS." WHERE ".DB_F_SKILLS_PK_ID."=\"".$skill->getId()."\"")===TRUE;
 	}
@@ -217,7 +216,6 @@ class DB_Con {
 	}
 	
 	
-	
 	function skillEintragen(Skill $skill){
 		return $this->query("INSERT INTO ".DB_TB_SKILLS." (".DB_F_SKILLS_PK_ID.", ".DB_F_SKILLS_BESCHREIBUNG.") VALUES (\"".$skill->getId()."\", \"".mysqli_escape_string($this->con,$skill->getBeschreibung())."\")")===TRUE;
 	}
@@ -333,11 +331,6 @@ class DB_Con {
 	}
 	
 	
-	
-	
-	
-	
-	
 	function skillUpdaten(Skill $skill){
 		return $this->query("UPDATE ".DB_TB_SKILLS." SET ".DB_F_SKILLS_BESCHREIBUNG." = \"" .mysqli_escape_string($this->con, $skill->getBeschreibung())."\" WHERE ".DB_F_SKILLS_PK_ID." = \"".$skill->getId()."\"")===TRUE;
 	}
@@ -404,12 +397,10 @@ class DB_Con {
 		$success=$success?$this->query("DELETE FROM ".DB_TB_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN." WHERE ".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZRESSOURCEN." = \"".$arbeitsplatz->getNummer()."\" AND (".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN." NOT IN(".$ausstattungen_neu."))"):$success;
 		return $success;
 	}
-
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 	function mitarbeiterUpdaten(Mitarbeiter $mitarbeiter){
-		$success = $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_NACHNAME." = \"" .mysqli_escape_string($this->con, $mitarbeiter->getNachname())."\", ".DB_F_MITARBEITER_VORNAME." = \"".mysqli_escape_string($this->con, $mitarbeiter->getVorname())."\", ".DB_F_MITARBEITER_ADMIN." = ".$mitarbeiter->getAdmin()." WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 		$mitarbeiter_alt=$this->getMitarbeiter($mitarbeiter->getSvnr());
+		$success = $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_NACHNAME." = \"" .mysqli_escape_string($this->con, $mitarbeiter->getNachname())."\", ".DB_F_MITARBEITER_VORNAME." = \"".mysqli_escape_string($this->con, $mitarbeiter->getVorname())."\", ".DB_F_MITARBEITER_ADMIN." = ".$mitarbeiter->getAdmin()." WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 		
 		$skillsIds_alt = array();
 		
@@ -426,7 +417,7 @@ class DB_Con {
 			}
 		}
 		$skills_neu = substr($skills_neu,2);
-		$success=$success?$this->query("DELETE FROM ".DB_TB_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN." WHERE ".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZRESSOURCEN." = \"".$arbeitsplatz->getNummer()."\" AND (".DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN." NOT IN(".$ausstattungen_neu."))"):$success;
+		$success=$success?$this->query("DELETE FROM ".DB_TB_MITARBEITER_SKILLS." WHERE ".DB_F_MITARBEITER_SKILLS_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\" AND (".DB_F_MITARBEITER_SKILLS_PK_SKILLS." NOT IN(".$skills_neu."))"):$success;
 		
 		$urlaube_del=array();
 		$urlaube_add=array();
@@ -479,36 +470,72 @@ class DB_Con {
 			$success=$success?$this->dienstzeitEintragen($dienstzeit, $mitarbeiter):$success;
 		return $success;
 	}
-
-	//!!!
+	
 	function kundeUpdaten(Kunde $kunde){
-		$success = $this->query("INSERT INTO ".DB_TB_KUNDEN." (".DB_F_KUNDEN_EMAIL.", ".DB_F_KUNDEN_VORNAME.", ".DB_F_KUNDEN_NACHNAME.", ".DB_F_KUNDEN_TELNR.", ".DB_F_KUNDEN_FREISCHALTUNG.", ".DB_F_KUNDEN_FOTO.") VALUES (\"".mysqli_escape_string($this->con,$kunde->getEmail())."\", \"".mysqli_escape_string($this->con,$kunde->getVorname())."\", \"".mysqli_escape_string($this->con,$kunde->getNachname())."\", \"".mysqli_escape_string($this->con,$kunde->getTelNr())."\", \"".$kunde->getFreischaltung()."\", \"".mysqli_escape_string($this->con,$kunde->getFoto())."\")")===TRUE;
+		$kunde_alt=$this->getKunde($kunde->getEmail());
+		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname())."\", ".DB_F_KUNDEN_TELNR." = ".mysqli_escape_string($this->con, $kunde->getTelNr())." WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
+		
+		$interessenIds_alt = array();
+		
+		foreach ($kunde_alt->getInteressen() as $interesse_alt)
+			array_push($interessenIds_alt,$interesse_alt->getId());
+		
+		$interessen_neu="";
+		
 		foreach ($kunde->getInteressen() as $interesse){
-			if($interesse instanceof Interesse)
-				$success=$success?$this->interesseKundeZuweisen($interesse, $kunde):$success;
+			if($interesse instanceof Interesse){
+				$interessen_neu = $interessen_neu.", \"".$interesse->getId()."\"";
+				if(!in_array($interesse->getId(),$interessenIds_alt))
+					$success=$success?$this->interesseKundeZuweisen($interesse, $kunde):$success;
+			}
 		}
+		$interessen_neu = substr($interessen_neu,2);
+		$success=$success?$this->query("DELETE FROM ".DB_TB_KUNDEN_INTERESSEN." WHERE ".DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$kunde->getEmail()."\" AND (".DB_F_KUNDEN_INTERESSEN_PK_INTERESSEN." NOT IN(".$interessen_neu."))"):$success;
+		
 		return $success;
 	}
 	
 	function dienstleistungUpdaten(Dienstleistung $dienstleistung){
-		$success = $this->query("INSERT INTO ".DB_TB_DIENSTLEISTUNGEN." (".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL.", ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP.", ".DB_F_DIENSTLEISTUNGEN_NAME.", ".DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN.", ".DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN.", ".DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG.") VALUES (\"".mysqli_escape_string($this->con,$dienstleistung->getKuerzel())."\", \"".mysqli_escape_string($this->con,$dienstleistung->getHaartyp()->getKuerzel())."\", \"".mysqli_escape_string($this->con,$dienstleistung->getName())."\", \"".$dienstleistung->getBenoetigteEinheiten()."\", \"".$dienstleistung->getPausenEinheiten()."\", \"".$dienstleistung->getGruppierung()."\")")===TRUE;
+		$dienstleistung_alt=$this->getDienstleistung($dienstleistung->getKuerzel(), $dienstleistung->getHaartyp());
+		$success = $this->query("UPDATE ".DB_TB_DIENSTLEISTUNGEN." SET ".DB_F_DIENSTLEISTUNGEN_NAME." = \"" .mysqli_escape_string($this->con, $dienstleistung->getName())."\", ".DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getBenoetigteEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getPausenEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG." = ".$dienstleistung->getGruppierung()." WHERE ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())." AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".mysqli_escape_string($this->con, $dienstleistung->getHaartyp()->getKuerzel())."\"")===TRUE;
+		
+		$skillsIds_alt = array();
+		
+		foreach ($dienstleistung->getSkills() as $skill_alt)
+			array_push($skillsIds_alt,$skill_alt->getId());
+		
+		$skills_neu="";
+		
 		foreach ($dienstleistung->getSkills() as $skill){
-			if($skill instanceof Skill)
-				$success=$success?$this->skillDienstleistungZuweisen($skill, $dienstleistung):$success;
+			if($skill instanceof Skill){
+				$skills_neu = $skills_neu.", \"".$skill->getId()."\"";
+				if(!in_array($skill->getId(),$skillsIds_alt))
+					$success=$success?$this->skillDienstleistungZuweisen($skill, $dienstleistung):$success;
+			}
 		}
+		$skills_neu = substr($skills_neu,2);
+		$success=$success?$this->query("DELETE FROM ".DB_TB_DIENSTLEISTUNGEN_SKILLS." WHERE ".DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())."\" AND (".DB_F_DIENSTLEISTUNGEN_SKILLS_PK_SKILLS." NOT IN(".$skills_neu."))"):$success;
+		
+		
+		$ausstattungenIds_alt = array();
+		
+		foreach ($dienstleistung_alt->getArbeitsplatzausstattungen() as $ausstattung_alt)
+			array_push($ausstattungenIds_alt,$ausstattung_alt->getId());
+		
+		$ausstattungen_neu="";
+		
 		foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
-			if($ausstattung instanceof Arbeitsplatzausstattung)
-				$success=$success?$this->arbeitsplatzausstattungDienstleistungZuweisen($ausstattung, $dienstleistung):$success;
+			if($ausstattung instanceof Arbeitsplatzausstattung){
+				$ausstattungen_neu = $ausstattungen_neu.", \"".$ausstattung->getId()."\"";
+				if(!in_array($ausstattung->getId(),$ausstattungenIds_alt))
+					$success=$success?$this->arbeitsplatzausstattungDienstleistungZuweisen($ausstattung, $dienstleistung):$success;
+			}
 		}
+		$ausstattungen_neu = substr($ausstattungen_neu,2);
+		$success=$success?$this->query("DELETE FROM ".DB_TB_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN." WHERE ".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())."\" AND (".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN." NOT IN(".$ausstattungen_neu."))"):$success;
+		
 		return $success;
 	}
-	
-	
-	
-	
-	//-------------------------------------
-	
-	
 	
 	
 	function authentifiziereKunde($kundeEmail){
@@ -526,46 +553,61 @@ class DB_Con {
 	
 	
 	function getWochentag($kuerzel){
-		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_WOCHENTAGE, "*", DB_F_WOCHENTAGE_PK_KUERZEL." = \"".$kuerzel."\""));
-		
+		$abf = $this->selectQuery(DB_TB_WOCHENTAGE, "*", DB_F_WOCHENTAGE_PK_KUERZEL." = \"".$kuerzel."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$row = mysqli_fetch_assoc($abf);
 		return new Wochentag($row[DB_F_WOCHENTAGE_PK_KUERZEL],$row[DB_F_WOCHENTAGE_BEZEICHNUNG]);
 	}
 	
 	function getInteresse($id){
-		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_INTERESSEN, "*", DB_F_INTERESSEN_PK_ID." = \"".$id."\""));
-		
+		$abf = $this->selectQuery(DB_TB_INTERESSEN, "*", DB_F_INTERESSEN_PK_ID." = \"".$id."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$row = mysqli_fetch_assoc($abf);
 		return new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]);
 	}
 	
 	function getProdukt($id){
-		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_PRODUKTE, "*", DB_F_PRODUKTE_PK_ID." = \"".$id."\""));
-		
+		$abf = $this->selectQuery(DB_TB_PRODUKTE, "*", DB_F_PRODUKTE_PK_ID." = \"".$id."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$row = mysqli_fetch_assoc($abf);
 		return new Produkt($row[DB_F_PRODUKTE_PK_ID], $row[DB_F_PRODUKTE_NAME], $row[DB_F_PRODUKTE_HERSTELLER], $row[DB_F_PRODUKTE_BESCHREIBUNG], $row[DB_F_PRODUKTE_PREIS], $row[DB_F_PRODUKTE_BESTAND]);
 	}
 	
 	function getHaartyp($kuerzel){
-		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_HAARTYPEN, "*", DB_F_HAARTYPEN_PK_KUERZEL." = \"".$kuerzel."\""));
-		
+		$abf = $this->selectQuery(DB_TB_HAARTYPEN, "*", DB_F_HAARTYPEN_PK_KUERZEL." = \"".$kuerzel."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$row = mysqli_fetch_assoc($abf);
 		return new Haartyp($row[DB_F_HAARTYPEN_PK_KUERZEL], $row[DB_F_HAARTYPEN_BEZEICHNUNG]);
 	}
 	
 	function getArbeitsplatzausstattung($id){
-		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID." = \"".$id."\""));
-		
+		$abf = $this->selectQuery(DB_TB_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID." = \"".$id."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$row = mysqli_fetch_assoc($abf);
 		return new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]);
 	}
 
 	function getSkill($id){
-		$row = mysqli_fetch_assoc($this->selectQuery(DB_TB_SKILLS, "*", DB_F_SKILLS_PK_ID." = \"".$id."\""));
-		
+		$abf = $this->selectQuery(DB_TB_SKILLS, "*", DB_F_SKILLS_PK_ID." = \"".$id."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$row = mysqli_fetch_assoc($abf);
 		return new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]);
 	}
 	
-	
 	function getArbeitsplatz($nummer){
-		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_ARBEITSPLATZRESSOURCEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER." = \"".$nummer."\""));
+		$abf = $this->selectQuery(DB_TB_ARBEITSPLATZRESSOURCEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER." = \"".$nummer."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZRESSOURCEN." = \"".$nummer."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$ausstattungen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
@@ -575,15 +617,20 @@ class DB_Con {
 	}
 	
 	function getDienstleistung($kuerzel,Haartyp $haartyp){
-		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".$kuerzel."\" AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".$haartyp->getKuerzel()."\""));
+		$abf = $this->selectQuery(DB_TB_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".$kuerzel."\" AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".$haartyp->getKuerzel()."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$ausstattungen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
 		}
 		
 		$abf = $this->selectQuery(DB_VIEW_SKILLS_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$skills = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($skills, new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]));
@@ -593,14 +640,22 @@ class DB_Con {
 	}
 	
 	function getDienstzeit(Mitarbeiter $mitarbeiter, Wochentag $wochentag){
-		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\" AND ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".$wochentag->getKuerzel()."\""));
+		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\" AND ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".$wochentag->getKuerzel()."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$main = mysqli_fetch_assoc($abf);
+		
 		return new Dienstzeit($wochentag, new DateTime($main->{DB_F_DIENSTZEITEN_BEGINN}), new DateTime($main->{DB_F_DIENSTZEITEN_ENDE}));
 	}
 	
 	function getKunde($email){
-		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_KUNDEN, "*", DB_F_KUNDEN_PK_EMAIL." = \"".$email."\""));
+		$abf = $this->selectQuery(DB_TB_KUNDEN, "*", DB_F_KUNDEN_PK_EMAIL." = \"".$email."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_KUNDEN_INTERESSEN, "*", DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$email."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$interessen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
@@ -610,21 +665,27 @@ class DB_Con {
 	}
 	
 	function getMitarbeiter($svnr){
-		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_MITARBEITER, "*", DB_F_MITARBEITER_PK_SVNR." = \"".$svnr."\""));
+		$abf = $this->selectQuery(DB_TB_MITARBEITER, "*", DB_F_MITARBEITER_PK_SVNR." = \"".$svnr."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_MITARBEITER_SKILLS, "*", DB_F_MITARBEITER_SKILLS_PK_MITARBEITER." = \"".$svnr."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$skills = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($skills, new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]));
 		}
 		
 		$abf = $this->selectQuery(DB_TB_URLAUBE, "*", DB_F_URLAUBE_PK_MITARBEITER." = \"".$svnr."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$urlaube = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($urlaube, new Urlaub($row[DB_F_URLAUBE_PK_BEGINN], $row[DB_F_URLAUBE_ENDE]));
 		}
 		
 		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$dienstzeiten = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($dienstzeiten, new Dienstzeit($this->getWochentag($row[DB_F_DIENSTZEITEN_PK_WOCHENTAGE]),new DateTime($row[DB_F_DIENSTZEITEN_BEGINN]) , new DateTime($row[DB_F_DIENSTZEITEN_ENDE])));
@@ -634,9 +695,13 @@ class DB_Con {
 	}
 	
 	function getWerbung($nummer){
-		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_WERBUNG, "*", DB_F_WERBUNG_PK_NUMMER." = \"".$nummer."\""));
+		$abf = $this->selectQuery(DB_TB_WERBUNG, "*", DB_F_WERBUNG_PK_NUMMER." = \"".$nummer."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_WERBUNG_INTERESSEN, "*", DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$nummer."\"");
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$interessen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
@@ -646,10 +711,125 @@ class DB_Con {
 	}
 	
 	function getTermin(DateTime $zeitstempel, Mitarbeiter $mitarbeiter){
-		$main = mysqli_fetch_assoc($this->selectQuery(DB_TB_ZEITTABELLE, "*", DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." = \"".$zeitstempel->format(DB_FORMAT_DATETIME)."\" AND ".DB_F_ZEITTABELLE_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"")); 
+		$abf = $this->selectQuery(DB_TB_ZEITTABELLE, "*", DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." = \"".$zeitstempel->format(DB_FORMAT_DATETIME)."\" AND ".DB_F_ZEITTABELLE_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\""); 
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		if($abf->num_rows == 0) return null;
+		$main = mysqli_fetch_assoc($abf);
 		
 		return new Termin($zeitstempel, $mitarbeiter, $this->getArbeitsplatz($main->{DB_F_ZEITTABELLE_ARBEITSPLATZ}), $this->getKunde($main->{DB_F_ZEITTABELLE_KUNDE}), $main->{DB_F_ZEITTABELLE_FRISURWUNSCH}, $this->getDienstleistung($main->{DB_F_ZEITTABELLE_DIENSTLEISTUNG}, $this->getHaartyp($main->{DB_F_ZEITTABELLE_DIENSTLEISTUNG_HAARTYP})));
 	}
+	
+	
+	
+	function getAllWochentag(){
+		$abf = $this->selectQueryField(DB_TB_WOCHENTAGE, DB_F_WOCHENTAGE_PK_KUERZEL);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getWochentag($row[DB_F_WOCHENTAGE_PK_KUERZEL]));
+		return $res;
+	}
+	
+	function getAllInteresse(){
+		$abf = $this->selectQueryField(DB_TB_INTERESSEN, DB_F_INTERESSEN_PK_ID);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getInteresse($row[DB_F_INTERESSEN_PK_ID]));
+		return $res;
+	}
+	
+	function getAllProdukt(){
+		$abf = $this->selectQueryField(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getProdukt($row[DB_F_PRODUKTE_PK_ID]));
+		return $res;
+	}
+	
+	function getAllHaartyp(){
+		$abf = $this->selectQueryField(DB_TB_HAARTYPEN, DB_F_HAARTYPEN_PK_KUERZEL);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getHaartyp($row[DB_F_HAARTYPEN_PK_KUERZEL]));
+		return $res;
+	}
+	
+	function getAllArbeitsplatzausstattung(){
+		$abf = $this->selectQueryField(DB_TB_ARBEITSPLATZAUSSTATTUNGEN, DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getArbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID]));
+		return $res;
+	}
+	
+	function getAllSkill(){
+		$abf = $this->selectQueryField(DB_TB_SKILLS, DB_F_SKILLS_PK_ID);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getSkill($row[DB_F_SKILLS_PK_ID]));
+		return $res;
+	}
+	
+	
+	function getAllArbeitsplatz(){
+		$abf = $this->selectQueryField(DB_TB_ARBEITSPLATZRESSOURCEN, DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getArbeitsplatz($row[DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER]));
+		return $res;
+	}
+	
+	function getAllDienstleistung($kuerzel,Haartyp $haartyp){
+		$abf = $this->selectQueryField(DB_TB_DIENSTLEISTUNGEN, DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." , ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getDienstleistung($row[DB_F_DIENSTLEISTUNGEN_PK_KUERZEL],$this->getHaartyp($row[DB_F_DIENSTLEISTUNGEN_PK_HAARTYP])));
+		return $res;
+	}
+	
+	function getAllDienstzeit(){
+		$abf = $this->selectQueryField(DB_TB_DIENSTZEITEN, DB_F_DIENSTZEITEN_PK_WOCHENTAGE." , ".DB_F_DIENSTZEITEN_BEGINN." , ".DB_F_DIENSTZEITEN_ENDE);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,new Dienstzeit($this->getWochentag($row[DB_F_DIENSTZEITEN_PK_WOCHENTAGE]), new DateTime($row[DB_F_DIENSTZEITEN_BEGINN]), new DateTime($row[DB_F_DIENSTZEITEN_ENDE])));
+		return $res;
+	}
+	
+	function getAllKunde(){
+		$abf = $this->selectQueryField(DB_TB_KUNDEN, DB_F_KUNDEN_PK_EMAIL);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getKunde($row[DB_F_KUNDEN_PK_EMAIL]));
+		return $res;
+	}
+	
+	function getAllMitarbeiter(){
+		$abf = $this->selectQueryField(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getMitarbeiter($row[DB_F_MITARBEITER_PK_SVNR]));
+		return $res;
+	}
+	
+	function getAllWerbung(){
+		$abf = $this->selectQueryField(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER);
+		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getWerbung($row[DB_F_WERBUNG_PK_NUMMER]));
+		return $res;
+	}
+	
 	
 	
 	
