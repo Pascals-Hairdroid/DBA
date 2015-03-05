@@ -132,7 +132,7 @@ const DB_VIEW_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN = "View_Arbeitspl
 
 const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_ARBEITSPLATZRESSOURCEN = "View_Arbeitplatzausstattung_Arbeitsplatzressourcen";
 
-const DB_VIEW_MITARBEITER_SKILLS = "View_MitarbeiterSkills";
+const DB_VIEW_MITARBEITER_SKILLS = "View_Mitarbeiter_Skills";
 
 const DB_VIEW_KUNDEN_INTERESSEN = "View_Kunden_Interessen";
 
