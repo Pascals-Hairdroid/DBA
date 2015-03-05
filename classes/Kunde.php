@@ -50,6 +50,9 @@ class Kunde {
 	}
 	
 	function setFreischaltung($freischaltung){
+		try{
+			$freischaltung=(bool)$freischaltung;
+		} catch(Exception $e){}
 		if(is_bool($freischaltung))
 			$this->freischaltung = $freischaltung;
 		else

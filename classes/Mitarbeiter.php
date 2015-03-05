@@ -55,6 +55,9 @@ class Mitarbeiter {
 	}
 	
 	function setAdmin($admin){
+		try{
+			$admin=(bool)$admin;
+		} catch(Exception $e){}
 		if(is_bool($admin))
 			$this->admin = $admin;
 		else
