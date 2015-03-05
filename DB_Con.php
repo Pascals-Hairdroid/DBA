@@ -701,7 +701,7 @@ class DB_Con {
 			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
 		}
 		
-		return new Kunde($email, $main->{DB_F_KUNDEN_VORNAME}, $main->{DB_F_KUNDEN_NACHNAME}, $main->{DB_F_KUNDEN_TELNR}, $main->{DB_F_KUNDEN_FREISCHALTUNG}, $main->{DB_F_KUNDEN_FOTO}, $interessen);
+	return new Kunde($email, $main[DB_F_KUNDEN_VORNAME], $main[DB_F_KUNDEN_NACHNAME], $main[DB_F_KUNDEN_TELNR], $main[DB_F_KUNDEN_FREISCHALTUNG], $main[DB_F_KUNDEN_FOTO], $interessen);
 	}
 	
 	function getMitarbeiter($svnr){
@@ -731,7 +731,7 @@ class DB_Con {
 			array_push($dienstzeiten, new Dienstzeit($this->getWochentag($row[DB_F_DIENSTZEITEN_PK_WOCHENTAGE]),new DateTime($row[DB_F_DIENSTZEITEN_BEGINN]) , new DateTime($row[DB_F_DIENSTZEITEN_ENDE])));
 		}
 		
-		return new Mitarbeiter($svnr, $main->{DB_F_MITARBEITER_VORNAME}, $main->{DB_F_MITARBEITER_NACHNAME}, $skills, $main->{DB_F_MITARBEITER_ADMIN}, $urlaube, $dienstzeiten);
+		return new Mitarbeiter($svnr, $main[DB_F_MITARBEITER_VORNAME], $main[DB_F_MITARBEITER_NACHNAME], $skills, $main[DB_F_MITARBEITER_ADMIN], $urlaube, $dienstzeiten);
 	}
 	
 	function getWerbung($nummer){
