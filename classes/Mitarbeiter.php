@@ -1,7 +1,7 @@
 <?php 
-include_once 'Skill.php';
-include_once 'Urlaub.php';
-include_once 'Dienstzeit.php';
+include_once dirname(__FILE__)."/".'Skill.php';
+include_once dirname(__FILE__)."/".'Urlaub.php';
+include_once dirname(__FILE__)."/".'Dienstzeit.php';
 
 class Mitarbeiter {
 	private $svnr;

@@ -1,19 +1,19 @@
 <?php
-include_once("conf/db_const.php");
-include_once("classes/Arbeitsplatz.php");
-include_once("classes/Arbeitsplatzausstattung.php");
-include_once("classes/Dienstleistung.php");
-include_once("classes/Dienstzeit.php");
-include_once("classes/Haartyp.php");
-include_once("classes/Interesse.php");
-include_once("classes/Kunde.php");
-include_once("classes/Mitarbeiter.php");
-include_once("classes/Produkt.php");
-include_once("classes/Skill.php");
-include_once("classes/Termin.php");
-include_once("classes/Urlaub.php");
-include_once("classes/Werbung.php");
-include_once("classes/Wochentag.php");
+include_once(dirname(__FILE__)."/conf/db_const.php");
+include_once(dirname(__FILE__)."/classes/Arbeitsplatz.php");
+include_once(dirname(__FILE__)."/classes/Arbeitsplatzausstattung.php");
+include_once(dirname(__FILE__)."/classes/Dienstleistung.php");
+include_once(dirname(__FILE__)."/classes/Dienstzeit.php");
+include_once(dirname(__FILE__)."/classes/Haartyp.php");
+include_once(dirname(__FILE__)."/classes/Interesse.php");
+include_once(dirname(__FILE__)."/classes/Kunde.php");
+include_once(dirname(__FILE__)."/classes/Mitarbeiter.php");
+include_once(dirname(__FILE__)."/classes/Produkt.php");
+include_once(dirname(__FILE__)."/classes/Skill.php");
+include_once(dirname(__FILE__)."/classes/Termin.php");
+include_once(dirname(__FILE__)."/classes/Urlaub.php");
+include_once(dirname(__FILE__)."/classes/Werbung.php");
+include_once(dirname(__FILE__)."/classes/Wochentag.php");
 
 class DB_Con {
 	private $db_ADDRESS;

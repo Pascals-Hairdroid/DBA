@@ -1,5 +1,5 @@
 <?php
-include_once 'Arbeitsplatzausstattung.php';
+include_once dirname(__FILE__)."/".'Arbeitsplatzausstattung.php';
 class Arbeitsplatz{
 	private $nummer;
 	private $name;

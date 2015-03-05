@@ -1,7 +1,7 @@
 <?php
-include_once 'Skill.php';
-include_once 'Arbeitsplatzausstattung.php';
-include_once 'Haartyp.php';
+include_once dirname(__FILE__)."/".'Skill.php';
+include_once dirname(__FILE__)."/".'Arbeitsplatzausstattung.php';
+include_once dirname(__FILE__)."/".'Haartyp.php';
 class Dienstleistung{
 	private $kuerzel;
 	private $haartyp;

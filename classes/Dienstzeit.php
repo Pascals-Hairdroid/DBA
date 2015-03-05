@@ -1,5 +1,5 @@
 <?php
-include_once 'Wochentag.php';
+include_once dirname(__FILE__)."/".'Wochentag.php';
 class Dienstzeit{
 	private $wochentag;
 	private $beginn;

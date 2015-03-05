@@ -1,8 +1,8 @@
 <?php
-include_once 'Mitarbeiter.php';
-include_once 'Arbeitsplatz.php';
-include_once 'Kunde.php';
-include_once 'Dienstleistung.php';
+include_once dirname(__FILE__)."/".'Mitarbeiter.php';
+include_once dirname(__FILE__)."/".'Arbeitsplatz.php';
+include_once dirname(__FILE__)."/".'Kunde.php';
+include_once dirname(__FILE__)."/".'Dienstleistung.php';
 
 class Termin {
 	private $zeitstempel;

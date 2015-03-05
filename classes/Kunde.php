@@ -1,5 +1,5 @@
 <?php
-include_once 'Interesse.php';
+include_once dirname(__FILE__)."/".'Interesse.php';
 class Kunde {
 	private $email;
 	private $vorname;

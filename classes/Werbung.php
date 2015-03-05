@@ -1,5 +1,5 @@
 <?php
-include_once 'Interesse.php';
+include_once dirname(__FILE__)."/".'Interesse.php';
 class Werbung {
 	private $nummer;
 	private $interessen = array();
