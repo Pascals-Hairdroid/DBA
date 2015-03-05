@@ -97,6 +97,15 @@ class DB_Con {
 	}
 	
 	
+	function kundePwUpdaten(Kunde $kunde, $passwort){
+		return $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_PASSWORT." = \"" .mysqli_escape_string($this->con, $passwort)."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
+	}
+	
+	function mitarbeiterPwUpdaten(Mitarbeiter $mitarbeiter, $passwort){
+		return $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_PASSWORT." = \"" .mysqli_escape_string($this->con, $passwort)."\" WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
+	}
+	
+	
 	function skillEntfernen(Skill $skill){
 		return $this->query("DELETE FROM ".DB_TB_SKILLS." WHERE ".DB_F_SKILLS_PK_ID."=\"".$skill->getId()."\"")===TRUE;
 	}
@@ -473,7 +482,7 @@ class DB_Con {
 	
 	function kundeUpdaten(Kunde $kunde){
 		$kunde_alt=$this->getKunde($kunde->getEmail());
-		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname())."\", ".DB_F_KUNDEN_TELNR." = ".mysqli_escape_string($this->con, $kunde->getTelNr())." WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr())."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
 		
 		$interessenIds_alt = array();
 		
@@ -538,16 +547,47 @@ class DB_Con {
 	}
 	
 	
-	function authentifiziereKunde($kundeEmail){
-		$row = mysqli_fetch_row($this->selectQuery(DB_TB_KUNDEN, DB_F_KUNDEN_FREISCHALTUNG, DB_F_KUNDEN_PK_EMAIL." = ".mysqli_escape_string($this->con,$kundeEmail)));
-		if(isset($row[0]))
-			if($row[0]){
-				return true;
+	function authentifiziereKunde(Kunde $kunde, $passwort){
+		
+		try{
+			$abf = $this->selectQuery(DB_TB_KUNDEN, DB_F_KUNDEN_PASSWORT, DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con,$kunde->getEmail())."\"");
+		} catch (Exception $e){
+			throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		}
+		
+		if ($abf == false)
+			return false;
+			try{
+				$row = mysqli_fetch_assoc($abf);
+				if(isset($row[DB_F_KUNDEN_PASSWORT]))
+				if(strcmp($row[DB_F_KUNDEN_PASSWORT],$passwort)==0)
+					return true;
+			}catch(Exception $e){
+				throw new Exception("Datenbankfehler: Unbekannter Fehler!");
 			}
-			else
-				throw new Exception("User ".$kundeEmail." nicht freigeschalten!");
-		else
-			throw new Exception("User ".$kundeEmail." nicht gefunden!");
+			
+		return false;
+	}
+	
+	function authentifiziereMitarbeiter(Mitarbeiter $mitarbeiter, $passwort){
+	
+		try{
+			$abf = $this->selectQuery(DB_TB_MITARBEITER, DB_F_MITARBEITER_PASSWORT, DB_F_MITARBEITER_PK_SVNR." = \"".mysqli_escape_string($this->con,$mitarbeiter->getSvnr())."\"");
+		} catch (Exception $e){
+			throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
+		}
+	
+		if ($abf == false)
+			return false;
+		try{
+			$row = mysqli_fetch_assoc($abf);
+			if(isset($row[DB_F_MITARBEITER_PASSWORT]))
+			if(strcmp($row[DB_F_MITARBEITER_PASSWORT],$passwort)==0)
+				return true;
+		}catch(Exception $e){
+			throw new Exception("Datenbankfehler: Unbekannter Fehler!");
+		}
+			
 		return false;
 	}
 	

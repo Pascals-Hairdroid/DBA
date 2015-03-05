@@ -10,6 +10,7 @@ const DB_F_MITARBEITER_PK_SVNR = "SVNr";
 const DB_F_MITARBEITER_VORNAME = "Vorname";
 const DB_F_MITARBEITER_NACHNAME = "Nachname";
 const DB_F_MITARBEITER_ADMIN = "Admin";
+const DB_F_MITARBEITER_PASSWORT = "Passwort";
 
 const DB_TB_SKILLS = "Skills";
 const DB_F_SKILLS_PK_ID = "ID";
@@ -37,6 +38,7 @@ const DB_F_KUNDEN_NACHNAME = "Nachname";
 const DB_F_KUNDEN_TELNR = "TelNr";
 const DB_F_KUNDEN_FOTO = "Foto";
 const DB_F_KUNDEN_FREISCHALTUNG = "Freischaltung";
+const DB_F_KUNDEN_PASSWORT = "Passwort";
 
 const DB_TB_PRODUKTE = "Produkte";
 const DB_F_PRODUKTE_PK_ID = "ID";
