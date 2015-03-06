@@ -300,7 +300,7 @@ class DB_Con {
 	}
 	
 	function mitarbeiterEintragen(Mitarbeiter $mitarbeiter){
-		$success = $this->query("INSERT INTO ".DB_TB_MITARBEITER." (".DB_F_MITARBEITER_SVNR.", ".DB_F_MITARBEITER_VORNAME.", ".DB_F_MITARBEITER_NACHNAME.", ".DB_F_MITARBEITER_ADMIN.") VALUES (\"".$mitarbeiter->getSvnr()."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getVorname())."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getNachname())."\", \"".$mitarbeiter->getAdmin()."\")")===TRUE;
+		$success = $this->query("INSERT INTO ".DB_TB_MITARBEITER." (".DB_F_MITARBEITER_PK_SVNR.", ".DB_F_MITARBEITER_VORNAME.", ".DB_F_MITARBEITER_NACHNAME.", ".DB_F_MITARBEITER_ADMIN.") VALUES (\"".$mitarbeiter->getSvnr()."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getVorname())."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getNachname())."\", \"".$mitarbeiter->getAdmin()."\")")===TRUE;
 		foreach ($mitarbeiter->getSkills() as $skill){
 			if($skill instanceof Skill)
 				$success=$success?$this->skillMitarbeiterZuweisen($skill, $mitarbeiter):$success;
