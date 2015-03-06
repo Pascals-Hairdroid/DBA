@@ -709,7 +709,7 @@ class DB_Con {
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
-		$abf = $this->selectQuery(DB_VIEW_MITARBEITER_SKILLS, "*", DB_F_MITARBEITER_SKILLS_PK_MITARBEITER." = \"".$svnr."\"");
+		$abf = $this->selectQuery(DB_VIEW_SKILLS_MITARBEITER, "*", DB_F_MITARBEITER_SKILLS_PK_MITARBEITER." = \"".$svnr."\"");
 		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$skills = array();
 		while ($row = mysqli_fetch_assoc($abf)){
