@@ -652,7 +652,7 @@ class DB_Con {
 			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
 		}
 		
-		return new Arbeitsplatz($nummer, $main->{DB_F_ARBEITSPLATZRESSOURCEN_NAME}, $ausstattung);
+		return new Arbeitsplatz($nummer, $main[DB_F_ARBEITSPLATZRESSOURCEN_NAME], $ausstattung);
 	}
 	
 	function getDienstleistung($kuerzel,Haartyp $haartyp){
@@ -684,7 +684,7 @@ class DB_Con {
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
-		return new Dienstzeit($wochentag, new DateTime($main->{DB_F_DIENSTZEITEN_BEGINN}), new DateTime($main->{DB_F_DIENSTZEITEN_ENDE}));
+		return new Dienstzeit($wochentag, new DateTime($main[DB_F_DIENSTZEITEN_BEGINN]), new DateTime($main[DB_F_DIENSTZEITEN_ENDE]));
 	}
 	
 	function getKunde($email){
@@ -755,7 +755,7 @@ class DB_Con {
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
-		return new Termin($zeitstempel, $mitarbeiter, $this->getArbeitsplatz($main->{DB_F_ZEITTABELLE_ARBEITSPLATZ}), $this->getKunde($main->{DB_F_ZEITTABELLE_KUNDE}), $main->{DB_F_ZEITTABELLE_FRISURWUNSCH}, $this->getDienstleistung($main->{DB_F_ZEITTABELLE_DIENSTLEISTUNG}, $this->getHaartyp($main->{DB_F_ZEITTABELLE_DIENSTLEISTUNG_HAARTYP})));
+		return new Termin($zeitstempel, $mitarbeiter, $this->getArbeitsplatz($main[DB_F_ZEITTABELLE_ARBEITSPLATZ]), $this->getKunde($main[DB_F_ZEITTABELLE_KUNDE]), $main[DB_F_ZEITTABELLE_FRISURWUNSCH], $this->getDienstleistung($main[DB_F_ZEITTABELLE_DIENSTLEISTUNG], $this->getHaartyp($main[DB_F_ZEITTABELLE_DIENSTLEISTUNG_HAARTYP])));
 	}
 	
 	
