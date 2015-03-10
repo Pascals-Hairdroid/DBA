@@ -24,6 +24,9 @@ class Dienstleistung{
 	}
 	
 	function setKuerzel($kuerzel){
+		try{
+			$kuerzel = (string)$kuerzel;
+		}catch (Exception $e){}
 		if(is_string($kuerzel))
 			$this->kuerzel = $kuerzel;
 		else
@@ -35,6 +38,9 @@ class Dienstleistung{
 	}
 	
 	function setName($name){
+		try{
+			$name = (string)$name;
+		}catch (Exception $e){}
 		if(is_string($name))
 			$this->name = $name;
 		else

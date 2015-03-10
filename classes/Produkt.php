@@ -30,6 +30,9 @@ class Produkt{
 	}
 	
 	function setName($name){
+		try{
+			$name = (string)$name;
+		}catch (Exception $e){}
 		if(is_string($name))
 			$this->name = $name;
 		else
@@ -37,6 +40,9 @@ class Produkt{
 	}
 	
 	function setHersteller($hersteller){
+		try{
+			$hersteller = (string)$hersteller;
+		}catch (Exception $e){}
 		if(is_string($hersteller))
 			$this->hersteller = $hersteller;
 		else
@@ -44,6 +50,9 @@ class Produkt{
 	}
 	
 	function setBeschreibung($beschreibung){
+		try{
+			$beschreibung = (string)$beschreibung;
+		}catch (Exception $e){}
 		if(is_string($beschreibung))
 			$this->beschreibung = $beschreibung;
 		else

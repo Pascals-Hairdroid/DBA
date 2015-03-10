@@ -21,6 +21,9 @@ class Skill {
 	}
 	
 	function setBeschreibung($beschreibung){
+		try{
+			$beschreibung = (string)$beschreibung;
+		}catch (Exception $e){}
 		if(is_string($beschreibung))
 			$this->beschreibung = $beschreibung;
 		else

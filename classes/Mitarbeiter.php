@@ -33,6 +33,9 @@ class Mitarbeiter {
 	}
 	
 	function setVorname($vorname){
+		try{
+			$vorname = (string)$vorname;
+		}catch (Exception $e){}
 		if(is_string($vorname))
 			$this->vorname = $vorname;
 		else
@@ -40,6 +43,9 @@ class Mitarbeiter {
 	}
 	
 	function setNachname($nachname){
+		try{
+			$nachname = (string)$nachname;
+		}catch (Exception $e){}
 		if(is_string($nachname))
 			$this->nachname = $nachname;
 		else

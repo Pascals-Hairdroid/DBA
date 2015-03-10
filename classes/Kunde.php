@@ -21,6 +21,9 @@ class Kunde {
 	
 	
 	function setEmail($email){
+		try{
+			$email = (string)$email;
+		}catch (Exception $e){}
 		if(is_string($email))
 			$this->email = $email;
 		else
@@ -28,6 +31,9 @@ class Kunde {
 	}
 	
 	function setVorname($vorname){
+		try{
+			$vorname = (string)$vorname;
+		}catch (Exception $e){}
 		if(is_string($vorname))
 			$this->vorname = $vorname;
 		else
@@ -35,6 +41,9 @@ class Kunde {
 	}
 	
 	function setNachname($nachname){
+		try{
+			$nachname = (string)$nachname;
+		}catch (Exception $e){}
 		if(is_string($nachname))
 			$this->nachname = $nachname;
 		else
@@ -43,6 +52,9 @@ class Kunde {
 	
 
 	function setTelNr($telNr){
+		try{
+			$telNr = (string)$telNr;
+		}catch (Exception $e){}
 		if(is_string($telNr))
 			$this->telNr = $telNr;
 		else
@@ -60,6 +72,9 @@ class Kunde {
 	}
 	
 	function setFoto($foto){
+		try{
+			$foto = (string)$foto;
+		}catch (Exception $e){}
 		if(is_string($foto) || $foto == null)
 			$this->foto = $foto;
 		else

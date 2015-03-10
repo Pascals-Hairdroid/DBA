@@ -39,6 +39,9 @@ class Termin {
 	}
 	
 	function setFrisurwunsch($frisurwunsch){
+		try{
+			$frisurwunsch = (string)$frisurwunsch;
+		}catch (Exception $e){}
 		if(is_string($frisurwunsch))
 			$this->frisurwunsch = $frisurwunsch;
 		else

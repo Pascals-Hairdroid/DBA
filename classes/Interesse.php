@@ -21,6 +21,9 @@ class Interesse{
 	}
 	
 	function setBezeichnung($bezeichnung){
+		try{
+			$bezeichnung = (string)$bezeichnung;
+		}catch (Exception $e){}
 		if(is_string($bezeichnung))
 			$this->bezeichnung = $bezeichnung;
 		else

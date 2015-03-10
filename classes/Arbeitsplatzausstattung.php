@@ -21,6 +21,9 @@ class Arbeitsplatzausstattung{
 	}
 	
 	function setName($name){
+		try{
+			$name = (string)$name;
+		}catch (Exception $e){}
 		if(is_string($name))
 			$this->name = $name;
 		else

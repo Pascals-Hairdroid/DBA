@@ -10,6 +10,9 @@ class Haartyp{
 	
 	
 	function setKuerzel($kuerzel){
+		try{
+			$kuerzel = (string)$kuerzel;
+		}catch (Exception $e){}
 		if(is_string($kuerzel))
 			$this->kuerzel = $kuerzel;
 		else
@@ -17,6 +20,9 @@ class Haartyp{
 	}
 	
 	function setBezeichnung($bezeichnung){
+		try{
+			$bezeichnung = (string)$bezeichnung;
+		}catch (Exception $e){}
 		if(is_string($bezeichnung))
 			$this->bezeichnung = $bezeichnung;
 		else
