@@ -1,7 +1,8 @@
 <?php 
 class Arbeitsplatzausstattung{
-	private $id;
-	private $name;
+	const NAME = "Arbeitsplatzausstattung";
+	public $id;
+	public $name;
 	
 	function __construct($id, $name){
 		$this->setId($id);

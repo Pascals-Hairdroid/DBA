@@ -1,9 +1,10 @@
 <?php
 include_once dirname(__FILE__)."/".'Arbeitsplatzausstattung.php';
 class Arbeitsplatz{
-	private $nummer;
-	private $name;
-	private $ausstattung = array();
+	const NAME = "Arbeitsplatz";
+	public $nummer;
+	public $name;
+	public $ausstattung = array();
 	
 	
 	function __construct($nummer, $name, array $ausstattung){

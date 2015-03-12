@@ -1,13 +1,14 @@
 <?php
 include_once dirname(__FILE__)."/".'Interesse.php';
 class Kunde {
-	private $email;
-	private $vorname;
-	private $nachname;
-	private $telNr;
-	private $freischaltung;
-	private $foto;
-	private $interessen = array();
+	const NAME = "Kunde";
+	public $email;
+	public $vorname;
+	public $nachname;
+	public $telNr;
+	public $freischaltung;
+	public $foto;
+	public $interessen = array();
 
 	function __construct($email, $vorname, $nachname, $telNr, $freischaltung, $foto, array $interessen){
 		$this->setEmail($email);

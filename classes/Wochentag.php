@@ -1,7 +1,7 @@
 <?php
 class Wochentag{
-	private $kuerzel;
-	private $bezeichnung;
+	public $kuerzel;
+	public $bezeichnung;
 	
 	function __construct($kuerzel, $bezeichnung){
 		$this->setKuerzel($kuerzel);

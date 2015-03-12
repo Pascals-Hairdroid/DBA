@@ -1,11 +1,11 @@
 <?php 
 class Produkt{
-	private $id;
-	private $name;
-	private $hersteller;
-	private $beschreibung;
-	private $preis;
-	private $bestand;
+	public $id;
+	public $name;
+	public $hersteller;
+	public $beschreibung;
+	public $preis;
+	public $bestand;
 	
 	
 	function __construct($id, $name, $hersteller, $beschreibung, $preis, $bestand){

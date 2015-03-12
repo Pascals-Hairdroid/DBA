@@ -1,7 +1,8 @@
 <?php 
 class Interesse{
-	private $id;
-	private $bezeichnung;
+	const NAME = "Interesse";
+	public $id;
+	public $bezeichnung;
 	
 	function __construct($id, $bezeichnung){
 		$this->setId($id);

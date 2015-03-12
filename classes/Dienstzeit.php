@@ -1,9 +1,10 @@
 <?php
 include_once dirname(__FILE__)."/".'Wochentag.php';
 class Dienstzeit{
-	private $wochentag;
-	private $beginn;
-	private $ende;
+	const NAME = "Dienstzeit";
+	public $wochentag;
+	public $beginn;
+	public $ende;
 
 	function __construct(Wochentag $wochentag, DateTime $beginn, DateTime $ende){
 		$this->setBeginn($beginn);

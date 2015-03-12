@@ -693,7 +693,7 @@ class DB_Con {
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
-		$abf = $this->selectQuery(DB_VIEW_KUNDEN_INTERESSEN, "*", DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$email."\"");
+		$abf = $this->selectQuery(DB_VIEW_INTERESSEN_KUNDEN, "*", DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$email."\"");
 		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$interessen = array();
 		while ($row = mysqli_fetch_assoc($abf)){

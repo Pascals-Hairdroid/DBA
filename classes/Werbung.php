@@ -1,8 +1,8 @@
 <?php
 include_once dirname(__FILE__)."/".'Interesse.php';
 class Werbung {
-	private $nummer;
-	private $interessen = array();
+	public $nummer;
+	public $interessen = array();
 
 	function __construct($nummer, array $interessen){
 		$this->setNummer($nummer);

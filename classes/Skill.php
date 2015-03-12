@@ -1,7 +1,7 @@
 <?php 
 class Skill {
-	private $id;
-	private $beschreibung;
+	public $id;
+	public $beschreibung;
 	
 	function __construct($id, $beschreibung){
 		$this->setId($id);

@@ -27,7 +27,7 @@ const DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME = "Ausstattung";
 const DB_TB_WERBUNG = "Werbung";
 const DB_F_WERBUNG_PK_NUMMER = "WerbungsNr";
 
-const DB_TB_INTERESSEN = "Interessen";
+const DB_TB_INTERESSEN = "interessen";
 const DB_F_INTERESSEN_PK_ID = "ID";
 const DB_F_INTERESSEN_BEZEICHNUNG = "Bez";
 
@@ -72,8 +72,8 @@ const DB_F_URLAUBE_ENDE = "Ende";
 
 // Zwischentabellen (MULTI PK)
 // Informationenbeinhaltende Zwischentabellen
-const DB_TB_DIENSTZEITEN = "Dienstzeiten";
-const DB_F_DIENSTZEITEN_PK_MITARBEITER = "Mitarbeiter_ID";
+const DB_TB_DIENSTZEITEN = "dienstzeiten";
+const DB_F_DIENSTZEITEN_PK_MITARBEITER = "Mitarbeiter_SVNr";
 const DB_F_DIENSTZEITEN_PK_WOCHENTAGE = "Wochentage_Kuerzel";
 const DB_F_DIENSTZEITEN_BEGINN = "Beginn";
 const DB_F_DIENSTZEITEN_ENDE = "Ende";
@@ -135,6 +135,8 @@ const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_ARBEITSPLATZRESSOURCEN = "View_Arbeitpla
 const DB_VIEW_MITARBEITER_SKILLS = "View_Mitarbeiter_Skills";
 
 const DB_VIEW_KUNDEN_INTERESSEN = "View_Kunden_Interessen";
+
+const DB_VIEW_INTERESSEN_KUNDEN = "View_Interessen_Kunden";
 
 const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN = "view_arbeitplatzausstattung_dienstleistungen";
 

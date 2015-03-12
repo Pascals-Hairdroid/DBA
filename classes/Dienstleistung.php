@@ -3,14 +3,15 @@ include_once dirname(__FILE__)."/".'Skill.php';
 include_once dirname(__FILE__)."/".'Arbeitsplatzausstattung.php';
 include_once dirname(__FILE__)."/".'Haartyp.php';
 class Dienstleistung{
-	private $kuerzel;
-	private $haartyp;
-	private $name;
-	private $benoetigteEinheiten;
-	private $pausenEinheiten;
-	private $skills = array();
-	private $arbeitsplatzausstattungen = array();
-	private $gruppierung;
+	const NAME = "Dienstleistung";
+	public $kuerzel;
+	public $haartyp;
+	public $name;
+	public $benoetigteEinheiten;
+	public $pausenEinheiten;
+	public $skills = array();
+	public $arbeitsplatzausstattungen = array();
+	public $gruppierung;
 	
 	function __construct($kuerzel, Haartyp $haartyp, $name, $benoetigteEinheiten, $pausenEinheiten, array $skills, array $arbeitsplatzausstattungen, $gruppierung){
 		$this->setKuerzel($kuerzel);

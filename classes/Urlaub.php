@@ -1,7 +1,7 @@
 <?php
 class Urlaub{
-	private $beginn;
-	private $ende;
+	public $beginn;
+	public $ende;
 	
 	function __construct(DateTime $beginn, DateTime $ende){
 		$this->setBeginn($beginn);

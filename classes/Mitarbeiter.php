@@ -4,13 +4,13 @@ include_once dirname(__FILE__)."/".'Urlaub.php';
 include_once dirname(__FILE__)."/".'Dienstzeit.php';
 
 class Mitarbeiter {
-	private $svnr;
-	private $vorname;
-	private $nachname;
-	private $skills = array();
-	private $admin;
-	private $urlaube = array();
-	private $dienstzeiten = array();
+	public $svnr;
+	public $vorname;
+	public $nachname;
+	public $skills = array();
+	public $admin;
+	public $urlaube = array();
+	public $dienstzeiten = array();
 	
 	function __construct($svnr, $vorname, $nachname, array $skills, $admin, array $urlaube, array $dienstzeiten){
 		$this->setSvnr($svnr);

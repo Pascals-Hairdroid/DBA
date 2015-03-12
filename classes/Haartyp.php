@@ -1,7 +1,8 @@
 <?php 
 class Haartyp{
-	private $kuerzel;
-	private $bezeichnung;
+	const NAME = "Haartyp";
+	public $kuerzel;
+	public $bezeichnung;
 	
 	function __construct($kuerzel, $bezeichnung){
 		$this->setKuerzel($kuerzel);
