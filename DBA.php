@@ -1,19 +1,35 @@
 <?php
 include_once 'conf/login_const.php';
-session_start();
-if(!isset($_SESSION[L_ANGEMELDET]))
-	die();
-include_once "DB_Con.php";
 include_once 'conf/dba_const.php';
-if(isset($_POST[DBA_XML_PARAMS]))
-	$post = $_POST[DBA_XML_PARAMS];
+include_once "DB_Con.php";
+
+function objectToObject($instance, $className) {
+	return unserialize(sprintf(
+			'O:%d:"%s"%s',
+			strlen($className),
+			$className,
+			strstr(strstr(serialize($instance), '"'), ':')
+	));
+}
+
+function toKunde($kd){
+	$kunde = objectToObject($kd, Kunde::NAME);
+	foreach($kunde->getInteressen() as $interesse){
+		array_push($interessen, objectToObject($interesse, Interesse::NAME));
+	}
+}
+session_start();
+$function = $_GET[DBA_FUNCTION];
+if(strcmp($function,DBA_F_KUNDEEINTRAGEN)!=0 and !isset($_SESSION[L_ANGEMELDET]))
+	die();
+if(isset($_POST[DBA_JSON_PARAMS]))
+	$post = $_POST[DBA_JSON_PARAMS];
 try{
-	$vargs = new SimpleXMLElement($post);
+	$vargs = json_decode($post);
 } catch(Exception $e){
-	echo "ERROR: XML-ERROR: ".$e->getMessage();
+	echo "ERROR: JSON-ERROR: ".$e->getMessage();
 }
 $args = array();
-$function = $_GET[DBA_FUNCTION];
 if(!in_array($function, $DBA_FUNCTIONS)){
 	echo "ERROR: METHOD NOT SUPPORTED!";
 	die;
@@ -23,20 +39,21 @@ switch ($function){
 	case DBA_F_KUNDEEINTRAGEN:
 		try {
 			$interessen = array();
-			if(isset($vargs->Kunde->Interessen))
-				foreach($vargs->Kunde->Interessen->Interesse as $interesse){
-					array_push($interessen, new Interesse($interesse->id, $interesse->bezeichnung));
-				}
-			array_push($args, new Kunde($vargs->Kunde->email, $vargs->Kunde->vorname, $vargs->Kunde->nachname, $vargs->Kunde->telNr, $_SESSION[L_ADMIN]?$vargs->Kunde->freischaltung:false, $vargs->Kunde->foto, $interessen));
+			if(isset($vargs[0]) and isset($vargs[1])){
+				array_push($args, toKunde($vargs[0]));
+				array_push($args, $vargs[1]);
+				$db->kundeEintragen($args[0]);
+				$function = DBA_F_KUNDEPWUPDATEN;
+			}
 		}catch(Exception $e){
 			echo "ERROR: ".$e->getMessage();
-			exit(1);	
+			exit(1);
 		}
 	break;
 	case DBA_F_KUNDEPWUPDATEN:
 		try {
-			array_push($args, new Kunde($_SESSION[L_ADMIN]?$vargs->Kunde->email:$_SESSION[L_USERNAME], null, null, null, null, null, array()));
-			array_push($args, $vargs->passwort);
+			array_push($args, $_SESSION[L_ADMIN]?toKunde($args[0]):new Kunde($_SESSION[L_USERNAME], null, null, null, false, null, array()));
+			array_push($args, $vargs[1]);
 		}catch(Exception $e){
 			echo "ERROR: ".$e->getMessage();
 			exit(1);
@@ -45,5 +62,5 @@ switch ($function){
 }
 
 $res = call_user_func_array(array($db,$function), $args);
-echo serialize($res);
+echo json_encode($res);
 ?>
