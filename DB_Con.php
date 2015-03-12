@@ -824,7 +824,7 @@ class DB_Con {
 		return $res;
 	}
 	
-	function getAllDienstleistung($kuerzel,Haartyp $haartyp){
+	function getAllDienstleistung(){
 		$abf = $this->selectQueryField(DB_TB_DIENSTLEISTUNGEN, DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." , ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL);
 		if($abf==false) throw new Exception("Datenbankfehler: Abfrage nicht möglich!");
 		$res = array();
