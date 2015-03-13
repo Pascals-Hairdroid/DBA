@@ -95,6 +95,21 @@ class DB_Con {
 			throw new Exception("Von-Wert darf nicht größer sein als Bis-Wert!");
 	}
 	
+	function getTermineZeitstempelVonMitarbeiter(Mitarbeiter $mitarbeiter, DateTime $von, DateTime $bis){
+		if(!($von->format("U") <= $bis->format("U")))
+			throw new Exception("Von-Wert darf nicht größer sein als Bis-Wert!");
+		if($mitarbeiter != null){
+			$abf = $this->selectQuery(DB_TB_ZEITTABELLE, DB_F_ZEITTABELLE_PK_ZEITSTEMPEL, DB_F_ZEITTABELLE_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"");
+			$return = array();
+			while($row = mysqli_fetch_assoc($abf)){
+				array_push($return, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
+			}
+		}
+		else 
+			throw new Exception("Mitarbeiter darf nicht null sein!");
+		return $return;
+	}
+	
 	
 	function kundePwUpdaten(Kunde $kunde, $passwort){
 		return $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_PASSWORT." = \"" .mysqli_escape_string($this->con, $passwort)."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
