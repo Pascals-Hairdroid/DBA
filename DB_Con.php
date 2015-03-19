@@ -498,7 +498,7 @@ class DB_Con {
 	
 	function kundeUpdaten(Kunde $kunde){
 		$kunde_alt=$this->getKunde($kunde->getEmail());
-		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr())."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr())."\", ".DB_F_KUNDEN_FREISCHALTUNG." = \"".($kunde->getFreischaltung()?1:0)."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
 		
 		$interessenIds_alt = array();
 		
