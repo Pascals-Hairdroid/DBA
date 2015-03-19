@@ -112,6 +112,10 @@ const DB_TB_KUNDEN_INTERESSEN ="Kunden_has_Interessen";
 const DB_F_KUNDEN_INTERESSEN_PK_KUNDEN = "Kunden_EMail";
 const DB_F_KUNDEN_INTERESSEN_PK_INTERESSEN = "Interessen_ID";
 
+const DB_TB_SESSION = "session";
+const DB_F_SESSION_PK_ID = "Session_ID";
+const DB_F_SESSION_KUNDEN = "Kunden_EMail";
+
 
 // Views
 
