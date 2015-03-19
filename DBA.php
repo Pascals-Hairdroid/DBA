@@ -1,4 +1,6 @@
 <?php
+include_once 'classes/DB_Exception.php';
+include_once 'conf/db_exception_const.php';
 include_once 'conf/login_const.php';
 include_once 'conf/dba_const.php';
 include_once "DB_Con.php";
@@ -27,7 +29,7 @@ if(isset($_POST[DBA_JSON_PARAMS]))
 try{
 	$vargs = json_decode($post);
 } catch(Exception $e){
-	echo "ERROR: JSON-ERROR: ".$e->getMessage();
+	echo json_encode(new DB_Exception(400, "Fehler beim json-decoden der Parameter! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DECODE_FAIL));
 }
 $args = array();
 if(!in_array($function, $DBA_FUNCTIONS)){
@@ -45,8 +47,8 @@ switch ($function){
 				$db->kundeEintragen($args[0]);
 				$function = DBA_F_KUNDEPWUPDATEN;
 			}
-		}catch(Exception $e){
-			echo "ERROR: ".$e->getMessage();
+		}catch(DB_Exception $e){
+			echo json_encode($e);
 			exit(1);
 		}
 	break;
@@ -54,8 +56,10 @@ switch ($function){
 		try {
 			array_push($args, $_SESSION[L_ADMIN]?toKunde($args[0]):new Kunde($_SESSION[L_USERNAME], null, null, null, false, null, array()));
 			array_push($args, $vargs[1]);
-		}catch(Exception $e){
-			echo "ERROR: ".$e->getMessage();
+		}catch (DB_Exception $e){
+			
+		}catch(DB_Exception $e){
+			echo json_encode($e);
 			exit(1);
 		}
 		break;
