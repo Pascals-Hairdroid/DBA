@@ -886,6 +886,12 @@ class DB_Con {
 		return $res;
 	}
 	
+	function getKundeMailBySessionId($session_id){
+		$abf = $this->selectQuery(DB_TB_SESSION, DB_F_SESSION_KUNDEN, DB_F_SESSION_PK_ID."=\"".$session_id."\"");
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		$row = mysqli_fetch_assoc($abf);
+		return $row[DB_F_SESSION_KUNDEN];
+	}
 	
 	
 	
@@ -911,6 +917,12 @@ class DB_Con {
 		else
 			throw new DB_Exception(503, "Keine Datenbankverbindung! Fehlermessage: {".$e->getMessage()."}", DB_ERR_VIEW_NO_CONNECTION);
 	}
+	
+	
+	function escape_string($string){
+		return mysqli_escape_string($this->con, $string);
+	}
+	
 	
 	function __destruct(){
 		if($this->con instanceof mysqli)

@@ -9,4 +9,5 @@ $success = true;
 if(!isset($_SESSION[L_USERNAME]))
 	if(!login($_POST[L_USERNAME], $_POST[L_PASSWORT]))
 		$success = false;
-echo serialize($success);
+echo json_encode($success?session_id():$success);
+session_write_close();
