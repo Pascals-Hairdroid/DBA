@@ -498,24 +498,26 @@ class DB_Con {
 	
 	function kundeUpdaten(Kunde $kunde){
 		$kunde_alt=$this->getKunde($kunde->getEmail());
-		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr())."\", ".DB_F_KUNDEN_FREISCHALTUNG." = \"".($kunde->getFreischaltung()?1:0)."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto()!=null?$kunde->getFoto():$kunde_alt->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname()!=null?$kunde->getVorname():$kunde_alt->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname()!=null?$kunde->getNachname():$kunde_alt->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr()!=null?$kunde->getTelNr():$kunde_alt->getTelNr())."\", ".DB_F_KUNDEN_FREISCHALTUNG." = \"".($kunde->getFreischaltung()!=null?($kunde->getFreischaltung()?1:0):($kunde_alt->getFreischaltung()?1:0))."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
 		
-		$interessenIds_alt = array();
-		
-		foreach ($kunde_alt->getInteressen() as $interesse_alt)
-			array_push($interessenIds_alt,$interesse_alt->getId());
-		
-		$interessen_neu="";
-		
-		foreach ($kunde->getInteressen() as $interesse){
-			if($interesse instanceof Interesse){
-				$interessen_neu = $interessen_neu.", \"".$interesse->getId()."\"";
-				if(!in_array($interesse->getId(),$interessenIds_alt))
-					$success=$success?$this->interesseKundeZuweisen($interesse, $kunde):$success;
+		if(count($kunde->getInteressen())!=0){
+			$interessenIds_alt = array();
+			
+			foreach ($kunde_alt->getInteressen() as $interesse_alt)
+				array_push($interessenIds_alt,$interesse_alt->getId());
+			
+			$interessen_neu="";
+			
+			foreach ($kunde->getInteressen() as $interesse){
+				if($interesse instanceof Interesse){
+					$interessen_neu = $interessen_neu.", \"".$interesse->getId()."\"";
+					if(!in_array($interesse->getId(),$interessenIds_alt))
+						$success=$success?$this->interesseKundeZuweisen($interesse, $kunde):$success;
+				}
 			}
+			$interessen_neu = substr($interessen_neu,2);
+			$success=$success?$this->query("DELETE FROM ".DB_TB_KUNDEN_INTERESSEN." WHERE ".DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$kunde->getEmail()."\" AND (".DB_F_KUNDEN_INTERESSEN_PK_INTERESSEN." NOT IN(".$interessen_neu."))"):$success;
 		}
-		$interessen_neu = substr($interessen_neu,2);
-		$success=$success?$this->query("DELETE FROM ".DB_TB_KUNDEN_INTERESSEN." WHERE ".DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$kunde->getEmail()."\" AND (".DB_F_KUNDEN_INTERESSEN_PK_INTERESSEN." NOT IN(".$interessen_neu."))"):$success;
 		
 		return $success;
 	}
