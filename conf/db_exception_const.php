@@ -11,6 +11,9 @@ const DB_ERR_VIEW_UK_FAIL = "Ein unbekannter Fehler ist aufgetreten!";
 // 404
 const DB_ERR_VIEW_SESSION_NOT_FOUND = "Es wurde keine Session gefunden!";
 
+// 401
+const DB_ERR_VIEW_BAD_LOGIN = "Login fehlgeschlagen!";
+
 // 400
 const DB_ERR_VIEW_VON_BIS = "Von-Wert darf nicht größer sein als Bis-Wert!";
 const DB_ERR_VIEW_NO_MA = "Kein Mitarbeiter angegeben!";

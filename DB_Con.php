@@ -241,6 +241,10 @@ class DB_Con {
 	}
 	
 	
+	function sessionEintragen($session_id, $email){
+		return $this->query("INSERT INTO ".DB_TB_SESSION." (".DB_F_SESSION_PK_ID.", ".DB_F_SESSION_KUNDEN.") VALUES (\"".mysqli_escape_string($this->con,$session_id)."\", \"".mysqli_escape_string($this->con,$email)."\")")===TRUE;
+	}
+	
 	function skillEintragen(Skill $skill){
 		return $this->query("INSERT INTO ".DB_TB_SKILLS." (".DB_F_SKILLS_PK_ID.", ".DB_F_SKILLS_BESCHREIBUNG.") VALUES (\"".$skill->getId()."\", \"".mysqli_escape_string($this->con,$skill->getBeschreibung())."\")")===TRUE;
 	}

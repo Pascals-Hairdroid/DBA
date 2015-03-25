@@ -18,7 +18,7 @@ function readKunde(){
 	return new Kunde($_POST[DBA_P_KUNDE_EMAIL], isset($_POST[DBA_P_KUNDE_VORNAME])?$_POST[DBA_P_KUNDE_VORNAME]:null, isset($_POST[DBA_P_KUNDE_NACHNAME])?$_POST[DBA_P_KUNDE_NACHNAME]:null, isset($_POST[DBA_P_KUNDE_TELNR])?$_POST[DBA_P_KUNDE_TELNR]:null, isset($_POST[DBA_P_KUNDE_FREISCHALTUNG])?$_POST[DBA_P_KUNDE_FREISCHALTUNG]:null, isset($_POST[DBA_P_KUNDE_FOTO])?$_POST[DBA_P_KUNDE_FOTO]:null, $interessen);
 }
 
-$db = new DB_Con("conf/db.php", true);
+$db = new DB_Con(DB_DEFAULT_CONF_FILE, true);
 if(isset($_POST[DBA_SESSION_ID])){
 	session_start($_POST[DBA_SESSION_ID]);
 	try{
@@ -27,7 +27,8 @@ if(isset($_POST[DBA_SESSION_ID])){
 		if($abf==false)
 			throw new DB_Exception(404, "Kein Eintrag zu Session-ID gefunden. ID: ".$_POST[DBA_SESSION_ID], DB_ERR_VIEW_SESSION_NOT_FOUND);
 		$row = mysqli_fetch_assoc($abf);
-		login($susr, $row[DB_F_KUNDEN_PASSWORT]);
+		if(!login($susr, $row[DB_F_KUNDEN_PASSWORT]))
+			throw new DB_Exception(401, "Login fehlgeschlagen!", DB_ERR_VIEW_BAD_LOGIN);
 	}catch(DB_Exception $e){
 		echo json_encode($e);
 		exit(1);
