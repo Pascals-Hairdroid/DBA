@@ -303,7 +303,7 @@ class DB_Con {
 	
 
 	function werbungEintragen(Werbung $werbung){
-		$success = $this->query("INSERT INTO ".DB_TB_WERBUNG." (".DB_F_WERBUNG_PK_NUMMER.") VALUES (\"".$werbung->getNummer()."\")")===TRUE;
+		$success = $this->query("INSERT INTO ".DB_TB_WERBUNG." (".DB_F_WERBUNG_PK_NUMMER.", ".DB_F_WERBUNG_TITEL.", ".DB_F_WERBUNG_TEXT.") VALUES (\"".$werbung->getNummer()."\", \"".mysqli_escape_string($this->con, $werbung->getTitel())."\", \"".mysqli_escape_string($this->con, $werbung->getText())."\")")===TRUE;
 		foreach ($werbung->getInteressen() as $interesse){
 			if($interesse instanceof Interesse)
 				$success=$success?$this->interesseWerbungZuweisen($interesse, $werbung):$success;
@@ -390,8 +390,8 @@ class DB_Con {
 	
 	
 	function werbungUpdaten(Werbung $werbung){
-		$success = true;
 		$werbung_alt=$this->getWerbung($werbung->getNummer());
+		$success = $this->query("UPDATE ".DB_TB_WERBUNG." SET ".DB_F_WERBUNG_TITEL." = \"" .mysqli_escape_string($this->con, $werbung->getTitel())."\", ".DB_F_WERBUNG_TEXT." = \"".mysqli_escape_string($this->con, $werbung->getText())."\" WHERE ".DB_F_WERBUNG_PK_NUMMER." = \"".$werbung->getNummer()."\"")===TRUE;
 		$interessenIds_alt = array();
 		foreach ($werbung_alt->getInteressen() as $interesse_alt)
 			array_push($interessenIds_alt,$interesse_alt->getId());
@@ -769,7 +769,7 @@ class DB_Con {
 			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
 		}
 		
-		return new Werbung($nummer, $interessen);
+		return new Werbung($nummer, $main[DB_F_WERBUNG_TITEL], $main[DB_F_WERBUNG_TEXT], $interessen);
 	}
 	
 	function getTermin(DateTime $zeitstempel, Mitarbeiter $mitarbeiter){

@@ -2,12 +2,14 @@
 include_once dirname(__FILE__)."/".'Interesse.php';
 class Werbung {
 	public $nummer;
-	public $titel; 				// + in DB: varchar(45)
-	public $text; 				// + in DB: varchar(500)
+	public $titel;
+	public $text;
 	public $interessen = array();
 
-	function __construct($nummer, array $interessen){
+	function __construct($nummer, $titel, $text, array $interessen){
 		$this->setNummer($nummer);
+		$this->setTitel($titel);
+		$this->setText($text);
 		$this->setInteressen($interessen);
 	}
 	
