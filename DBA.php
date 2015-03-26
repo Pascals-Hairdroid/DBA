@@ -6,7 +6,9 @@ include_once 'conf/login_const.php';
 include_once 'conf/dba_const.php';
 include_once "DB_Con.php";
 
-
+// Test:
+echo json_encode("Hallo");
+// ---
 function readKunde(){
 	if(!isset($_POST[DBA_P_KUNDE_EMAIL]))
 		throw new DB_Exception(400, "Kundenmail nicht gesetzt!", DB_ERR_VIEW_PARAM_FAIL);
