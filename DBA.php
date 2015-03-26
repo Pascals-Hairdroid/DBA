@@ -43,8 +43,10 @@ if(!isset($_GET[DBA_FUNCTION])){
 	exit(1); 
 }
 $function = $_GET[DBA_FUNCTION];
-if(strcmp($function,DBA_F_KUNDEEINTRAGEN)!=0 and !isset($_SESSION[L_ANGEMELDET]))
+if(strcmp($function,DBA_F_KUNDEEINTRAGEN)!=0 and !isset($_SESSION[L_ANGEMELDET])){
+	echo new DB_Exception(401, "Erweiterter Funktionsaufruf ohne Login!", DB_ERR_VIEW_UNAUTHORIZED);
 	die();
+}
 $args = array();
 if(!in_array($function, $DBA_FUNCTIONS)){
 	echo json_encode(new DB_Exception(501, "Übergebene Funktion ist nicht in der Liste unterstützter funktionen! Gesuchte Funktion: ".$function, DB_ERR_VIEW_METHOD_NOT_SUPPORTED));

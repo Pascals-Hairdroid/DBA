@@ -13,6 +13,7 @@ const DB_ERR_VIEW_SESSION_NOT_FOUND = "Es wurde keine Session gefunden!";
 
 // 401
 const DB_ERR_VIEW_BAD_LOGIN = "Login fehlgeschlagen!";
+const DB_ERR_VIEW_UNAUTHORIZED = "Sie haben keine Berechtigung dies zu tun!";
 
 // 400
 const DB_ERR_VIEW_VON_BIS = "Von-Wert darf nicht größer sein als Bis-Wert!";
