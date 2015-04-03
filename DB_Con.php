@@ -712,8 +712,8 @@ class DB_Con {
 	
 	function getKunde($email){
 		$abf = $this->selectQuery(DB_TB_KUNDEN, "*", DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con,$email)."\"");
-		echo "<br>".mysqli_escape_string($this->con,$email)."<br>";
-		var_dump($abf);
+		//echo "<br>".mysqli_escape_string($this->con,$email)."<br>";
+		//var_dump($abf);
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
