@@ -16,7 +16,9 @@ include_once(dirname(__FILE__)."/classes/Urlaub.php");
 include_once(dirname(__FILE__)."/classes/Werbung.php");
 include_once(dirname(__FILE__)."/classes/Wochentag.php");
 include_once(dirname(__FILE__)."/classes/DB_Exception.php");
-
+try{
+	date_default_timezone_set("Europe/Vienna");
+}catch(Exception $e){}
 class DB_Con {
 	private $db_ADDRESS;
 	private $db_SCHEMA_NAME;
