@@ -4,12 +4,14 @@ class Werbung {
 	public $nummer;
 	public $titel;
 	public $text;
+	public $datum;
 	public $interessen = array();
 
-	function __construct($nummer, $titel, $text, array $interessen){
+	function __construct($nummer, $titel, $text, DateTime $datum, array $interessen){
 		$this->setNummer($nummer);
 		$this->setTitel($titel);
 		$this->setText($text);
+		$tis->setDatum($datum);
 		$this->setInteressen($interessen);
 	}
 	
@@ -44,7 +46,11 @@ class Werbung {
 		else
 			throw new Exception("Text ungültig!");
 	}
-
+	
+	function setDatum(DateTime $datum){
+		$this->datum = $datum;
+	}
+	
 	function setInteressen(array $interessen){
 		foreach ($interessen as $interesse){
 			if(!($interesse instanceof Interesse))
@@ -56,6 +62,10 @@ class Werbung {
 
 	function getNummer(){
 		return $this->nummer;
+	}
+	
+	function getDatum(){
+		return $this->datum;
 	}
 	
 	function getTitel(){

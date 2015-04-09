@@ -30,6 +30,7 @@ const DB_TB_WERBUNG = "werbung";
 const DB_F_WERBUNG_PK_NUMMER = "WerbungsNr";
 const DB_F_WERBUNG_TITEL = "Titel";
 const DB_F_WERBUNG_TEXT = "Text";
+const DB_F_WERBUNG_DATUM = "Datum";
 
 const DB_TB_INTERESSEN = "interessen";
 const DB_F_INTERESSEN_PK_ID = "ID";
