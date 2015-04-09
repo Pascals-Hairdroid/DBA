@@ -38,7 +38,7 @@ class DB_Con {
 		// include config
 		$this->changeConfig($conf_file);
 		$this->connect($admin);
-		$this->con->character_set_name();
+		$this->setCharset($charset);
 	}
 	
 	function setCharset($charset){
