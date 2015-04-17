@@ -16,7 +16,9 @@ include_once(dirname(__FILE__)."/classes/Urlaub.php");
 include_once(dirname(__FILE__)."/classes/Werbung.php");
 include_once(dirname(__FILE__)."/classes/Wochentag.php");
 include_once(dirname(__FILE__)."/classes/DB_Exception.php");
-
+try{
+	date_default_timezone_set("Europe/Vienna");
+}catch(Exception $e){}
 class DB_Con {
 	private $db_ADDRESS;
 	private $db_SCHEMA_NAME;
@@ -36,7 +38,7 @@ class DB_Con {
 		// include config
 		$this->changeConfig($conf_file);
 		$this->connect($admin);
-		$this->con->character_set_name();
+		$this->setCharset($charset);
 	}
 	
 	function setCharset($charset){
@@ -303,7 +305,7 @@ class DB_Con {
 	
 
 	function werbungEintragen(Werbung $werbung){
-		$success = $this->query("INSERT INTO ".DB_TB_WERBUNG." (".DB_F_WERBUNG_PK_NUMMER.", ".DB_F_WERBUNG_TITEL.", ".DB_F_WERBUNG_TEXT.") VALUES (\"".$werbung->getNummer()."\", \"".mysqli_escape_string($this->con, $werbung->getTitel())."\", \"".mysqli_escape_string($this->con, $werbung->getText())."\")")===TRUE;
+		$success = $this->query("INSERT INTO ".DB_TB_WERBUNG." (".DB_F_WERBUNG_PK_NUMMER.", ".DB_F_WERBUNG_DATUM.", ".DB_F_WERBUNG_TITEL.", ".DB_F_WERBUNG_TEXT.") VALUES (\"".$werbung->getNummer()."\", \"".$werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", \"".mysqli_escape_string($this->con, $werbung->getTitel())."\", \"".mysqli_escape_string($this->con, $werbung->getText())."\")")===TRUE;
 		foreach ($werbung->getInteressen() as $interesse){
 			if($interesse instanceof Interesse)
 				$success=$success?$this->interesseWerbungZuweisen($interesse, $werbung):$success;
@@ -391,7 +393,7 @@ class DB_Con {
 	
 	function werbungUpdaten(Werbung $werbung){
 		$werbung_alt=$this->getWerbung($werbung->getNummer());
-		$success = $this->query("UPDATE ".DB_TB_WERBUNG." SET ".DB_F_WERBUNG_TITEL." = \"" .mysqli_escape_string($this->con, $werbung->getTitel())."\", ".DB_F_WERBUNG_TEXT." = \"".mysqli_escape_string($this->con, $werbung->getText())."\" WHERE ".DB_F_WERBUNG_PK_NUMMER." = \"".$werbung->getNummer()."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_WERBUNG." SET ".DB_F_WERBUNG_DATUM." = \"" .$this->con, $werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", ".DB_F_WERBUNG_TITEL." = \"" .mysqli_escape_string($this->con, $werbung->getTitel())."\", ".DB_F_WERBUNG_TEXT." = \"".mysqli_escape_string($this->con, $werbung->getText())."\" WHERE ".DB_F_WERBUNG_PK_NUMMER." = \"".$werbung->getNummer()."\"")===TRUE;
 		$interessenIds_alt = array();
 		foreach ($werbung_alt->getInteressen() as $interesse_alt)
 			array_push($interessenIds_alt,$interesse_alt->getId());
@@ -616,7 +618,7 @@ class DB_Con {
 	
 	function getWochentag($kuerzel){
 		$abf = $this->selectQuery(DB_TB_WOCHENTAGE, "*", DB_F_WOCHENTAGE_PK_KUERZEL." = \"".$kuerzel."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
 		return new Wochentag($row[DB_F_WOCHENTAGE_PK_KUERZEL],$row[DB_F_WOCHENTAGE_BEZEICHNUNG]);
@@ -624,7 +626,7 @@ class DB_Con {
 	
 	function getInteresse($id){
 		$abf = $this->selectQuery(DB_TB_INTERESSEN, "*", DB_F_INTERESSEN_PK_ID." = \"".$id."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
 		return new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]);
@@ -632,7 +634,7 @@ class DB_Con {
 	
 	function getProdukt($id){
 		$abf = $this->selectQuery(DB_TB_PRODUKTE, "*", DB_F_PRODUKTE_PK_ID." = \"".$id."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
 		return new Produkt($row[DB_F_PRODUKTE_PK_ID], $row[DB_F_PRODUKTE_NAME], $row[DB_F_PRODUKTE_HERSTELLER], $row[DB_F_PRODUKTE_BESCHREIBUNG], $row[DB_F_PRODUKTE_PREIS], $row[DB_F_PRODUKTE_BESTAND]);
@@ -640,7 +642,7 @@ class DB_Con {
 	
 	function getHaartyp($kuerzel){
 		$abf = $this->selectQuery(DB_TB_HAARTYPEN, "*", DB_F_HAARTYPEN_PK_KUERZEL." = \"".$kuerzel."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
 		return new Haartyp($row[DB_F_HAARTYPEN_PK_KUERZEL], $row[DB_F_HAARTYPEN_BEZEICHNUNG]);
@@ -648,7 +650,7 @@ class DB_Con {
 	
 	function getArbeitsplatzausstattung($id){
 		$abf = $this->selectQuery(DB_TB_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID." = \"".$id."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
 		return new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]);
@@ -656,7 +658,7 @@ class DB_Con {
 
 	function getSkill($id){
 		$abf = $this->selectQuery(DB_TB_SKILLS, "*", DB_F_SKILLS_PK_ID." = \"".$id."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
 		return new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]);
@@ -664,12 +666,12 @@ class DB_Con {
 	
 	function getArbeitsplatz($nummer){
 		$abf = $this->selectQuery(DB_TB_ARBEITSPLATZRESSOURCEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER." = \"".$nummer."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN, "*", DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZRESSOURCEN." = \"".$nummer."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$ausstattungen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
@@ -680,19 +682,19 @@ class DB_Con {
 	
 	function getDienstleistung($kuerzel,Haartyp $haartyp){
 		$abf = $this->selectQuery(DB_TB_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".$kuerzel."\" AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".$haartyp->getKuerzel()."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$ausstattungen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
 		}
 		
 		$abf = $this->selectQuery(DB_VIEW_SKILLS_DIENSTLEISTUNGEN, "*", DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".$kuerzel."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$skills = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($skills, new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]));
@@ -703,7 +705,7 @@ class DB_Con {
 	
 	function getDienstzeit(Mitarbeiter $mitarbeiter, Wochentag $wochentag){
 		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\" AND ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".$wochentag->getKuerzel()."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
@@ -711,13 +713,15 @@ class DB_Con {
 	}
 	
 	function getKunde($email){
-		$abf = $this->selectQuery(DB_TB_KUNDEN, "*", DB_F_KUNDEN_PK_EMAIL." = \"".$email."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		$abf = $this->selectQuery(DB_TB_KUNDEN, "*", DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con,$email)."\"");
+		//echo "<br>".mysqli_escape_string($this->con,$email)."<br>";
+		//var_dump($abf);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_INTERESSEN_KUNDEN, "*", DB_F_KUNDEN_INTERESSEN_PK_KUNDEN." = \"".$email."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$interessen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
@@ -728,26 +732,26 @@ class DB_Con {
 	
 	function getMitarbeiter($svnr){
 		$abf = $this->selectQuery(DB_TB_MITARBEITER, "*", DB_F_MITARBEITER_PK_SVNR." = \"".$svnr."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_SKILLS_MITARBEITER, "*", DB_F_MITARBEITER_SKILLS_PK_MITARBEITER." = \"".$svnr."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$skills = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($skills, new Skill($row[DB_F_SKILLS_PK_ID], $row[DB_F_SKILLS_BESCHREIBUNG]));
 		}
 		
 		$abf = $this->selectQuery(DB_TB_URLAUBE, "*", DB_F_URLAUBE_PK_MITARBEITER." = \"".$svnr."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$urlaube = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($urlaube, new Urlaub($row[DB_F_URLAUBE_PK_BEGINN], $row[DB_F_URLAUBE_ENDE]));
 		}
 		
 		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$dienstzeiten = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($dienstzeiten, new Dienstzeit($this->getWochentag($row[DB_F_DIENSTZEITEN_PK_WOCHENTAGE]),new DateTime($row[DB_F_DIENSTZEITEN_BEGINN]) , new DateTime($row[DB_F_DIENSTZEITEN_ENDE])));
@@ -758,23 +762,23 @@ class DB_Con {
 	
 	function getWerbung($nummer){
 		$abf = $this->selectQuery(DB_TB_WERBUNG, "*", DB_F_WERBUNG_PK_NUMMER." = \"".$nummer."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
 		$abf = $this->selectQuery(DB_VIEW_WERBUNG_INTERESSEN, "*", DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$nummer."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$interessen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
 		}
 		
-		return new Werbung($nummer, $main[DB_F_WERBUNG_TITEL], $main[DB_F_WERBUNG_TEXT], $interessen);
+		return new Werbung($nummer, $main[DB_F_WERBUNG_TITEL], $main[DB_F_WERBUNG_TEXT], new DateTime($main[DB_F_WERBUNG_DATUM]), $interessen);
 	}
 	
 	function getTermin(DateTime $zeitstempel, Mitarbeiter $mitarbeiter){
 		$abf = $this->selectQuery(DB_TB_ZEITTABELLE, "*", DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." = \"".$zeitstempel->format(DB_FORMAT_DATETIME)."\" AND ".DB_F_ZEITTABELLE_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\""); 
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
@@ -785,7 +789,7 @@ class DB_Con {
 	
 	function getAllWochentag(){
 		$abf = $this->selectQueryField(DB_TB_WOCHENTAGE, DB_F_WOCHENTAGE_PK_KUERZEL);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getWochentag($row[DB_F_WOCHENTAGE_PK_KUERZEL]));
@@ -794,7 +798,7 @@ class DB_Con {
 	
 	function getAllInteresse(){
 		$abf = $this->selectQueryField(DB_TB_INTERESSEN, DB_F_INTERESSEN_PK_ID);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getInteresse($row[DB_F_INTERESSEN_PK_ID]));
@@ -803,7 +807,7 @@ class DB_Con {
 	
 	function getAllProdukt(){
 		$abf = $this->selectQueryField(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getProdukt($row[DB_F_PRODUKTE_PK_ID]));
@@ -812,7 +816,7 @@ class DB_Con {
 	
 	function getAllHaartyp(){
 		$abf = $this->selectQueryField(DB_TB_HAARTYPEN, DB_F_HAARTYPEN_PK_KUERZEL);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getHaartyp($row[DB_F_HAARTYPEN_PK_KUERZEL]));
@@ -821,7 +825,7 @@ class DB_Con {
 	
 	function getAllArbeitsplatzausstattung(){
 		$abf = $this->selectQueryField(DB_TB_ARBEITSPLATZAUSSTATTUNGEN, DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getArbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID]));
@@ -830,7 +834,7 @@ class DB_Con {
 	
 	function getAllSkill(){
 		$abf = $this->selectQueryField(DB_TB_SKILLS, DB_F_SKILLS_PK_ID);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getSkill($row[DB_F_SKILLS_PK_ID]));
@@ -840,7 +844,7 @@ class DB_Con {
 	
 	function getAllArbeitsplatz(){
 		$abf = $this->selectQueryField(DB_TB_ARBEITSPLATZRESSOURCEN, DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getArbeitsplatz($row[DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER]));
@@ -849,7 +853,7 @@ class DB_Con {
 	
 	function getAllDienstleistung(){
 		$abf = $this->selectQueryField(DB_TB_DIENSTLEISTUNGEN, DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." , ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getDienstleistung($row[DB_F_DIENSTLEISTUNGEN_PK_KUERZEL],$this->getHaartyp($row[DB_F_DIENSTLEISTUNGEN_PK_HAARTYP])));
@@ -858,7 +862,7 @@ class DB_Con {
 	
 	function getAllDienstzeit(){
 		$abf = $this->selectQueryField(DB_TB_DIENSTZEITEN, DB_F_DIENSTZEITEN_PK_WOCHENTAGE." , ".DB_F_DIENSTZEITEN_BEGINN." , ".DB_F_DIENSTZEITEN_ENDE);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,new Dienstzeit($this->getWochentag($row[DB_F_DIENSTZEITEN_PK_WOCHENTAGE]), new DateTime($row[DB_F_DIENSTZEITEN_BEGINN]), new DateTime($row[DB_F_DIENSTZEITEN_ENDE])));
@@ -867,7 +871,7 @@ class DB_Con {
 	
 	function getAllKunde(){
 		$abf = $this->selectQueryField(DB_TB_KUNDEN, DB_F_KUNDEN_PK_EMAIL);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getKunde($row[DB_F_KUNDEN_PK_EMAIL]));
@@ -876,7 +880,7 @@ class DB_Con {
 	
 	function getAllMitarbeiter(){
 		$abf = $this->selectQueryField(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getMitarbeiter($row[DB_F_MITARBEITER_PK_SVNR]));
@@ -885,7 +889,7 @@ class DB_Con {
 	
 	function getAllWerbung(){
 		$abf = $this->selectQueryField(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER);
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getWerbung($row[DB_F_WERBUNG_PK_NUMMER]));
@@ -894,7 +898,7 @@ class DB_Con {
 	
 	function getKundeMailBySessionId($session_id){
 		$abf = $this->selectQuery(DB_TB_SESSION, DB_F_SESSION_KUNDEN, DB_F_SESSION_PK_ID."=\"".$session_id."\"");
-		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$e->getMessage(), DB_ERR_VIEW_DB_FAIL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$row = mysqli_fetch_assoc($abf);
 		return $row[DB_F_SESSION_KUNDEN];
 	}
@@ -921,7 +925,7 @@ class DB_Con {
 		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
 		else
-			throw new DB_Exception(503, "Keine Datenbankverbindung! Fehlermessage: {".$e->getMessage()."}", DB_ERR_VIEW_NO_CONNECTION);
+			throw new DB_Exception(503, "Keine Datenbankverbindung! Fehlermessage: {".$this->con->error."}", DB_ERR_VIEW_NO_CONNECTION);
 	}
 	
 	
