@@ -15,5 +15,5 @@ if ($success) {
 	$db = new DB_Con(DB_DEFAULT_CONF_FILE, true);
 	$success = $db->sessionEintragen(session_id(), $_POST[L_USERNAME]);
 }
-echo json_encode($success?session_id():$success);
+echo json_encode($success?array("sessioId"=>session_id()):array("success"=>$success));
 session_write_close();
