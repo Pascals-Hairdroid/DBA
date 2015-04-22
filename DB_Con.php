@@ -92,9 +92,9 @@ class DB_Con {
 	}
 	
 	
-	function getFreieTermine(DateTime $von, DateTime $bis){
+	function getFreieTermine(DateTime $von, DateTime $bis, Mitarbeiter $mitarbeiter){
 		if($von->format("U") <= $bis->format("U"))
-			return  $this->call(DB_PC_FREIE_TERMINE, $von->format(DB_FORMAT_DATETIME)." , ".$bis->format(DB_FORMAT_DATETIME));
+			return  $this->call(DB_PC_FREIE_TERMINE, $von->format(DB_FORMAT_DATETIME)." , ".$bis->format(DB_FORMAT_DATETIME)." , ".($mitarbeiter!=null?$mitarbeiter->getSvnr():0));
 		else
 			throw new DB_Exception(400, "Von-Wert größer als Bis-Wert. Werte: Von: ".$von->format("U")." Bis: ".$bis->format("U"), DB_ERR_VIEW_VON_BIS);
 	}
