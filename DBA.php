@@ -7,11 +7,16 @@ include_once 'conf/dba_const.php';
 include_once "DB_Con.php";
 
 // Test:
-echo json_encode("Hallo");
+// echo json_encode("Hallo");
+// $res=true;
+// echo json_encode(array("res" => $res));
 // ---
 function readKunde(){
-	if(!isset($_POST[DBA_P_KUNDE_EMAIL]))
-		throw new DB_Exception(400, "Kundenmail nicht gesetzt!", DB_ERR_VIEW_PARAM_FAIL);
+	if(!isset($_POST[DBA_P_KUNDE_EMAIL])){
+		//var_dump($_POST);
+		throw new DB_Exception(400, "Kundenmail nicht gesetzt! ".var_export($_POST,true), DB_ERR_VIEW_PARAM_FAIL);
+		
+	}
 	$interessen_p = isset($_POST[DBA_P_KUNDE_INTERESSEN])?$_POST[DBA_P_KUNDE_INTERESSEN]:array();
 	$interessen = array();
 	foreach ($interessen_p as $id)
@@ -61,6 +66,10 @@ switch ($function){
 				$kunde = readKunde();
 				$kunde->setFreischaltung(false);
 				$res = $db->kundeEintragen($kunde);
+				if (!$res)
+					throw new DB_Exception(500, "Registrierung fehlgeschlagen!".var_export($res,true), "Registrierung fehlgeschlagen!");
+				array_push($args, $kunde);
+				array_push($args, $_POST[DBA_P_PASSWORT]);
 				$function = DBA_F_KUNDEPWUPDATEN;
 		}catch(DB_Exception $e){
 			echo json_encode($e);
@@ -83,5 +92,5 @@ switch ($function){
 }
 
 $res = call_user_func_array(array($db,$function), $args);
-echo json_encode($res);
+echo json_encode(array("res" => $res));
 ?>
