@@ -21,9 +21,11 @@ else{
   echo json_encode(new DB_Exception(000, "Schon eingeloggt!", "Schon  eingeloggt!"));
   exit(1);
 }
+$kunde = null;
 if ($success) {
 	$db = new DB_Con(DB_DEFAULT_CONF_FILE, true);
 	$success = $db->sessionEintragen(session_id(), $_POST[L_USERNAME]);
+	$kunde = $db->getKunde($_POST[L_USERNAME]);
 }
-echo json_encode($success?array("sessionId"=>session_id()):array("success"=>$success));
+echo json_encode($success?array("sessionId"=>session_id(), "kunde"=>$kunde):array("success"=>$success));
 session_write_close();

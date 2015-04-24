@@ -747,7 +747,7 @@ class DB_Con {
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$urlaube = array();
 		while ($row = mysqli_fetch_assoc($abf)){
-			array_push($urlaube, new Urlaub($row[DB_F_URLAUBE_PK_BEGINN], $row[DB_F_URLAUBE_ENDE]));
+			array_push($urlaube, new Urlaub(new DateTime($row[DB_F_URLAUBE_PK_BEGINN]), new DateTime($row[DB_F_URLAUBE_ENDE])));
 		}
 		
 		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\"");
