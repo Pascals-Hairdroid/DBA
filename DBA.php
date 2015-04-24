@@ -91,8 +91,10 @@ switch ($function){
 		break;
 }
 $res = call_user_func_array(array($db,$function), $args);
-if($_POST[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
+if($_GET[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
 	if($res){
+		$_POST[L_USERNAME] = readKunde()->getEmail();
+		$_POST[L_PASSWORT] = $_POST[DBA_P_PASSWORT];
 		include("login.php");
 		exit(0);
 	}
