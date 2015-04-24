@@ -7,15 +7,17 @@ class Mitarbeiter {
 	public $svnr;
 	public $vorname;
 	public $nachname;
+	public $motto;
 	public $skills = array();
 	public $admin;
 	public $urlaube = array();
 	public $dienstzeiten = array();
 	
-	function __construct($svnr, $vorname, $nachname, array $skills, $admin, array $urlaube, array $dienstzeiten){
+	function __construct($svnr, $vorname, $nachname, $motto,  array $skills, $admin, array $urlaube, array $dienstzeiten){
 		$this->setSvnr($svnr);
 		$this->setVorname($vorname);
 		$this->setNachname($nachname);
+		$this->setMotto($motto);
 		$this->setSkills($skills);
 		$this->setAdmin($admin);
 		$this->setDienstzeiten($dienstzeiten);
@@ -46,6 +48,16 @@ class Mitarbeiter {
 			$this->nachname = $nachname;
 		else
 			throw new Exception("Nachname ungültig!");
+	}
+	
+	function setMotto($motto){
+		try{
+			$motto = (string)$motto;
+		}catch (Exception $e){}
+		if(is_string($motto))
+			$this->motto = $motto;
+		else
+			throw new Exception("Motto ungültig!");
 	}
 	
 	function setSkills(array $skills){
@@ -93,6 +105,10 @@ class Mitarbeiter {
 	
 	function getNachname(){
 		return $this->nachname;
+	}
+	
+	function getMotto(){
+		return $this->motto;
 	}
 	
 	function getSkills(){

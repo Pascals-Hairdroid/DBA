@@ -11,6 +11,7 @@ const DB_TB_MITARBEITER = "mitarbeiter";
 const DB_F_MITARBEITER_PK_SVNR = "SVNr";
 const DB_F_MITARBEITER_VORNAME = "Vorname";
 const DB_F_MITARBEITER_NACHNAME = "Nachname";
+const DB_F_MITARBEITER_MOTTO = "Motto";
 const DB_F_MITARBEITER_ADMIN = "Admin";
 const DB_F_MITARBEITER_PASSWORT = "Passwort";
 

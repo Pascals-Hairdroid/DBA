@@ -323,7 +323,7 @@ class DB_Con {
 	}
 	
 	function mitarbeiterEintragen(Mitarbeiter $mitarbeiter){
-		$success = $this->query("INSERT INTO ".DB_TB_MITARBEITER." (".DB_F_MITARBEITER_PK_SVNR.", ".DB_F_MITARBEITER_VORNAME.", ".DB_F_MITARBEITER_NACHNAME.", ".DB_F_MITARBEITER_ADMIN.") VALUES (\"".$mitarbeiter->getSvnr()."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getVorname())."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getNachname())."\", \"".$mitarbeiter->getAdmin()."\")")===TRUE;
+		$success = $this->query("INSERT INTO ".DB_TB_MITARBEITER." (".DB_F_MITARBEITER_PK_SVNR.", ".DB_F_MITARBEITER_VORNAME.", ".DB_F_MITARBEITER_NACHNAME.", ".DB_F_MITARBEITER_MOTTO.", ".DB_F_MITARBEITER_ADMIN.") VALUES (\"".$mitarbeiter->getSvnr()."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getVorname())."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getNachname())."\", \"".mysqli_escape_string($this->con,$mitarbeiter->getMotto())."\", \"".$mitarbeiter->getAdmin()."\")")===TRUE;
 		foreach ($mitarbeiter->getSkills() as $skill){
 			if($skill instanceof Skill)
 				$success=$success?$this->skillMitarbeiterZuweisen($skill, $mitarbeiter):$success;
@@ -431,7 +431,7 @@ class DB_Con {
 	
 	function mitarbeiterUpdaten(Mitarbeiter $mitarbeiter){
 		$mitarbeiter_alt=$this->getMitarbeiter($mitarbeiter->getSvnr());
-		$success = $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_NACHNAME." = \"" .mysqli_escape_string($this->con, $mitarbeiter->getNachname())."\", ".DB_F_MITARBEITER_VORNAME." = \"".mysqli_escape_string($this->con, $mitarbeiter->getVorname())."\", ".DB_F_MITARBEITER_ADMIN." = ".($mitarbeiter->getAdmin()?1:0)." WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_NACHNAME." = \"" .mysqli_escape_string($this->con, $mitarbeiter->getNachname())."\", ".DB_F_MITARBEITER_VORNAME." = \"".mysqli_escape_string($this->con, $mitarbeiter->getVorname())."\", ".DB_F_MITARBEITER_MOTTO." = \"".mysqli_escape_string($this->con, $mitarbeiter->getMotto())."\", ".DB_F_MITARBEITER_ADMIN." = ".($mitarbeiter->getAdmin()?1:0)." WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 		
 		$skillsIds_alt = array();
 		
@@ -757,7 +757,7 @@ class DB_Con {
 			array_push($dienstzeiten, new Dienstzeit($this->getWochentag($row[DB_F_DIENSTZEITEN_PK_WOCHENTAGE]),new DateTime($row[DB_F_DIENSTZEITEN_BEGINN]) , new DateTime($row[DB_F_DIENSTZEITEN_ENDE])));
 		}
 		
-		return new Mitarbeiter($svnr, $main[DB_F_MITARBEITER_VORNAME], $main[DB_F_MITARBEITER_NACHNAME], $skills, $main[DB_F_MITARBEITER_ADMIN], $urlaube, $dienstzeiten);
+		return new Mitarbeiter($svnr, $main[DB_F_MITARBEITER_VORNAME], $main[DB_F_MITARBEITER_NACHNAME], $main[DB_F_MITARBEITER_MOTTO], $skills, $main[DB_F_MITARBEITER_ADMIN], $urlaube, $dienstzeiten);
 	}
 	
 	function getWerbung($nummer){
