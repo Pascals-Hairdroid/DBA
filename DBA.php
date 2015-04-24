@@ -90,7 +90,12 @@ switch ($function){
 		die;
 		break;
 }
-
 $res = call_user_func_array(array($db,$function), $args);
+if($_POST[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
+	if($res){
+		include("login.php");
+		exit(0);
+	}
+}
 echo json_encode(array("res" => $res));
 ?>
