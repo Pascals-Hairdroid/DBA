@@ -11,17 +11,24 @@ include_once "DB_Con.php";
 // $res=true;
 // echo json_encode(array("res" => $res));
 // ---
+/**
+ * 
+ * @throws DB_Exception
+ * @return Kunde
+ */
 function readKunde(){
 	if(!isset($_POST[DBA_P_KUNDE_EMAIL])){
 		//var_dump($_POST);
 		throw new DB_Exception(400, "Kundenmail nicht gesetzt! ".var_export($_POST,true), DB_ERR_VIEW_PARAM_FAIL);
-		
+
 	}
+	if(isset($_SESSION[L_USERNAME]))
+		$_POST[DBA_P_KUNDE_EMAIL] = $_SESSION[L_USERNAME];
 	$interessen_p = isset($_POST[DBA_P_KUNDE_INTERESSEN])?$_POST[DBA_P_KUNDE_INTERESSEN]:array();
 	$interessen = array();
 	foreach ($interessen_p as $id)
 		array_push($interessen, new Interesse($id, null));
-	
+
 	return new Kunde($_POST[DBA_P_KUNDE_EMAIL], isset($_POST[DBA_P_KUNDE_VORNAME])?$_POST[DBA_P_KUNDE_VORNAME]:null, isset($_POST[DBA_P_KUNDE_NACHNAME])?$_POST[DBA_P_KUNDE_NACHNAME]:null, isset($_POST[DBA_P_KUNDE_TELNR])?$_POST[DBA_P_KUNDE_TELNR]:null, isset($_POST[DBA_P_KUNDE_FREISCHALTUNG])?$_POST[DBA_P_KUNDE_FREISCHALTUNG]:null, isset($_POST[DBA_P_KUNDE_FOTO])?$_POST[DBA_P_KUNDE_FOTO]:null, $interessen);
 }
 
@@ -47,7 +54,7 @@ if(isset($_POST[DBA_SESSION_ID])){
 
 if(!isset($_GET[DBA_FUNCTION])){
 	echo json_encode(new DB_Exception(400, "Keine Funktion angegeben!", DB_ERR_VIEW_NO_FUNCTION));
-	exit(1); 
+	exit(1);
 }
 $function = $_GET[DBA_FUNCTION];
 if(strcmp($function,DBA_F_KUNDEEINTRAGEN)!=0 and !isset($_SESSION[L_ANGEMELDET])){
@@ -63,19 +70,19 @@ $res = true;
 switch ($function){
 	case DBA_F_KUNDEEINTRAGEN:
 		try {
-				$kunde = readKunde();
-				$kunde->setFreischaltung(false);
-				$res = $db->kundeEintragen($kunde);
-				if (!$res)
-					throw new DB_Exception(500, "Registrierung fehlgeschlagen!".var_export($res,true), "Registrierung fehlgeschlagen!");
-				array_push($args, $kunde);
-				array_push($args, $_POST[DBA_P_PASSWORT]);
-				$function = DBA_F_KUNDEPWUPDATEN;
+			$kunde = readKunde();
+			$kunde->setFreischaltung(false);
+			$res = $db->kundeEintragen($kunde);
+			if (!$res)
+				throw new DB_Exception(500, "Registrierung fehlgeschlagen!".var_export($res,true), "Registrierung fehlgeschlagen!");
+			array_push($args, $kunde);
+			array_push($args, $_POST[DBA_P_PASSWORT]);
+			$function = DBA_F_KUNDEPWUPDATEN;
 		}catch(DB_Exception $e){
 			echo json_encode($e);
 			exit(1);
 		}
-	break;
+		break;
 	case DBA_F_KUNDEPWUPDATEN:
 		try {
 			array_push($args, readKunde());
@@ -85,6 +92,27 @@ switch ($function){
 			exit(1);
 		}
 		break;
+	case DBA_F_KUNDEUPDATEN:
+		try{
+			$kunde_neu = readKunde();
+			$kunde = $db->getKunde($kunde_neu->getEmail());
+			if($kunde_neu->getVorname() != null) 
+				$kunde->setVorname($kunde_neu->getVorname());
+			if($kunde_neu->getNachname() != null) 
+				$kunde->setNachname($kunde_neu->getNachname());
+			if($kunde_neu->getTelNr() != null) 
+				$kunde->setTelNr($kunde_neu->getTelNr());
+			if($kunde_neu->getFoto() != null) 
+				$kunde->setFoto($kunde_neu->getFoto());
+			
+			if(isset($_POST[DBA_P_KUNDE_INTERESSEN]))
+				$kunde->setInteressen($kunde_neu->getInteressen());
+			$args = array($kunde);
+		}catch (DB_Exception $e){
+			echo json_encode($e);
+			exit(1);
+		}
+			break;
 	default:
 		echo json_encode(new DB_Exception(501, "Übergebene Funktion wird nicht unterstützt! Gesuchte Funktion: ".$function, DB_ERR_VIEW_METHOD_NOT_SUPPORTED));
 		die;

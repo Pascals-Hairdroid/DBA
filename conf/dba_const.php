@@ -7,10 +7,12 @@ const DBA_SESSION_ID = "session_id";
 // Funktionen
 const DBA_F_KUNDEEINTRAGEN = "kundeEintragen";
 const DBA_F_KUNDEPWUPDATEN = "kundePwUpdaten";
+const DBA_F_KUNDEUPDATEN = "kundeUpdaten";
 
 $DBA_FUNCTIONS = array(
 		DBA_F_KUNDEEINTRAGEN,
-		DBA_F_KUNDEPWUPDATEN
+		DBA_F_KUNDEPWUPDATEN,
+		DBA_F_KUNDEUPDATEN
 );
 
 // Kunde
