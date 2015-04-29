@@ -632,12 +632,20 @@ class DB_Con {
 		return new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]);
 	}
 	
+	function getProduktkategorie($kuerzel){
+		$abf = $this->selectQuery(DB_TB_PRODUKTKATEGORIEN, "*", DB_F_PRODUKTKATEGORIEN_PK_KUERZEL." = \"".$kuerzel."\"");
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
+		if($abf->num_rows == 0) return null;
+		$row = mysqli_fetch_assoc($abf);
+		return new Produktkategorie($row[$kuerzel], $row[DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG]);
+	}
+	
 	function getProdukt($id){
 		$abf = $this->selectQuery(DB_TB_PRODUKTE, "*", DB_F_PRODUKTE_PK_ID." = \"".$id."\"");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
-		return new Produkt($row[DB_F_PRODUKTE_PK_ID], $row[DB_F_PRODUKTE_NAME], $row[DB_F_PRODUKTE_HERSTELLER], $row[DB_F_PRODUKTE_BESCHREIBUNG], $row[DB_F_PRODUKTE_PREIS], $row[DB_F_PRODUKTE_BESTAND]);
+		return new Produkt($row[DB_F_PRODUKTE_PK_ID], $row[DB_F_PRODUKTE_NAME], $row[DB_F_PRODUKTE_HERSTELLER], $row[DB_F_PRODUKTE_BESCHREIBUNG], $row[DB_F_PRODUKTE_PREIS], $row[DB_F_PRODUKTE_BESTAND], $this->getProduktkategorie($row[DB_F_PRODUKTE_PRODUKTKATEGORIE]));
 	}
 	
 	function getHaartyp($kuerzel){
@@ -910,7 +918,7 @@ class DB_Con {
 	}
 	
 	function selectQuery($name, $fields, $where_clause){
-		return $this->query("SELECT * FROM ".$name." WHERE ".$where_clause.";");
+		return $this->query("SELECT ".$fields." FROM ".$name." WHERE ".$where_clause.";");
 	}
 	
 	function selectQueryField($name, $fields){

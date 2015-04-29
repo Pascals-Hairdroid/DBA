@@ -6,15 +6,17 @@ class Produkt{
 	public $beschreibung;
 	public $preis;
 	public $bestand;
+	public $kategorie;
 	
 	
-	function __construct($id, $name, $hersteller, $beschreibung, $preis, $bestand){
+	function __construct($id, $name, $hersteller, $beschreibung, $preis, $bestand, Produktkategorie $kategorie){
 		$this->setId($id);
 		$this->setName($name);
 		$this->setHersteller($hersteller);
 		$this->setBeschreibung($beschreibung);
 		$this->setPreis($preis);
 		$this->setBestand($bestand);
+		$this->setKategorie($kategorie);
 	}
 	
 	
@@ -47,6 +49,10 @@ class Produkt{
 			$this->hersteller = $hersteller;
 		else
 			throw new Exception("Hersteller ungültig!");
+	}
+	
+	function setKategorie(Produktkategorie $kategorie){
+		$this->kategorie = $kategorie;
 	}
 	
 	function setBeschreibung($beschreibung){
@@ -84,28 +90,32 @@ class Produkt{
 	
 	
 	function getId(){
-		$this->id;
+		return $this->id;
 	}
 	
 	function getName(){
-		$this->name;
+		return $this->name;
 	}
 	
 	function getHersteller(){
-		$this->hersteller;
+		return $this->hersteller;
 	}
 	
 	function getBeschreibung(){
-		$this->beschreibung;
+		return $this->beschreibung;
 	}
 	
 	function getPreis(){
-		$this->preis;
+		return $this->preis;
 	}
 	
 	
 	function getBestand(){
-		$this->bestand;
+		return $this->bestand;
+	}
+	
+	function getKategorie(){
+		return $this->kategorie;
 	}
 	
 }

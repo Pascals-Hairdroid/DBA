@@ -20,6 +20,7 @@ class Mitarbeiter {
 		$this->setMotto($motto);
 		$this->setSkills($skills);
 		$this->setAdmin($admin);
+		$this->setUrlaube($urlaube);
 		$this->setDienstzeiten($dienstzeiten);
 	}
 	
