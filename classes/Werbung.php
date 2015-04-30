@@ -11,7 +11,7 @@ class Werbung {
 		$this->setNummer($nummer);
 		$this->setTitel($titel);
 		$this->setText($text);
-		$tis->setDatum($datum);
+		$this->setDatum($datum);
 		$this->setInteressen($interessen);
 	}
 	
