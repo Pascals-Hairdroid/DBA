@@ -647,7 +647,7 @@ class DB_Con {
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		if($abf->num_rows == 0) return null;
 		$row = mysqli_fetch_assoc($abf);
-		return new Produktkategorie($row[$kuerzel], $row[DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG]);
+		return new Produktkategorie($kuerzel, $row[DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG]);
 	}
 	
 	function getProdukt($id){
