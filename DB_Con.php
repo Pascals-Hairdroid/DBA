@@ -823,8 +823,17 @@ class DB_Con {
 		return $res;
 	}
 	
-	function getAllProdukt(){
-		$abf = $this->selectQueryField(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID);
+	function getAllProduktkategorie(){
+		$abf = $this->selectQueryField(DB_TB_PRODUKTKATEGORIEN, DB_F_PRODUKTKATEGORIEN_PK_KUERZEL);
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getProduktkategorie($row[DB_F_PRODUKTKATEGORIEN_PK_KUERZEL]));
+		return $res;
+	}
+	
+	function getAllProdukt(Produktkategorie $kategorie = null){
+		$abf = $kategorie==null?$this->selectQueryField(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID):$this->selectQuery(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID, DB_F_PRODUKTE_PRODUKTKATEGORIE."=\"".mysqli_escape_string($this->con, $kategorie->getKuerzel())."\"");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
