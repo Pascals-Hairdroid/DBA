@@ -55,6 +55,10 @@ const DB_F_PRODUKTE_BESCHREIBUNG = "Beschreibung";
 const DB_F_PRODUKTE_PREIS = "Preis";
 const DB_F_PRODUKTE_BESTAND = "Bestand";
 
+const DB_TB_PRODUKTKATEGORIEN = "produktkategorien";
+const DB_F_PRODUKTKATEGORIEN_PK_KUERZEL = "Kuerzel";
+const DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG = "Bezeichnung";
+
 const DB_TB_WOCHENTAGE = "wochentage";
 const DB_F_WOCHENTAGE_PK_KUERZEL = "Kuerzel";
 const DB_F_WOCHENTAGE_BEZEICHNUNG = "Bezeichnung";
