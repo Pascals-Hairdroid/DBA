@@ -394,7 +394,7 @@ class DB_Con {
 		return $this->query("UPDATE ".DB_TB_DIENSTZEITEN." SET ".DB_F_DIENSTZEITEN_BEGINN." = \"" .$dienstzeit->getBeginn()->format(DB_FORMAT_TIME)."\", ".DB_F_DIENSTZEITEN_ENDE." = \"".$dienstzeit->getEnde()->format(DB_FORMAT_TIME)."\" WHERE ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".mysqli_escape_string($this->con, $dienstzeit->getWochentag()->getKuerzel())."\" AND ".DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 	}
 	
-	function dienstzeitUpdaten(Produktkategorie $kategorie){
+	function produktkategorieUpdaten(Produktkategorie $kategorie){
 		return $this->query("UPDATE ".DB_TB_PRODUKTKATEGORIEN." SET ".DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG." = \"".mysqli_escape_string($this->con, $kategorie->getBezeichnung())."\" WHERE ".DB_F_PRODUKTKATEGORIEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $kategorie->getKuerzel())."\"")===TRUE;
 	}
 	
