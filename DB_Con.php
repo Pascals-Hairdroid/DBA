@@ -9,6 +9,7 @@ include_once(dirname(__FILE__)."/classes/Haartyp.php");
 include_once(dirname(__FILE__)."/classes/Interesse.php");
 include_once(dirname(__FILE__)."/classes/Kunde.php");
 include_once(dirname(__FILE__)."/classes/Mitarbeiter.php");
+include_once(dirname(__FILE__)."/classes/Produktkategorie.php");
 include_once(dirname(__FILE__)."/classes/Produkt.php");
 include_once(dirname(__FILE__)."/classes/Skill.php");
 include_once(dirname(__FILE__)."/classes/Termin.php");
