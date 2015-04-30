@@ -3,6 +3,7 @@
 const DB_DEFAULT_CONF_FILE = "conf/db.php";
 // FORMATE
 const DB_FORMAT_DATETIME = "Y-m-d H:i:s";
+const DB_MYSQL_FORMAT_DATETIME = "%Y-%m-%d %H:%i:%s";
 const DB_FORMAT_TIME = "H:i:s";
 
 // TABELLEN
@@ -53,11 +54,6 @@ const DB_F_PRODUKTE_HERSTELLER = "Hersteller";
 const DB_F_PRODUKTE_BESCHREIBUNG = "Beschreibung";
 const DB_F_PRODUKTE_PREIS = "Preis";
 const DB_F_PRODUKTE_BESTAND = "Bestand";
-const DB_F_PRODUKTE_PRODUKTKATEGORIE = "Produktkategorien_Kuerzel";
-
-const DB_TB_PRODUKTKATEGORIEN = "produktkategorien";
-const DB_F_PRODUKTKATEGORIEN_PK_KUERZEL = "Kuerzel";
-const DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG = "Bezeichnung";
 
 const DB_TB_WOCHENTAGE = "wochentage";
 const DB_F_WOCHENTAGE_PK_KUERZEL = "Kuerzel";
