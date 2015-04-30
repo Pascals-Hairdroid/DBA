@@ -287,8 +287,12 @@ class DB_Con {
 		return $this->query("INSERT INTO ".DB_TB_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN." (".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN.", ".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN.") VALUES (\"".$ausstattung->getId()."\", \"".$dienstleistung->getKuerzel()."\")")===TRUE;
 	}
 	
+	function produktkategorienEintragen(Produktkategorie $kategorie){
+		return $this->query("INSERT INTO ".DB_TB_PRODUKTKATEGORIEN." (".DB_F_PRODUKTKATEGORIEN_PK_KUERZEL.", ".DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG.") VALUES (\"".mysqli_escape_string($this->con,$kategorie->getKuerzel())."\", \"".mysqli_escape_string($this->con,$kategorie->getBezeichnung())."\")")===TRUE;
+	}
+	
 	function produktEintragen(Produkt $produkt){
-		return $this->query("INSERT INTO ".DB_TB_PRODUKTE." (".DB_F_PRODUKTE_PK_ID.", ".DB_F_PRODUKTE_NAME.", ".DB_F_PRODUKTE_HERSTELLER.", ".DB_F_PRODUKTE_BESCHREIBUNG.", ".DB_F_PRODUKTE_PREIS.", ".DB_F_PRODUKTE_BESTAND.") VALUES (\"".$produkt->getId()."\", \"".mysqli_escape_string($this->con,$produkt->getName())."\", \"".mysqli_escape_string($this->con,$produkt->getHersteller())."\", \"".mysqli_escape_string($this->con,$produkt->getBeschreibung())."\", \"".$produkt->getPreis()."\", \"".$produkt->getBestand()."\")")===TRUE;
+		return $this->query("INSERT INTO ".DB_TB_PRODUKTE." (".DB_F_PRODUKTE_PK_ID.", ".DB_F_PRODUKTE_NAME.", ".DB_F_PRODUKTE_HERSTELLER.", ".DB_F_PRODUKTE_BESCHREIBUNG.", ".DB_F_PRODUKTE_PREIS.", ".DB_F_PRODUKTE_BESTAND.", ".DB_F_PRODUKTE_PRODUKTKATEGORIE.") VALUES (\"".$produkt->getId()."\", \"".mysqli_escape_string($this->con,$produkt->getName())."\", \"".mysqli_escape_string($this->con,$produkt->getHersteller())."\", \"".mysqli_escape_string($this->con,$produkt->getBeschreibung())."\", \"".$produkt->getPreis()."\", \"".$produkt->getBestand()."\", \"".mysqli_escape_string($this->con,$produkt->getKategorie()->getKuerzel())."\")")===TRUE;
 	}
 	
 	function wochentagEintragen(Wochentag $wochentag){
@@ -379,7 +383,7 @@ class DB_Con {
 	}
 	
 	function produktUpdaten(Produkt $produkt){
-		return $this->query("UPDATE ".DB_TB_PRODUKTE." SET ".DB_F_PRODUKTE_NAME." = \"" .mysqli_escape_string($this->con, $produkt->getName())."\", ".DB_F_PRODUKTE_HERSTELLER." = \"".mysqli_escape_string($this->con, $produkt->getHersteller())."\", ".DB_F_PRODUKTE_BESCHREIBUNG." = \"".mysqli_escape_string($this->con, $produkt->getBeschreibung())."\", ".DB_F_PRODUKTE_PREIS." = \"".$produkt->getPreis()."\", ".DB_F_PRODUKTE_BESTAND." = \"".$produkt->getBestand()."\" WHERE ".DB_F_PRODUKTE_PK_ID." = \"".$produkt->getId()."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_PRODUKTE." SET ".DB_F_PRODUKTE_NAME." = \"" .mysqli_escape_string($this->con, $produkt->getName())."\", ".DB_F_PRODUKTE_HERSTELLER." = \"".mysqli_escape_string($this->con, $produkt->getHersteller())."\", ".DB_F_PRODUKTE_BESCHREIBUNG." = \"".mysqli_escape_string($this->con, $produkt->getBeschreibung())."\", ".DB_F_PRODUKTE_PRODUKTKATEGORIE." = \"".mysqli_escape_string($this->con, $produkt->getKategorie()->getKuerzel())."\", ".DB_F_PRODUKTE_PREIS." = \"".$produkt->getPreis()."\", ".DB_F_PRODUKTE_BESTAND." = \"".$produkt->getBestand()."\" WHERE ".DB_F_PRODUKTE_PK_ID." = \"".$produkt->getId()."\"")===TRUE;
 	}
 	
 	function wochentagUpdaten(Wochentag $wochentag){
@@ -389,6 +393,11 @@ class DB_Con {
 	function dienstzeitUpdaten(Dienstzeit $dienstzeit, Mitarbeiter $mitarbeiter){
 		return $this->query("UPDATE ".DB_TB_DIENSTZEITEN." SET ".DB_F_DIENSTZEITEN_BEGINN." = \"" .$dienstzeit->getBeginn()->format(DB_FORMAT_TIME)."\", ".DB_F_DIENSTZEITEN_ENDE." = \"".$dienstzeit->getEnde()->format(DB_FORMAT_TIME)."\" WHERE ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".mysqli_escape_string($this->con, $dienstzeit->getWochentag()->getKuerzel())."\" AND ".DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 	}
+	
+	function dienstzeitUpdaten(Produktkategorie $kategorie){
+		return $this->query("UPDATE ".DB_TB_PRODUKTKATEGORIEN." SET ".DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG." = \"".mysqli_escape_string($this->con, $kategorie->getBezeichnung())."\" WHERE ".DB_F_PRODUKTKATEGORIEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $kategorie->getKuerzel())."\"")===TRUE;
+	}
+	
 	
 	
 	function werbungUpdaten(Werbung $werbung){
