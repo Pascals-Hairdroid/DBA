@@ -54,6 +54,7 @@ const DB_F_PRODUKTE_HERSTELLER = "Hersteller";
 const DB_F_PRODUKTE_BESCHREIBUNG = "Beschreibung";
 const DB_F_PRODUKTE_PREIS = "Preis";
 const DB_F_PRODUKTE_BESTAND = "Bestand";
+const DB_F_PRODUKTE_PRODUKTKATEGORIE = "Produktkategorien_Kuerzel";
 
 const DB_TB_PRODUKTKATEGORIEN = "produktkategorien";
 const DB_F_PRODUKTKATEGORIEN_PK_KUERZEL = "Kuerzel";
