@@ -914,12 +914,32 @@ class DB_Con {
 		return $res;
 	}
 	
-	function getAllWerbung(DateTime $abdatum = null){
+	function getAllWerbung(DateTime $abdatum = null, $interessen = null){
 		$abf = $abdatum==null?$this->selectQueryField(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER):$this->selectQuery(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER, DB_F_WERBUNG_DATUM.">=\"".$abdatum->format(DB_FORMAT_DATETIME)."\"");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
 			array_push($res,$this->getWerbung($row[DB_F_WERBUNG_PK_NUMMER]));
+		if($interessen != null){
+			if(is_array($interessen)){
+				$interessenIds = array();
+				foreach($interessen as $interesse)
+					if(($interesse instanceof Interesse))
+						array_push($interessenIds, $interesse->getId());
+					else
+						throw new DB_Exception(400, "Ein Objekt im Interessen-Array ist nicht vom Typ Interesse!", DB_ERR_VIEW_PARAM_FAIL);
+				$temp = array();
+				foreach ($res as $werbung){
+					$in = false;
+					foreach($werbung->getInteressen() as $interesse)
+						if(in_array($interesse->getId(), $interessenIds))
+							$in = true;
+					if($in)
+						array_push($temp, $werbung);
+				}
+				$res=$temp;
+			}
+		}
 		return $res;
 	}
 	

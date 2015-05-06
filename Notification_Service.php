@@ -12,9 +12,8 @@ include_once 'conf/notification_service_const.php';
 // }
 
 try{
-	if(!isset($_GET[NS_DATE])){
+	if(!isset($_GET[NS_DATE]))
 		throw new DB_Exception(400, "Kein Datum angegeben.", utf8_encode(DB_ERR_VIEW_PARAM_FAIL));
-	}
 	$date = new DateTime($_GET[NS_DATE]);
 }catch(DB_Exception $e){
 	echo json_encode($e);
@@ -26,7 +25,7 @@ try{
 $db = new DB_Con(DB_DEFAULT_CONF_FILE, true, "utf8");
 $res = array(false);
 try{
-	$res=$db->getAllWerbung();
+	$res=$db->getAllWerbung($date);
 }catch(DB_Exception $e){
 	echo json_encode($e);
 	exit(1);
