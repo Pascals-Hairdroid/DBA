@@ -131,7 +131,7 @@ const DB_F_SESSION_KUNDEN = "Kunden_EMail";
 
 // Views
 
-const DB_VIEW_ZEITTABELLE = "view_zeittabelle";
+const DB_VIEW_ZEITTABELLE = "View_Zeittabelle";
 const DB_F_VIEW_ZEITTABELE_MITARBEITER_VORNAME = "Mitarbeiitervorname";
 const DB_F_VIEW_ZEITTABELE_MITARBEITER_NACHNAME = "Mitarbeiiternachname";
 const DB_F_VIEW_ZEITTABELE_DIENSTLEISTUNG = "Dienstleistung";
@@ -140,31 +140,31 @@ const DB_F_VIEW_ZEITTABELE_KUNDEN_NACHNAME = "Kundennachname";
 const DB_F_VIEW_ZEITTABELE_KUNDEN_TELNR = "Kundennummer";
 const DB_F_VIEW_ZEITTABELE_ARBEITSPLATZRESSOURCEN_NAME = "Arbeitsplatz";
 
-const DB_VIEW_DIENSTLEISTUNGEN_SKILLS = "view_dienstleistungen_skills";
+const DB_VIEW_DIENSTLEISTUNGEN_SKILLS = "View_Dienstleistungen_Skills";
 
-const DB_VIEW_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN= "view_dienstleistungen_arbeitplatzausstattung";
+const DB_VIEW_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN= "View_Dienstleistungen_Arbeitplatzausstattung";
 
-const DB_VIEW_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN = "view_arbeitsplatzressourcen_arbeitsplatzausstattung";
+const DB_VIEW_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN = "View_Arbeitsplatzressourcen_Arbeitplatzausstattung";
 
-const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_ARBEITSPLATZRESSOURCEN = "view_arbeitplatzausstattung_arbeitsplatzressourcen";
+const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_ARBEITSPLATZRESSOURCEN = "View_Arbeitplatzausstattung_Arbeitsplatzressourcen";
 
-const DB_VIEW_MITARBEITER_SKILLS = "view_mitarbeiter_skills";
+const DB_VIEW_MITARBEITER_SKILLS = "View_Mitarbeiter_Skills";
 
-const DB_VIEW_KUNDEN_INTERESSEN = "view_kunden_interessen";
+const DB_VIEW_KUNDEN_INTERESSEN = "View_Kunden_Interessen";
 
-const DB_VIEW_INTERESSEN_KUNDEN = "view_interessen_kunden";
+const DB_VIEW_INTERESSEN_KUNDEN = "View_Interessen_Kunden";
 
-const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN = "view_arbeitplatzausstattung_dienstleistungen";
+const DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_DIENSTLEISTUNGEN = "View_Arbeitplatzausstattung_Dienstleistungen";
 
-const DB_VIEW_INTERESSEN_WERBUNG = "view_interessen_werbung";
+const DB_VIEW_INTERESSEN_WERBUNG = "View_Interessen_Werbung";
 
-const DB_VIEW_MITARBEITERSKILLS = "view_mitarbeiterskills";
+const DB_VIEW_MITARBEITERSKILLS = "View_MitarbeiterSkills";
 
-const DB_VIEW_SKILLS_DIENSTLEISTUNGEN = "view_skills_dienstleistungen";
+const DB_VIEW_SKILLS_DIENSTLEISTUNGEN = "View_Skills_Dienstleistungen";
 
-const DB_VIEW_SKILLS_MITARBEITER = "view_skills_mitarbeiter";
+const DB_VIEW_SKILLS_MITARBEITER = "View_Skills_Mitarbeiter";
 
-const DB_VIEW_WERBUNG_INTERESSEN = "view_werbung_interessen";
+const DB_VIEW_WERBUNG_INTERESSEN = "View_Werbung_Interessen";
 
 
 
