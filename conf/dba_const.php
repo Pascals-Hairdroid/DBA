@@ -2,7 +2,7 @@
 // Allgemein
 const DBA_FUNCTION = "f";
 const DBA_JSON_PARAMS = "jsonParams";
-const DBA_SESSION_ID = "session_id";
+const DBA_SESSION_ID = "sessionId";
 
 // Funktionen
 const DBA_F_KUNDEEINTRAGEN = "kundeEintragen";
