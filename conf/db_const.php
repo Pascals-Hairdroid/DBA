@@ -176,4 +176,18 @@ const DB_PC_FREIE_TERMINE = "FreieTermine";
 const DB_PC_TERMIN_EINTRAGEN = "TerminEintragen";
 const DB_PC_TERMIN_STORNIEREN = "TerminStornieren";
 
+
+
+
+
+
+
+
+// Namenskonvention: ( Pfadaufbau: $beginn.$id.$mitte.$counter.$ende   ; wobei: $counter = $counter_zero bis n;
+const NK_COUNTER_ZERO = 1;
+// Werbung:
+const NK_Pfad_Werbung_Bild_beginn = "http://www.pascals.at/v2/Bilder/Werbung/";
+const NK_Pfad_Werbung_Bild_mitte = "_";
+const NK_Pfad_Werbung_Bild_ende = ".jpg";
+
 ?>

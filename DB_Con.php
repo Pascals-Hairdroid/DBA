@@ -790,8 +790,9 @@ class DB_Con {
 		while ($row = mysqli_fetch_assoc($abf)){
 			array_push($interessen, new Interesse($row[DB_F_INTERESSEN_PK_ID], $row[DB_F_INTERESSEN_BEZEICHNUNG]));
 		}
-		
-		return new Werbung($nummer, $main[DB_F_WERBUNG_TITEL], $main[DB_F_WERBUNG_TEXT], new DateTime($main[DB_F_WERBUNG_DATUM]), $interessen);
+		$res = new Werbung($nummer, $main[DB_F_WERBUNG_TITEL], $main[DB_F_WERBUNG_TEXT], new DateTime($main[DB_F_WERBUNG_DATUM]), $interessen);
+		$res->updateFotos();
+		return $res;
 	}
 	
 	function getTermin(DateTime $zeitstempel, Mitarbeiter $mitarbeiter){
@@ -914,7 +915,7 @@ class DB_Con {
 		return $res;
 	}
 	
-	function getAllWerbung(DateTime $abdatum = null, $interessen = null){
+	function getAllWerbung(DateTime $abdatum = null, array $interessen = null){
 		$abf = $abdatum==null?$this->selectQueryField(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER):$this->selectQuery(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER, DB_F_WERBUNG_DATUM.">=\"".$abdatum->format(DB_FORMAT_DATETIME)."\"");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();

@@ -1,18 +1,22 @@
 <?php
+include_once dirname(__FILE__)."/".'../conf/db_const.php';
 include_once dirname(__FILE__)."/".'Interesse.php';
+
 class Werbung {
 	public $nummer;
 	public $titel;
 	public $text;
 	public $datum;
 	public $interessen = array();
+	public $fotos = array();
 
-	function __construct($nummer, $titel, $text, DateTime $datum, array $interessen){
+	function __construct($nummer, $titel, $text, DateTime $datum, array $interessen, array $fotos = null){
 		$this->setNummer($nummer);
 		$this->setTitel($titel);
 		$this->setText($text);
 		$this->setDatum($datum);
 		$this->setInteressen($interessen);
+		$this->setFotos($fotos);
 	}
 	
 
@@ -59,7 +63,20 @@ class Werbung {
 		$this->interessen = $interessen;
 	}
 
-
+	function setFotos(array $fotos){
+		foreach ($fotos as $foto){
+			try{
+				$foto = (string)$foto;
+			}catch (Exception $e){}
+			if(!is_string($foto))
+				throw new Exception("Fotos ungültig!");
+		}
+		$this->fotos = $fotos;
+		
+		
+	}
+	
+	
 	function getNummer(){
 		return $this->nummer;
 	}
@@ -78,6 +95,18 @@ class Werbung {
 	
 	function getInteressen(){
 		return $this->interessen;
+	}
+	
+	function getFotos(){
+		return $this->fotos;
+	}
+
+	
+	function updateFotos(){
+		$i=NK_COUNTER_ZERO;
+		$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende;
+		while(file_exists($foto))
+			array_push($this->fotos, $foto);
 	}
 }
 ?>

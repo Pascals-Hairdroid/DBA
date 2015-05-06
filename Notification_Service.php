@@ -25,7 +25,14 @@ try{
 $db = new DB_Con(DB_DEFAULT_CONF_FILE, true, "utf8");
 $res = array(false);
 try{
-	$res=$db->getAllWerbung($date);
+	if(isset($_POST[NS_INTERESSEN])){
+		$interessen = array();
+		foreach($_POST[NS_INTERESSEN] as $id)
+			array_push($interessen, new Interesse($id, ""));
+		$res=$db->getAllWerbung($date, $interessen);
+	}
+	else
+		$res=$db->getAllWerbung($date);
 }catch(DB_Exception $e){
 	echo json_encode($e);
 	exit(1);
