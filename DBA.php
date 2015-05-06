@@ -17,7 +17,7 @@ include_once "DB_Con.php";
  * @return Kunde
  */
 function readKunde(){
-	if(!isset($_POST[DBA_P_KUNDE_EMAIL])){
+	if(!isset($_POST[DBA_P_KUNDE_EMAIL]) && !isset($_SESSION[L_USERNAME])){
 		//var_dump($_POST);
 		throw new DB_Exception(400, "Kundenmail nicht gesetzt! ".var_export($_POST,true), DB_ERR_VIEW_PARAM_FAIL);
 
@@ -119,6 +119,15 @@ switch ($function){
 		break;
 }
 $res = call_user_func_array(array($db,$function), $args);
+
+if($function == DBA_F_KUNDEUPDATEN && isset($_POST[DBA_P_PASSWORT]) && $res){
+	try {
+		$res = $db->kundePwUpdaten(readKunde(), $_POST[DBA_P_PASSWORT]);
+	}catch(DB_Exception $e){
+		echo json_encode($e);
+		exit(1);
+	}
+}
 if($_GET[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
 	if($res){
 		$_POST[L_USERNAME] = readKunde()->getEmail();
