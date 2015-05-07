@@ -93,11 +93,14 @@ class DB_Con {
 	}
 	
 	
-	function getFreieTermine(DateTime $von, DateTime $bis, Mitarbeiter $mitarbeiter){
-		if($von->format("U") <= $bis->format("U"))
-			return  $this->call(DB_PC_FREIE_TERMINE, "UNIX_TIMESTAMP(STR_TO_DATE('".$von->format(DB_FORMAT_DATETIME)."', '".DB_MYSQL_FORMAT_DATETIME."')) , UNIX_TIMESTAMP(STR_TO_DATE('".$bis->format(DB_FORMAT_DATETIME)."', '".DB_MYSQL_FORMAT_DATETIME."')) , ".($mitarbeiter!=null?$mitarbeiter->getSvnr():0));
-		else
-			throw new DB_Exception(400, "Von-Wert größer als Bis-Wert. Werte: Von: ".$von->format("U")." Bis: ".$bis->format("U"), DB_ERR_VIEW_VON_BIS);
+	function getAllTermin(DateTime $von, DateTime $bis){
+		$abf = $this->selectQuery(DB_TB_ZEITTABELLE, "*",DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." BETWEEN '".$von->format(DB_FORMAT_DATETIME)."' AND '".$bis->format(DB_FORMAT_DATETIME)."'");
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
+		$res = array();
+		//var_dump($abf);
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,new DateTime ($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
+		return $res;
 	}
 	
 	function getTermineZeitstempelVonMitarbeiter(Mitarbeiter $mitarbeiter, DateTime $von, DateTime $bis){
@@ -970,6 +973,7 @@ class DB_Con {
 	}
 	
 	function query($query_string){
+		//var_dump($query_string);
 		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
 		else
@@ -985,6 +989,29 @@ class DB_Con {
 	function __destruct(){
 		if($this->con instanceof mysqli)
 			mysqli_close($this->con);
+	}
+	
+	function getTermineVonBis(DateTime $von, DateTime $bis) {
+		if(!($von->format("U") <= $bis->format("U")))
+			throw new DB_Exception(400, "Von-Wert größer als Bis-Wert. Werte: Von: ".$von->format("U")." Bis: ".$bis->format("U"), DB_ERR_VIEW_VON_BIS);
+	
+		$interval = new DateInterval('PT15M');
+	
+		$realEnd = $bis;
+		$realEnd->add($interval);
+	
+		$period = new DatePeriod(
+				$von,
+				$interval,
+				$realEnd
+		);
+		$db=new db_con("conf/db.php",true);
+	
+		foreach($period as $date) {
+			$array[] = $date->format('d.m.Y H:i');
+		}
+	
+		return $array;
 	}
 }
 ?>
