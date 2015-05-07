@@ -784,7 +784,7 @@ class DB_Con {
 		if($abf->num_rows == 0) return null;
 		$main = mysqli_fetch_assoc($abf);
 		
-		$abf = $this->selectQuery(DB_VIEW_WERBUNG_INTERESSEN, "*", DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$nummer."\"");
+		$abf = $this->selectQuery(DB_VIEW_INTERESSEN_WERBUNG, "*", DB_F_WERBUNG_INTERESSEN_PK_WERBUNG." = \"".$nummer."\"");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$interessen = array();
 		while ($row = mysqli_fetch_assoc($abf)){

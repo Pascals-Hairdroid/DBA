@@ -2,6 +2,23 @@
 include_once dirname(__FILE__)."/".'../conf/db_const.php';
 include_once dirname(__FILE__)."/".'Interesse.php';
 
+function exists($url){
+  $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL,$url);
+    // don't download content
+    curl_setopt($ch, CURLOPT_NOBODY, 1);
+    curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    if(curl_exec($ch)!==FALSE)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 class Werbung {
 	public $nummer;
 	public $titel;
@@ -10,7 +27,7 @@ class Werbung {
 	public $interessen = array();
 	public $fotos = array();
 
-	function __construct($nummer, $titel, $text, DateTime $datum, array $interessen, array $fotos = null){
+	function __construct($nummer, $titel, $text, DateTime $datum, array $interessen, array $fotos = array()){
 		$this->setNummer($nummer);
 		$this->setTitel($titel);
 		$this->setText($text);
@@ -105,8 +122,11 @@ class Werbung {
 	function updateFotos(){
 		$i=NK_COUNTER_ZERO;
 		$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende;
-		while(file_exists($foto))
+		while(exists($foto)){
 			array_push($this->fotos, $foto);
+			$i++;
+			$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende;
+		}
 	}
 }
 ?>
