@@ -1,7 +1,11 @@
 <?php
-function file_upload($target_file){
+include_once(dirname(__FILE__)."/conf/db_exception_const.php");
+include_once(dirname(__FILE__)."/conf/db_const.php");
+function file_upload($target_file, $allowed_types=null){
+	if($allowed_types == null)
+		$allowed_types = unserialize(NK_Bild_Formate);
 	$uploadOk = 1;
-	$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+	$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 	// Check if image file is a actual image or fake image
 	if(isset($_POST["submit"])) {
 		$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
@@ -24,8 +28,7 @@ function file_upload($target_file){
 		$uploadOk = 0;
 	}
 	// Allow certain file formats
-	if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-			&& $imageFileType != "gif" ) {
+	if(in_array($imageFileType, $allowed_types)) {
 		echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
 		$uploadOk = 0;
 	}

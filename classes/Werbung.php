@@ -121,11 +121,13 @@ class Werbung {
 	
 	function updateFotos(){
 		$i=NK_COUNTER_ZERO;
-		$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende;
-		while(exists($foto)){
-			array_push($this->fotos, $foto);
-			$i++;
-			$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende;
+		foreach(unserialize(NK_Bild_Formate) as $format){
+			$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende.$format;
+			while(exists($foto)){
+				array_push($this->fotos, $foto);
+				$i++;
+				$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende.$format;
+			}
 		}
 	}
 }

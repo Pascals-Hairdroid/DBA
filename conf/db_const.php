@@ -188,6 +188,7 @@ const NK_COUNTER_ZERO = 1;
 // Werbung:
 const NK_Pfad_Werbung_Bild_beginn = "http://www.pascals.at/v2/Bilder/Werbung/";
 const NK_Pfad_Werbung_Bild_mitte = "_";
-const NK_Pfad_Werbung_Bild_ende = ".jpg";
+const NK_Pfad_Werbung_Bild_ende = ".";
+define("NK_Bild_Formate", serialize(array("jpg", "jpeg", "png")));
 
 ?>
