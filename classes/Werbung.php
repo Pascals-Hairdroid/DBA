@@ -121,14 +121,20 @@ class Werbung {
 	
 	function updateFotos(){
 		$i=NK_COUNTER_ZERO;
-		foreach(unserialize(NK_Bild_Formate) as $format){
-			$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende.$format;
-			while(exists($foto)){
-				array_push($this->fotos, $foto);
-				$i++;
-				$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende.$format;
+		$formate=unserialize(NK_Bild_Formate);
+		$exist=true;
+		while($exist){
+			$one = false;
+			foreach($formate as $format){
+				if(!$one){
+          $foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende.$format;
+					$one=$exist=exists($foto);
+					if($one)
+						array_push($this->fotos, $foto);
+				}
 			}
-		}
+			$i++;
+ 		}
 	}
 }
 ?>
