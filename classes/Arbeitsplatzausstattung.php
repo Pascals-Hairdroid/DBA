@@ -26,7 +26,7 @@ class Arbeitsplatzausstattung{
 			$name = (string)$name;
 		}catch (Exception $e){}
 		if(is_string($name))
-			$this->name = $name;
+			$this->name = utf8_encode($name);
 		else
 			throw new Exception("Name ungültig!");
 	}
@@ -37,7 +37,7 @@ class Arbeitsplatzausstattung{
 	}
 	
 	function getName(){
-			return $this->name;
+			return utf8_decode($this->name);
 	}
 	
 }

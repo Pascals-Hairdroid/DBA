@@ -43,7 +43,7 @@ class Termin {
 			$frisurwunsch = (string)$frisurwunsch;
 		}catch (Exception $e){}
 		if(is_string($frisurwunsch))
-			$this->frisurwunsch = $frisurwunsch;
+			$this->frisurwunsch = utf8_encode($frisurwunsch);
 		else
 			throw new Exception("Frisurwunsch ungültig!");
 	}
@@ -70,7 +70,7 @@ class Termin {
 	}
 	
 	function getFrisurwunsch(){
-		return $this->frisurwunsch;
+		return utf8_decode($this->frisurwunsch);
 	}
 	
 	function getDienstleistung(){

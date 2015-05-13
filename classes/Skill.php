@@ -25,7 +25,7 @@ class Skill {
 			$beschreibung = (string)$beschreibung;
 		}catch (Exception $e){}
 		if(is_string($beschreibung))
-			$this->beschreibung = $beschreibung;
+			$this->beschreibung = utf8_encode($beschreibung);
 		else
 			throw new Exception("Beschriebung ungültig!");
 	}
@@ -36,7 +36,7 @@ class Skill {
 	}
 	
 	function getBeschreibung(){
-			return $this->beschreibung;
+			return utf8_decode($this->beschreibung);
 	}
 }
 ?>

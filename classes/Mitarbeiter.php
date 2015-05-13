@@ -36,7 +36,7 @@ class Mitarbeiter {
 			$vorname = (string)$vorname;
 		}catch (Exception $e){}
 		if(is_string($vorname))
-			$this->vorname = $vorname;
+			$this->vorname = utf8_encode($vorname);
 		else
 			throw new Exception("Vorname ungültig!");
 	}
@@ -46,7 +46,7 @@ class Mitarbeiter {
 			$nachname = (string)$nachname;
 		}catch (Exception $e){}
 		if(is_string($nachname))
-			$this->nachname = $nachname;
+			$this->nachname = utf8_encode($nachname);
 		else
 			throw new Exception("Nachname ungültig!");
 	}
@@ -56,7 +56,7 @@ class Mitarbeiter {
 			$motto = (string)$motto;
 		}catch (Exception $e){}
 		if(is_string($motto))
-			$this->motto = $motto;
+			$this->motto = utf8_encode($motto);
 		else
 			throw new Exception("Motto ungültig!");
 	}
@@ -101,15 +101,15 @@ class Mitarbeiter {
 	}
 	
 	function getVorname(){
-		return $this->vorname;
+		return utf8_decode($this->vorname);
 	}
 	
 	function getNachname(){
-		return $this->nachname;
+		return utf8_decode($this->nachname);
 	}
 	
 	function getMotto(){
-		return $this->motto;
+		return utf8_decode($this->motto);
 	}
 	
 	function getSkills(){

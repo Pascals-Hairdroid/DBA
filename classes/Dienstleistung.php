@@ -29,7 +29,7 @@ class Dienstleistung{
 			$kuerzel = (string)$kuerzel;
 		}catch (Exception $e){}
 		if(is_string($kuerzel))
-			$this->kuerzel = $kuerzel;
+			$this->kuerzel = utf8_encode($kuerzel);
 		else
 			throw new Exception("Kuerzel ungültig!");
 	}
@@ -43,7 +43,7 @@ class Dienstleistung{
 			$name = (string)$name;
 		}catch (Exception $e){}
 		if(is_string($name))
-			$this->name = $name;
+			$this->name = utf8_encode($name);
 		else
 			throw new Exception("Name ungültig!");
 	}
@@ -97,7 +97,7 @@ class Dienstleistung{
 	
 
 	function getKuerzel(){
-			return $this->kuerzel;
+			return utf8_decode($this->kuerzel);
 	}
 	
 	function getHaartyp(){
@@ -105,7 +105,7 @@ class Dienstleistung{
 	}
 	
 	function getName(){
-		return $this->name;
+		return utf8_decode($this->name);
 	}
 	
 	function getBenoetigteEinheiten(){

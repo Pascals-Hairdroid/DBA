@@ -1,4 +1,5 @@
 <?php 
+include_once(dirname(__FILE__)."../include_login.php");
 
 const DB_DEFAULT_CONF_FILE = "conf/db.php";
 // FORMATE
@@ -185,10 +186,18 @@ const DB_PC_TERMIN_STORNIEREN = "TerminStornieren";
 
 // Namenskonvention: ( Pfadaufbau: $beginn.$id.$mitte.$counter.$ende   ; wobei: $counter = $counter_zero bis n;
 const NK_COUNTER_ZERO = 1;
+define("NK_Bild_Formate", serialize(array("jpg", "jpeg", "png", "gif")));
 // Werbung:
+const NK_Werbung_Bild_Width = 1024;
+const NK_Werbung_Bild_Height = 768;
 const NK_Pfad_Werbung_Bild_beginn = "http://www.pascals.at/v2/Bilder/Werbung/";
 const NK_Pfad_Werbung_Bild_mitte = "_";
-const NK_Pfad_Werbung_Bild_ende = ".";
-define("NK_Bild_Formate", serialize(array("jpg", "jpeg", "png")));
+const NK_Pfad_Werbung_Bild_ende = ".jpg";
+define("NK_Pfad_Werbung_Bildupload_beginn",$homepage_dir."/Bilder/Profilbilder/");
 
+const NK_Kunde_Bild_Width = 1024;
+const NK_Kunde_Bild_Height = 768;
+const NK_Pfad_Kunde_Bild_beginn = "http://www.pascals.at/v2/Bilder/Profilbilder/";
+const NK_Pfad_Kunde_Bild_ende = ".jpg";
+define("NK_Pfad_Kunde_Bildupload_beginn",$homepage_dir."/Bilder/Profilbilder/");
 ?>

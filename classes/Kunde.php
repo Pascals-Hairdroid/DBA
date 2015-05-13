@@ -26,7 +26,7 @@ class Kunde {
 			$email = (string)$email;
 		}catch (Exception $e){}
 		if(is_string($email))
-			$this->email = $email;
+			$this->email = utf8_encode($email);
 		else
 			throw new Exception("E-Mail ungültig!");
 	}
@@ -36,7 +36,7 @@ class Kunde {
 			$vorname = (string)$vorname;
 		}catch (Exception $e){}
 		if(is_string($vorname))
-			$this->vorname = $vorname;
+			$this->vorname = utf8_encode($vorname);
 		else
 			throw new Exception("Vorname ungültig!");
 	}
@@ -46,7 +46,7 @@ class Kunde {
 			$nachname = (string)$nachname;
 		}catch (Exception $e){}
 		if(is_string($nachname))
-			$this->nachname = $nachname;
+			$this->nachname = utf8_encode($nachname);
 		else
 			throw new Exception("Nachname ungültig!");
 	}
@@ -57,7 +57,7 @@ class Kunde {
 			$telNr = (string)$telNr;
 		}catch (Exception $e){}
 		if(is_string($telNr))
-			$this->telNr = $telNr;
+			$this->telNr = utf8_encode($telNr);
 		else
 			throw new Exception("Telefonnummer ungültig!");
 	}
@@ -77,7 +77,7 @@ class Kunde {
 			$foto = (string)$foto;
 		}catch (Exception $e){}
 		if(is_string($foto) || $foto == null)
-			$this->foto = $foto;
+			$this->foto = utf8_encode($foto);
 		else
 			throw new Exception("Foto ungültig!");
 	}
@@ -92,20 +92,20 @@ class Kunde {
 	
 	
 	function getEmail(){
-		return $this->email;
+		return utf8_decode($this->email);
 	}
 	
 	function getVorname(){
-		return $this->vorname;
+		return utf8_decode($this->vorname);
 	}
 	
 	function getNachname(){
-		return $this->nachname;
+		return utf8_decode($this->nachname);
 	}
 	
 
 	function getTelNr(){
-		return $this->telNr;
+		return utf8_decode($this->telNr);
 	}
 	
 	function getFreischaltung(){
@@ -113,7 +113,7 @@ class Kunde {
 	}
 	
 	function getFoto(){
-		return $this->foto;
+		return utf8_decode($this->foto);
 	}
 	
 	function getInteressen(){

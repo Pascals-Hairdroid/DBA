@@ -14,7 +14,7 @@ class Wochentag{
 			$kuerzel = (string)$kuerzel;
 		}catch (Exception $e){}
 		if(is_string($kuerzel))
-			$this->kuerzel = $kuerzel;
+			$this->kuerzel = utf8_encode($kuerzel);
 		else
 			throw new Exception("Kuerzel ungültig!");
 	}
@@ -24,18 +24,18 @@ class Wochentag{
 			$bezeichnung = (string)$bezeichnung;
 		}catch (Exception $e){}
 		if(is_string($bezeichnung))
-			$this->bezeichnung = $bezeichnung;
+			$this->bezeichnung = utf8_encode($bezeichnung);
 		else
 			throw new Exception("Bezeichnung ungültig!");
 	}
 	
 	
 	function getKuerzel(){
-		return $this->kuerzel;
+		return utf8_decode($this->kuerzel);
 	}
 	
 	function getBezeichnung(){
-		return $this->bezeichnung;
+		return utf8_decode($this->bezeichnung);
 	}
 		
 }

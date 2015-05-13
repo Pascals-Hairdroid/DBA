@@ -27,7 +27,7 @@ function readKunde(){
 	$interessen_p = isset($_POST[DBA_P_KUNDE_INTERESSEN])?$_POST[DBA_P_KUNDE_INTERESSEN]:array();
 	$interessen = array();
 	foreach ($interessen_p as $id)
-		array_push($interessen, new Interesse($id, null));
+		$id==""?:array_push($interessen, new Interesse($id, null));
 
 	return new Kunde($_POST[DBA_P_KUNDE_EMAIL], isset($_POST[DBA_P_KUNDE_VORNAME])?$_POST[DBA_P_KUNDE_VORNAME]:null, isset($_POST[DBA_P_KUNDE_NACHNAME])?$_POST[DBA_P_KUNDE_NACHNAME]:null, isset($_POST[DBA_P_KUNDE_TELNR])?$_POST[DBA_P_KUNDE_TELNR]:null, isset($_POST[DBA_P_KUNDE_FREISCHALTUNG])?$_POST[DBA_P_KUNDE_FREISCHALTUNG]:null, isset($_POST[DBA_P_KUNDE_FOTO])?$_POST[DBA_P_KUNDE_FOTO]:null, $interessen);
 }
@@ -63,7 +63,7 @@ if($function != DBA_F_KUNDEEINTRAGEN && !isset($_SESSION[L_ANGEMELDET])){
 }
 $args = array();
 if(!in_array($function, $DBA_FUNCTIONS)){
-	echo json_encode(new DB_Exception(501, "Übergebene Funktion ist nicht in der Liste unterstützter funktionen! Gesuchte Funktion: ".$function, DB_ERR_VIEW_METHOD_NOT_SUPPORTED));
+	echo json_encode(new DB_Exception(501, utf8_encode("Übergebene Funktion ist nicht in der Liste unterstützter funktionen! Übergebene Funktion: ".$function), DB_ERR_VIEW_METHOD_NOT_SUPPORTED));
 	die;
 }
 $res = true;
@@ -102,24 +102,31 @@ switch ($function){
 				$kunde->setNachname($kunde_neu->getNachname());
 			if($kunde_neu->getTelNr() != null) 
 				$kunde->setTelNr($kunde_neu->getTelNr());
-			if($kunde_neu->getFoto() != null) 
-				$kunde->setFoto($kunde_neu->getFoto());
-			
-			if(isset($_POST[DBA_P_KUNDE_INTERESSEN]))
+			if($kunde_neu->getFoto() != null){ 
+				if(!isset($_FILES[DBA_P_KUNDE_FOTOUPLOAD][$kunde_neu->getFoto()]))
+					throw new DB_Exception(400, "Kein Image mitgegeben!", DB_ERR_VIEW_PARAM_FAIL);
+				$res = file_upload($_FILES[DBA_P_KUNDE_FOTOUPLOAD][$kunde_neu->getFoto()], NK_Pfad_Kunde_Bildupload_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende, NK_Kunde_Bild_Width, NK_Kunde_Bild_Height);
+				if($res)
+					$kunde->setFoto(NK_Pfad_Kunde_Bild_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende);
+			}
+			if(isset($_POST[DBA_P_KUNDE_INTERESSEN])){
 				$kunde->setInteressen($kunde_neu->getInteressen());
+				}
 			$args = array($kunde);
 		}catch (DB_Exception $e){
 			echo json_encode($e);
 			exit(1);
+		}catch (Exception $e){
+			echo json_encode(new DB_Exception(500, utf8_encode("Unbekannter Fehler beim übernehmen der Kundendaten! Fehlermessage: ".$e->getMessage()), utf8_encode(DB_ERR_VIEW_UK_FAIL)));
+			exit(1);
 		}
 			break;
 	default:
-		echo json_encode(new DB_Exception(501, "Übergebene Funktion wird nicht unterstützt! Gesuchte Funktion: ".$function, DB_ERR_VIEW_METHOD_NOT_SUPPORTED));
+		echo json_encode(new DB_Exception(501, utf8_encode("Übergebene Funktion wird nicht unterstützt! Übergebene Funktion: ".$function), utf8_encode(DB_ERR_VIEW_METHOD_NOT_SUPPORTED)));
 		die;
 		break;
 }
-$res = call_user_func_array(array($db,$function), $args);
-
+$res = res?call_user_func_array(array($db,$function), $args):$res;
 if($function == DBA_F_KUNDEUPDATEN && isset($_POST[DBA_P_PASSWORT]) && $res){
 	try {
 		$res = $db->kundePwUpdaten(readKunde(), $_POST[DBA_P_PASSWORT]);
@@ -128,6 +135,7 @@ if($function == DBA_F_KUNDEUPDATEN && isset($_POST[DBA_P_PASSWORT]) && $res){
 		exit(1);
 	}
 }
+
 if($_GET[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
 	if($res){
 		$_POST[L_USERNAME] = readKunde()->getEmail();
@@ -135,6 +143,10 @@ if($_GET[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
 		include("login.php");
 		exit(0);
 	}
+}
+
+if($function == DBA_F_KUNDEUPDATEN && $res){
+	$res = $kunde;
 }
 echo json_encode(array("res" => $res));
 ?>

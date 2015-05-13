@@ -22,6 +22,7 @@ const DBA_P_KUNDE_NACHNAME = "nachname";
 const DBA_P_KUNDE_TELNR = "telnr";
 const DBA_P_KUNDE_FREISCHALTUNG = "freischaltung";
 const DBA_P_KUNDE_FOTO = "foto";
+const DBA_P_KUNDE_FOTOUPLOAD = "image";
 
 const DBA_P_KUNDE_INTERESSEN = "interessen";
 

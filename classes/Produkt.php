@@ -36,7 +36,7 @@ class Produkt{
 			$name = (string)$name;
 		}catch (Exception $e){}
 		if(is_string($name))
-			$this->name = $name;
+			$this->name = utf8_encode($name);
 		else
 			throw new Exception("Name ungültig!");
 	}
@@ -46,7 +46,7 @@ class Produkt{
 			$hersteller = (string)$hersteller;
 		}catch (Exception $e){}
 		if(is_string($hersteller))
-			$this->hersteller = $hersteller;
+			$this->hersteller = utf8_encode($hersteller);
 		else
 			throw new Exception("Hersteller ungültig!");
 	}
@@ -60,7 +60,7 @@ class Produkt{
 			$beschreibung = (string)$beschreibung;
 		}catch (Exception $e){}
 		if(is_string($beschreibung))
-			$this->beschreibung = $beschreibung;
+			$this->beschreibung = utf8_encode($beschreibung);
 		else
 			throw new Exception("Beschreibung ungültig!");
 	}
@@ -94,15 +94,15 @@ class Produkt{
 	}
 	
 	function getName(){
-		return $this->name;
+		return utf8_decode($this->name);
 	}
 	
 	function getHersteller(){
-		return $this->hersteller;
+		return utf8_decode($this->hersteller);
 	}
 	
 	function getBeschreibung(){
-		return $this->beschreibung;
+		return utf8_decode($this->beschreibung);
 	}
 	
 	function getPreis(){

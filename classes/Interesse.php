@@ -26,7 +26,7 @@ class Interesse{
 			$bezeichnung = (string)$bezeichnung;
 		}catch (Exception $e){}
 		if(is_string($bezeichnung))
-			$this->bezeichnung = $bezeichnung;
+			$this->bezeichnung = utf8_encode($bezeichnung);
 		else
 			throw new Exception("Bezeichnung ungültig!");
 	}
@@ -37,7 +37,7 @@ class Interesse{
 	}
 	
 	function getBezeichnung(){
-			return $this->bezeichnung;
+			return utf8_decode($this->bezeichnung);
 	}
 }
 ?>

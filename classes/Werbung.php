@@ -53,7 +53,7 @@ class Werbung {
 			$titel = (string)$titel;
 		}catch (Exception $e){}
 		if(is_string($titel))
-			$this->titel = $titel;
+			$this->titel = utf8_encode($titel);
 		else
 			throw new Exception("Titel ungültig!");
 	}
@@ -63,7 +63,7 @@ class Werbung {
 			$text = (string)$text;
 		}catch (Exception $e){}
 		if(is_string($text))
-			$this->text = $text;
+			$this->text = utf8_encode($text);
 		else
 			throw new Exception("Text ungültig!");
 	}
@@ -83,7 +83,7 @@ class Werbung {
 	function setFotos(array $fotos){
 		foreach ($fotos as $foto){
 			try{
-				$foto = (string)$foto;
+				$foto = utf8_encode((string)$foto);
 			}catch (Exception $e){}
 			if(!is_string($foto))
 				throw new Exception("Fotos ungültig!");
@@ -103,11 +103,11 @@ class Werbung {
 	}
 	
 	function getTitel(){
-		return $this->titel;
+		return utf8_decode($this->titel);
 	}
 	
 	function getText(){
-		return $this->text;
+		return utf8_decode($this->text);
 	}
 	
 	function getInteressen(){
@@ -115,13 +115,18 @@ class Werbung {
 	}
 	
 	function getFotos(){
-		return $this->fotos;
+		$f = array();
+		foreach($this->fotos as $foto){
+			array_push($f, utf8_decode($foto));
+		}
+		return $f;
 	}
 
 	
 	function updateFotos(){
 		$i=NK_COUNTER_ZERO;
 		$formate=unserialize(NK_Bild_Formate);
+		$this->fotos = array();
 		$exist=true;
 		while($exist){
 			$one = false;
@@ -130,7 +135,7 @@ class Werbung {
           $foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende.$format;
 					$one=$exist=exists($foto);
 					if($one)
-						array_push($this->fotos, $foto);
+						array_push($this->fotos, utf8_encode($foto));
 				}
 			}
 			$i++;
