@@ -1,5 +1,5 @@
 <?php 
-include_once(dirname(__FILE__)."../include_login.php");
+include_once(dirname(__FILE__)."/login_const.php");
 
 const DB_DEFAULT_CONF_FILE = "conf/db.php";
 // FORMATE
@@ -47,6 +47,8 @@ const DB_F_KUNDEN_TELNR = "TelNr";
 const DB_F_KUNDEN_FOTO = "Foto";
 const DB_F_KUNDEN_FREISCHALTUNG = "Freischaltung";
 const DB_F_KUNDEN_PASSWORT = "Passwort";
+const DB_F_KUNDEN_TOKEN = "Token";
+const DB_F_KUNDEN_TIMESTAMP = "Datum";
 
 const DB_TB_PRODUKTE = "produkte";
 const DB_F_PRODUKTE_PK_ID = "ID";
