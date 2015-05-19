@@ -123,11 +123,11 @@ class DB_Con {
 	
 	
 	function kundePwUpdaten(Kunde $kunde, $passwort){
-		return $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_PASSWORT." = \"" .escape_string($passwort)."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".escape_string($kunde->getEmail())."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_PASSWORT." = \"" .mysqli_escape_string($this->con, $passwort)."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
 	}
 	
 	function mitarbeiterPwUpdaten(Mitarbeiter $mitarbeiter, $passwort){
-		return $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_PASSWORT." = \"" .escape_string($passwort)."\" WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_PASSWORT." = \"" .mysqli_escape_string($this->con, $passwort)."\" WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 	}
 	
 	
@@ -316,7 +316,7 @@ class DB_Con {
 	
 
 	function werbungEintragen(Werbung $werbung){
-		$success = $this->query("INSERT INTO ".DB_TB_WERBUNG." (".DB_F_WERBUNG_PK_NUMMER.", ".DB_F_WERBUNG_DATUM.", ".DB_F_WERBUNG_TITEL.", ".DB_F_WERBUNG_TEXT.") VALUES (\"".$werbung->getNummer()."\", \"".$werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", \"".escape_string($werbung->getTitel())."\", \"".escape_string($werbung->getText())."\")")===TRUE;
+		$success = $this->query("INSERT INTO ".DB_TB_WERBUNG." (".DB_F_WERBUNG_PK_NUMMER.", ".DB_F_WERBUNG_DATUM.", ".DB_F_WERBUNG_TITEL.", ".DB_F_WERBUNG_TEXT.") VALUES (\"".$werbung->getNummer()."\", \"".$werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", \"".mysqli_escape_string($this->con, $werbung->getTitel())."\", \"".mysqli_escape_string($this->con, $werbung->getText())."\")")===TRUE;
 		foreach ($werbung->getInteressen() as $interesse){
 			if($interesse instanceof Interesse)
 				$success=$success?$this->interesseWerbungZuweisen($interesse, $werbung):$success;
@@ -373,46 +373,46 @@ class DB_Con {
 	}
 	
 	function kundeTokenUpdaten(Kunde $kunde, Token $token){
-		return $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_TOKEN." = \"" .escape_string($token->getToken())."\", ".DB_F_KUNDEN_TIMESTAMP." = \"".escape_string($token->getTimestamp()->format(DB_FORMAT_DATETIME))."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".escape_string($kunde->getEmail())."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_TOKEN." = \"" .mysqli_escape_string($this->con, $token->getToken())."\", ".DB_F_KUNDEN_TIMESTAMP." = \"".mysqli_escape_string($this->con, $token->getTimestamp()->format(DB_FORMAT_DATETIME))."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
 	}
 	
 	function skillUpdaten(Skill $skill){
-		return $this->query("UPDATE ".DB_TB_SKILLS." SET ".DB_F_SKILLS_BESCHREIBUNG." = \"" .escape_string($skill->getBeschreibung())."\" WHERE ".DB_F_SKILLS_PK_ID." = \"".$skill->getId()."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_SKILLS." SET ".DB_F_SKILLS_BESCHREIBUNG." = \"" .mysqli_escape_string($this->con, $skill->getBeschreibung())."\" WHERE ".DB_F_SKILLS_PK_ID." = \"".$skill->getId()."\"")===TRUE;
 	}
 	
 	function haartypUpdaten(Haartyp $haartyp){
-		return $this->query("UPDATE ".DB_TB_HAARTYPEN." SET ".DB_F_HAARTYPEN_BEZEICHNUNG." = \"" .escape_string($haartyp->getBezeichnung())."\" WHERE ".DB_F_HAARTYPEN_PK_KUERZEL." = \"".escape_string($haartyp->getKuerzel())."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_HAARTYPEN." SET ".DB_F_HAARTYPEN_BEZEICHNUNG." = \"" .mysqli_escape_string($this->con, $haartyp->getBezeichnung())."\" WHERE ".DB_F_HAARTYPEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $haartyp->getKuerzel())."\"")===TRUE;
 	}
 	
 	function interesseUpdaten(Interesse $interesse){
-		return $this->query("UPDATE ".DB_TB_INTERESSEN." SET ".DB_F_INTERESSEN_BEZEICHNUNG." = \"" .escape_string($interesse->getBezeichnung())."\" WHERE ".DB_F_INTERESSEN_PK_ID." = \"".$interesse->getId()."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_INTERESSEN." SET ".DB_F_INTERESSEN_BEZEICHNUNG." = \"" .mysqli_escape_string($this->con, $interesse->getBezeichnung())."\" WHERE ".DB_F_INTERESSEN_PK_ID." = \"".$interesse->getId()."\"")===TRUE;
 	}
 	
 	function arbeitsplatzausstattungUpdaten(Arbeitsplatzausstattung $ausstattung){
-		return $this->query("UPDATE ".DB_TB_ARBEITSPLATZAUSSTATTUNGEN." SET ".DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME." = \"" .escape_string($ausstattung->getName())."\" WHERE ".DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID." = \"".$ausstattung->getId()."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_ARBEITSPLATZAUSSTATTUNGEN." SET ".DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME." = \"" .mysqli_escape_string($this->con, $ausstattung->getName())."\" WHERE ".DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID." = \"".$ausstattung->getId()."\"")===TRUE;
 	}
 	
 	function produktUpdaten(Produkt $produkt){
-		return $this->query("UPDATE ".DB_TB_PRODUKTE." SET ".DB_F_PRODUKTE_NAME." = \"" .escape_string($produkt->getName())."\", ".DB_F_PRODUKTE_HERSTELLER." = \"".escape_string($produkt->getHersteller())."\", ".DB_F_PRODUKTE_BESCHREIBUNG." = \"".escape_string($produkt->getBeschreibung())."\", ".DB_F_PRODUKTE_PRODUKTKATEGORIE." = \"".escape_string($produkt->getKategorie()->getKuerzel())."\", ".DB_F_PRODUKTE_PREIS." = \"".$produkt->getPreis()."\", ".DB_F_PRODUKTE_BESTAND." = \"".$produkt->getBestand()."\" WHERE ".DB_F_PRODUKTE_PK_ID." = \"".$produkt->getId()."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_PRODUKTE." SET ".DB_F_PRODUKTE_NAME." = \"" .mysqli_escape_string($this->con, $produkt->getName())."\", ".DB_F_PRODUKTE_HERSTELLER." = \"".mysqli_escape_string($this->con, $produkt->getHersteller())."\", ".DB_F_PRODUKTE_BESCHREIBUNG." = \"".mysqli_escape_string($this->con, $produkt->getBeschreibung())."\", ".DB_F_PRODUKTE_PRODUKTKATEGORIE." = \"".mysqli_escape_string($this->con, $produkt->getKategorie()->getKuerzel())."\", ".DB_F_PRODUKTE_PREIS." = \"".$produkt->getPreis()."\", ".DB_F_PRODUKTE_BESTAND." = \"".$produkt->getBestand()."\" WHERE ".DB_F_PRODUKTE_PK_ID." = \"".$produkt->getId()."\"")===TRUE;
 	}
 	
 	function wochentagUpdaten(Wochentag $wochentag){
-		return $this->query("UPDATE ".DB_TB_WOCHENTAGE." SET ".DB_F_WOCHENTAGE_BEZEICHNUNG." = \"" .escape_string($wochentag->getBezeichnung())."\" WHERE ".DB_F_WOCHENTAGE_PK_KUERZEL." = \"".escape_string($wochentag->getKuerzel())."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_WOCHENTAGE." SET ".DB_F_WOCHENTAGE_BEZEICHNUNG." = \"" .mysqli_escape_string($this->con, $wochentag->getBezeichnung())."\" WHERE ".DB_F_WOCHENTAGE_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $wochentag->getKuerzel())."\"")===TRUE;
 	}
 	
 	function dienstzeitUpdaten(Dienstzeit $dienstzeit, Mitarbeiter $mitarbeiter){
-		return $this->query("UPDATE ".DB_TB_DIENSTZEITEN." SET ".DB_F_DIENSTZEITEN_BEGINN." = \"" .$dienstzeit->getBeginn()->format(DB_FORMAT_TIME)."\", ".DB_F_DIENSTZEITEN_ENDE." = \"".$dienstzeit->getEnde()->format(DB_FORMAT_TIME)."\" WHERE ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".escape_string($dienstzeit->getWochentag()->getKuerzel())."\" AND ".DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_DIENSTZEITEN." SET ".DB_F_DIENSTZEITEN_BEGINN." = \"" .$dienstzeit->getBeginn()->format(DB_FORMAT_TIME)."\", ".DB_F_DIENSTZEITEN_ENDE." = \"".$dienstzeit->getEnde()->format(DB_FORMAT_TIME)."\" WHERE ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." = \"".mysqli_escape_string($this->con, $dienstzeit->getWochentag()->getKuerzel())."\" AND ".DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 	}
 	
 	function produktkategorieUpdaten(Produktkategorie $kategorie){
-		return $this->query("UPDATE ".DB_TB_PRODUKTKATEGORIEN." SET ".DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG." = \"".escape_string($kategorie->getBezeichnung())."\" WHERE ".DB_F_PRODUKTKATEGORIEN_PK_KUERZEL." = \"".escape_string($kategorie->getKuerzel())."\"")===TRUE;
+		return $this->query("UPDATE ".DB_TB_PRODUKTKATEGORIEN." SET ".DB_F_PRODUKTKATEGORIEN_BEZEICHNUNG." = \"".mysqli_escape_string($this->con, $kategorie->getBezeichnung())."\" WHERE ".DB_F_PRODUKTKATEGORIEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $kategorie->getKuerzel())."\"")===TRUE;
 	}
 	
 	
 	
 	function werbungUpdaten(Werbung $werbung){
 		$werbung_alt=$this->getWerbung($werbung->getNummer());
-		$success = $this->query("UPDATE ".DB_TB_WERBUNG." SET ".DB_F_WERBUNG_DATUM." = \"" .$this->con, $werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", ".DB_F_WERBUNG_TITEL." = \"" .escape_string($werbung->getTitel())."\", ".DB_F_WERBUNG_TEXT." = \"".escape_string($werbung->getText())."\" WHERE ".DB_F_WERBUNG_PK_NUMMER." = \"".$werbung->getNummer()."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_WERBUNG." SET ".DB_F_WERBUNG_DATUM." = \"" .$this->con, $werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", ".DB_F_WERBUNG_TITEL." = \"" .mysqli_escape_string($this->con, $werbung->getTitel())."\", ".DB_F_WERBUNG_TEXT." = \"".mysqli_escape_string($this->con, $werbung->getText())."\" WHERE ".DB_F_WERBUNG_PK_NUMMER." = \"".$werbung->getNummer()."\"")===TRUE;
 		$interessenIds_alt = array();
 		foreach ($werbung_alt->getInteressen() as $interesse_alt)
 			array_push($interessenIds_alt,$interesse_alt->getId());
@@ -450,7 +450,7 @@ class DB_Con {
 	
 	function mitarbeiterUpdaten(Mitarbeiter $mitarbeiter){
 		$mitarbeiter_alt=$this->getMitarbeiter($mitarbeiter->getSvnr());
-		$success = $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_NACHNAME." = \"" .escape_string($mitarbeiter->getNachname())."\", ".DB_F_MITARBEITER_VORNAME." = \"".escape_string($mitarbeiter->getVorname())."\", ".DB_F_MITARBEITER_MOTTO." = \"".escape_string($mitarbeiter->getMotto())."\", ".DB_F_MITARBEITER_ADMIN." = ".($mitarbeiter->getAdmin()?1:0)." WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_MITARBEITER." SET ".DB_F_MITARBEITER_NACHNAME." = \"" .mysqli_escape_string($this->con, $mitarbeiter->getNachname())."\", ".DB_F_MITARBEITER_VORNAME." = \"".mysqli_escape_string($this->con, $mitarbeiter->getVorname())."\", ".DB_F_MITARBEITER_MOTTO." = \"".mysqli_escape_string($this->con, $mitarbeiter->getMotto())."\", ".DB_F_MITARBEITER_ADMIN." = ".($mitarbeiter->getAdmin()?1:0)." WHERE ".DB_F_MITARBEITER_PK_SVNR." = \"".$mitarbeiter->getSvnr()."\"")===TRUE;
 		
 		$skillsIds_alt = array();
 		
@@ -523,7 +523,7 @@ class DB_Con {
 	
 	function kundeUpdaten(Kunde $kunde){
 		$kunde_alt=$this->getKunde($kunde->getEmail());
-		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .escape_string($kunde->getFoto()!=null?$kunde->getFoto():$kunde_alt->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".escape_string($kunde->getVorname()!=null?$kunde->getVorname():$kunde_alt->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".escape_string($kunde->getNachname()!=null?$kunde->getNachname():$kunde_alt->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".escape_string($kunde->getTelNr()!=null?$kunde->getTelNr():$kunde_alt->getTelNr())."\", ".DB_F_KUNDEN_FREISCHALTUNG." = \"".($kunde->getFreischaltung()!=null?($kunde->getFreischaltung()?1:0):($kunde_alt->getFreischaltung()?1:0))."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".escape_string($kunde->getEmail())."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto()!=null?$kunde->getFoto():$kunde_alt->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname()!=null?$kunde->getVorname():$kunde_alt->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname()!=null?$kunde->getNachname():$kunde_alt->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr()!=null?$kunde->getTelNr():$kunde_alt->getTelNr())."\", ".DB_F_KUNDEN_FREISCHALTUNG." = \"".($kunde->getFreischaltung()!=null?($kunde->getFreischaltung()?1:0):($kunde_alt->getFreischaltung()?1:0))."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
 		
 		if(count($kunde->getInteressen())!=0){
 			$interessenIds_alt = array();
@@ -549,7 +549,7 @@ class DB_Con {
 	
 	function dienstleistungUpdaten(Dienstleistung $dienstleistung){
 		$dienstleistung_alt=$this->getDienstleistung($dienstleistung->getKuerzel(), $dienstleistung->getHaartyp());
-		$success = $this->query("UPDATE ".DB_TB_DIENSTLEISTUNGEN." SET ".DB_F_DIENSTLEISTUNGEN_NAME." = \"" .escape_string($dienstleistung->getName())."\", ".DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN." = \"".escape_string($dienstleistung->getBenoetigteEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN." = \"".escape_string($dienstleistung->getPausenEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG." = ".$dienstleistung->getGruppierung()." WHERE ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".escape_string($dienstleistung->getKuerzel())." AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".escape_string($dienstleistung->getHaartyp()->getKuerzel())."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_DIENSTLEISTUNGEN." SET ".DB_F_DIENSTLEISTUNGEN_NAME." = \"" .mysqli_escape_string($this->con, $dienstleistung->getName())."\", ".DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getBenoetigteEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getPausenEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG." = ".$dienstleistung->getGruppierung()." WHERE ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())." AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".mysqli_escape_string($this->con, $dienstleistung->getHaartyp()->getKuerzel())."\"")===TRUE;
 		
 		$skillsIds_alt = array();
 		
@@ -566,7 +566,7 @@ class DB_Con {
 			}
 		}
 		$skills_neu = substr($skills_neu,2);
-		$success=$success?$this->query("DELETE FROM ".DB_TB_DIENSTLEISTUNGEN_SKILLS." WHERE ".DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".escape_string($dienstleistung->getKuerzel())."\" AND (".DB_F_DIENSTLEISTUNGEN_SKILLS_PK_SKILLS." NOT IN(".$skills_neu."))"):$success;
+		$success=$success?$this->query("DELETE FROM ".DB_TB_DIENSTLEISTUNGEN_SKILLS." WHERE ".DB_F_DIENSTLEISTUNGEN_SKILLS_PK_DIENSTLEISTUNGEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())."\" AND (".DB_F_DIENSTLEISTUNGEN_SKILLS_PK_SKILLS." NOT IN(".$skills_neu."))"):$success;
 		
 		
 		$ausstattungenIds_alt = array();
@@ -584,7 +584,7 @@ class DB_Con {
 			}
 		}
 		$ausstattungen_neu = substr($ausstattungen_neu,2);
-		$success=$success?$this->query("DELETE FROM ".DB_TB_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN." WHERE ".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".escape_string($dienstleistung->getKuerzel())."\" AND (".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN." NOT IN(".$ausstattungen_neu."))"):$success;
+		$success=$success?$this->query("DELETE FROM ".DB_TB_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN." WHERE ".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_DIENSTLEISTUNGEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())."\" AND (".DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN." NOT IN(".$ausstattungen_neu."))"):$success;
 		
 		return $success;
 	}
@@ -854,7 +854,7 @@ class DB_Con {
 	}
 	
 	function getAllProdukt(Produktkategorie $kategorie = null){
-		$abf = $kategorie==null?$this->selectQueryField(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID):$this->selectQuery(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID, DB_F_PRODUKTE_PRODUKTKATEGORIE."=\"".escape_string($kategorie->getKuerzel())."\"");
+		$abf = $kategorie==null?$this->selectQueryField(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID):$this->selectQuery(DB_TB_PRODUKTE, DB_F_PRODUKTE_PK_ID, DB_F_PRODUKTE_PRODUKTKATEGORIE."=\"".mysqli_escape_string($this->con, $kategorie->getKuerzel())."\"");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))

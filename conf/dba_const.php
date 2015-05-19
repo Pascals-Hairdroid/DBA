@@ -8,11 +8,13 @@ const DBA_SESSION_ID = "sessionId";
 const DBA_F_KUNDEEINTRAGEN = "kundeEintragen";
 const DBA_F_KUNDEPWUPDATEN = "kundePwUpdaten";
 const DBA_F_KUNDEUPDATEN = "kundeUpdaten";
+const DBA_F_GETKUNDEDATEN = "getKundeDaten";
 
 $DBA_FUNCTIONS = array(
 		DBA_F_KUNDEEINTRAGEN,
 		DBA_F_KUNDEPWUPDATEN,
-		DBA_F_KUNDEUPDATEN
+		DBA_F_KUNDEUPDATEN,
+		DBA_F_GETKUNDEDATEN
 );
 
 // Kunde
@@ -22,7 +24,7 @@ const DBA_P_KUNDE_NACHNAME = "nachname";
 const DBA_P_KUNDE_TELNR = "telnr";
 const DBA_P_KUNDE_FREISCHALTUNG = "freischaltung";
 const DBA_P_KUNDE_FOTO = "foto";
-const DBA_P_KUNDE_FOTOUPLOAD = "image";
+const DBA_P_FOTONAME = "tmp_name";
 
 const DBA_P_KUNDE_INTERESSEN = "interessen";
 

@@ -26,6 +26,8 @@ if ($success) {
 	$db = new DB_Con(DB_DEFAULT_CONF_FILE, true);
 	$success = $db->sessionEintragen(session_id(), $_POST[L_USERNAME]);
 	$kunde = $db->getKunde($_POST[L_USERNAME]);
+	$foto = NK_Pfad_Kunde_Bildupload_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende;
+	$picdate = file_exists($foto)?filemtime($foto):0;
 }
-echo json_encode($success?array("sessionId"=>session_id(), "kunde"=>$kunde):array("success"=>$success));
+echo json_encode($success?array("sessionId"=>session_id(), "kunde"=>$kunde, "picdate"=> $picdate):array("success"=>$success));
 session_write_close();

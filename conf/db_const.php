@@ -187,6 +187,7 @@ const DB_PC_TERMIN_STORNIEREN = "TerminStornieren";
 
 
 // Namenskonvention: ( Pfadaufbau: $beginn.$id.$mitte.$counter.$ende   ; wobei: $counter = $counter_zero bis n;
+// $kunde->$id = md5($kunde->getEmail())
 const NK_COUNTER_ZERO = 1;
 define("NK_Bild_Formate", serialize(array("jpg", "jpeg", "png", "gif")));
 // Werbung:
@@ -195,7 +196,7 @@ const NK_Werbung_Bild_Height = 768;
 const NK_Pfad_Werbung_Bild_beginn = "http://www.pascals.at/v2/Bilder/Werbung/";
 const NK_Pfad_Werbung_Bild_mitte = "_";
 const NK_Pfad_Werbung_Bild_ende = ".jpg";
-define("NK_Pfad_Werbung_Bildupload_beginn",$homepage_dir."/Bilder/Profilbilder/");
+define("NK_Pfad_Werbung_Bildupload_beginn",$homepage_dir."/Bilder/Werbung/");
 
 const NK_Kunde_Bild_Width = 1024;
 const NK_Kunde_Bild_Height = 768;
