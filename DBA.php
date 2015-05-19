@@ -5,6 +5,7 @@ include_once 'conf/db_exception_const.php';
 include_once 'conf/login_const.php';
 include_once 'conf/dba_const.php';
 include_once "DB_Con.php";
+//var_dump($_POST, $_FILES);
 // Test:
 // echo json_encode("Hallo");
 // $res=true;
@@ -115,10 +116,8 @@ switch ($function){
 				$kunde->setNachname($kunde_neu->getNachname());
 			if($kunde_neu->getTelNr() != null) 
 				$kunde->setTelNr($kunde_neu->getTelNr());
-			if($kunde_neu->getFoto() != null){ 
-				if(!isset($_FILES[DBA_P_KUNDE_FOTOUPLOAD][$kunde_neu->getFoto()]))
-					throw new DB_Exception(400, "Kein Image mitgegeben!", DB_ERR_VIEW_PARAM_FAIL);
-				$res = file_upload($_FILES[DBA_P_KUNDE_FOTO][DBA_P_FOTONAME], NK_Pfad_Kunde_Bildupload_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende, NK_Kunde_Bild_Width, NK_Kunde_Bild_Height);
+			if(isset($_FILES[DBA_P_KUNDE_FOTO][DBA_P_FOTONAME])){
+				$res = file_upload($_FILES[DBA_P_KUNDE_FOTO]["name"], $_FILES[DBA_P_KUNDE_FOTO][DBA_P_FOTONAME], NK_Pfad_Kunde_Bildupload_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende, NK_Kunde_Bild_Width, NK_Kunde_Bild_Height);
 				if($res)
 					$kunde->setFoto(NK_Pfad_Kunde_Bild_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende);
 			}
@@ -126,6 +125,7 @@ switch ($function){
 				$kunde->setInteressen($kunde_neu->getInteressen());
 				}
 			$args = array($kunde);
+			// echo "test2";
 		}catch (DB_Exception $e){
 			echo json_encode($e);
 			exit(1);
@@ -159,7 +159,9 @@ if($_GET[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
 }
 
 if($function == DBA_F_KUNDEUPDATEN && $res){
-	$res = $kunde;
+	$foto = NK_Pfad_Kunde_Bildupload_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende;
+	$picdate = file_exists($foto)?filemtime($foto):0;
+	$res = array("kunde"=>$kunde, "picdate"=>$picdate);
 }
 echo json_encode(array("res" => $res));
 ?>

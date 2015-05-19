@@ -1,12 +1,13 @@
 <?php
 include_once(dirname(__FILE__)."/conf/db_exception_const.php");
 include_once(dirname(__FILE__)."/conf/db_const.php");
-function file_upload($file_to_upload, $target_file, $width=NK_Werbung_Bild_Width, $height=NK_Werbung_Bild_Height ,$allowed_types=null, $maxSize=1000000000){
+function file_upload($filename, $file_to_upload, $target_file, $overwrite = false, $width=NK_Werbung_Bild_Width, $height=NK_Werbung_Bild_Height ,$allowed_types=null, $maxSize=1000000000){
+	//echo "test: ".$target_file;
 	$success = false;
 	if($allowed_types == null)
 		$allowed_types = unserialize(NK_Bild_Formate);
 	$uploadOk = 1;
-	$imageFileType = strtolower(pathinfo($file_to_upload,PATHINFO_EXTENSION));
+	$imageFileType = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 	$targetFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 	// Check if image file is a actual image or fake image
 	if(isset($_POST["submit"])) {
@@ -21,8 +22,10 @@ function file_upload($file_to_upload, $target_file, $width=NK_Werbung_Bild_Width
 	}
 	// Check if file already exists
 	if (file_exists($target_file)) {
-		echo "Sorry, file already exists.";
-		$uploadOk = 0;
+		if(!$overwrite){
+			echo "Sorry, file already exists.";
+			$uploadOk = 0;
+		}
 	}
 	// Check file size
 	if ($_FILES["fileToUpload"]["size"] > $maxSize) {
@@ -58,11 +61,14 @@ function file_upload($file_to_upload, $target_file, $width=NK_Werbung_Bild_Width
 		}
 		
 		// Image resizen und speichern
-		$image = resizeImage($image, $width, $height);
+		// Überflüssig für DBA
+		// $image = resizeImage($image, $width, $height);
 		switch ($targetFileType){
 			case "jpg":
 			case "jpeg":
+				// echo "speichern";
 				$success=imagejpeg($image, $target_file, 100)?true:false;
+				//echo $success;
 				break;
 			case "png":
 				$success=imagepng($image, $target_file, 100)?true:false;
@@ -78,7 +84,7 @@ function file_upload($file_to_upload, $target_file, $width=NK_Werbung_Bild_Width
 	}
 	return false;
 }
-
+// Überflüssig für DBA
 function resizeImage($image, $width, $height){
 	list($w, $h) = getimagesize($image);
 	//...
