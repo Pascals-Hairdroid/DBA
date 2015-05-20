@@ -203,4 +203,6 @@ const NK_Kunde_Bild_Height = 768;
 const NK_Pfad_Kunde_Bild_beginn = "http://www.pascals.at/v2/Bilder/Profilbilder/";
 const NK_Pfad_Kunde_Bild_ende = ".jpg";
 define("NK_Pfad_Kunde_Bildupload_beginn",$homepage_dir."/Bilder/Profilbilder/");
+
+define("NK_Pfad_Frisur_Bildupload_beginn",$homepage_dir."/Bilder/Frisurwunsch/"); //pfad: NK_Pfad_Frisur_Bildupload_beginn.$xxx
 ?>

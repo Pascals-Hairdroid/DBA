@@ -90,9 +90,9 @@ class DB_Con {
 	}
 	
 	
-	function terminEintragen($beginn, $mitarbeiterId, $arbeitsplatzId, $kundeId, $foto, $dienstleistungId, $haartypId){
+	function terminEintragen(DateTime $beginn, $mitarbeiterId, $arbeitsplatzId, $kundeId, $foto, $dienstleistungId, $haartypId){
 		
-		return $this->call(DB_PC_TERMIN_EINTRAGEN, mysqli_escape_string($this->con,$beginn).",".$mitarbeiterId.",".$arbeitsplatzId.",".mysqli_escape_string($this->con,$kundeId).",".mysqli_escape_string($this->con,$foto).",".mysqli_escape_string($this->con,$dienstleistungId).",".mysqli_escape_string($this->con,$haartypId));
+		return $this->call(DB_PC_TERMIN_EINTRAGEN, mysqli_escape_string($this->con,$beginn->format(DB_FORMAT_DATETIME)).",".$mitarbeiterId.",".$arbeitsplatzId.",".mysqli_escape_string($this->con,$kundeId).",".mysqli_escape_string($this->con,$foto).",".mysqli_escape_string($this->con,$dienstleistungId).",".mysqli_escape_string($this->con,$haartypId));
 	}
 	
 	
