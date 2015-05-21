@@ -204,5 +204,11 @@ const NK_Pfad_Kunde_Bild_beginn = "http://www.pascals.at/v2/Bilder/Profilbilder/
 const NK_Pfad_Kunde_Bild_ende = ".jpg";
 define("NK_Pfad_Kunde_Bildupload_beginn",$homepage_dir."/Bilder/Profilbilder/");
 
-define("NK_Pfad_Frisur_Bildupload_beginn",$homepage_dir."/Bilder/Frisurwunsch/"); //pfad: NK_Pfad_Frisur_Bildupload_beginn.$xxx
+
+//pfad: NK_Pfad_Frisur_Bildupload_beginn.$mitarbeiter->getSvnr().NK_Pfad_Frisur_Bild_mitte.$timestamp.NK_Pfad_Frisur_Bild_ende
+define("NK_Pfad_Frisur_Bildupload_beginn",$homepage_dir."/Bilder/Frisurwunsch/");
+const NK_Pfad_Frisur_Bild_beginn = "http://www.pascals.at/v2/Bilder/Frisurwunsch/";
+const NK_Pfad_Frisur_Bild_mitte = "_";
+const NK_Pfad_Frisur_Bild_ende = ".jpg";
+
 ?>
