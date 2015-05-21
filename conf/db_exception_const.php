@@ -7,6 +7,8 @@ const DB_ERR_VIEW_METHOD_NOT_SUPPORTED = "Fehler beim übertragen der Funktion!";
 // 500
 const DB_ERR_VIEW_DB_FAIL = "Datenbankfehler: Abfrage nicht moeglich!";
 const DB_ERR_VIEW_UK_FAIL = "Ein unbekannter Fehler ist aufgetreten!";
+const DB_ERR_VIEW_FILE_EXISTS = "Ein Serverfehler ist aufgetreten!";
+const DB_ERR_VIEW_FILETYPE_NOT_SUPPORTED = "Ein Serverfehler ist aufgetreten!";
 
 // 404
 const DB_ERR_VIEW_SESSION_NOT_FOUND = "Es wurde keine Session gefunden!";
