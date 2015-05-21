@@ -89,4 +89,10 @@ function resizeImage($image, $width, $height){
 	return $img;
 }
 
+
+function umlaute_encode($str){
+	$a = array("ä", "ö", "ü", "Ä", "Ö", "Ü");
+	$b = array("&auml;", "&ouml;", "&uuml;", "&Auml;", "&Ouml;", "&Uuml;");
+	return str_replace($a,$b,$str);
+}
 ?>

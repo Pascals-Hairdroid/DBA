@@ -57,7 +57,7 @@ if(!isset($_GET[DBA_FUNCTION])){
 	exit(1);
 }
 $function = $_GET[DBA_FUNCTION];
-if($function != DBA_F_KUNDEEINTRAGEN && !isset($_SESSION[L_ANGEMELDET])){
+if($function != DBA_F_KUNDEEINTRAGEN && $function != DBA_F_GETALLMITARBEITER && !isset($_SESSION[L_ANGEMELDET])){
 	echo json_encode(new DB_Exception(401, "Erweiterter Funktionsaufruf ohne Login!", DB_ERR_VIEW_UNAUTHORIZED));
 	die();
 }
@@ -133,7 +133,10 @@ switch ($function){
 			echo json_encode(new DB_Exception(500, utf8_encode("Unbekannter Fehler beim übernehmen der Kundendaten! Fehlermessage: ".$e->getMessage()), utf8_encode(DB_ERR_VIEW_UK_FAIL)));
 			exit(1);
 		}
-			break;
+		break;
+	case DBA_F_GETALLMITARBEITER:
+			$args = array();
+		break;
 	default:
 		echo json_encode(new DB_Exception(501, utf8_encode("Übergebene Funktion wird nicht unterstützt! Übergebene Funktion: ".$function), utf8_encode(DB_ERR_VIEW_METHOD_NOT_SUPPORTED)));
 		die;
