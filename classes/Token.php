@@ -5,7 +5,8 @@ class Token {
 	public $timestamp;
 
 	function __construct($token, DateTime $timestamp){
-		
+		$this->setToken($token);
+		$this->setTimestamp($timestamp);
 	}
 	
 	
