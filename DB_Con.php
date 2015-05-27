@@ -758,7 +758,7 @@ class DB_Con {
 	}
 	
 	function getKundeToken(Kunde $kunde){
-		$abf = $this->selectQuery(DB_TB_KUNDEN, DB_F_KUNDEN_TOKEN.", ".DB_F_KUNDEN_TIMESTAMP, DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con,$email)."\"");
+		$abf = $this->selectQuery(DB_TB_KUNDEN, DB_F_KUNDEN_TOKEN.", ".DB_F_KUNDEN_TIMESTAMP, DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con,$kunde->getEmail())."\"");
 		//echo "<br>".mysqli_escape_string($this->con,$email)."<br>";
 		//var_dump($abf);
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
