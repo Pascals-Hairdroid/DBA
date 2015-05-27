@@ -39,5 +39,5 @@ try{
 	echo json_encode(new DB_Exception(500, "MESSAGE: ".$e->getMessage(), utf8_encode(DB_ERR_VIEW_UK_FAIL)));
 	exit(1);
 }
-echo json_encode(array("werbungen" => $res));
+echo json_encode(array(NS_WERBUNGEN => $res, NS_LASTSYNC => date('U')+""));
 ?>
