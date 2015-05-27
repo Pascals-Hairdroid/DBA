@@ -92,7 +92,7 @@ class DB_Con {
 	
 	function terminEintragen(DateTime $beginn, $mitarbeiterId, $arbeitsplatzId, $kundeId, $foto, $dienstleistungId, $haartypId){
 		
-		return $this->call(DB_PC_TERMIN_EINTRAGEN, mysqli_escape_string($this->con,$beginn->format(DB_FORMAT_DATETIME)).",".$mitarbeiterId.",".$arbeitsplatzId.",".mysqli_escape_string($this->con,$kundeId).",".mysqli_escape_string($this->con,$foto).",".mysqli_escape_string($this->con,$dienstleistungId).",".mysqli_escape_string($this->con,$haartypId));
+		return $this->call(DB_PC_TERMIN_EINTRAGEN, "\"".mysqli_escape_string($this->con,$beginn->format(DB_FORMAT_DATETIME))."\",".$mitarbeiterId.",".$arbeitsplatzId.",\"".mysqli_escape_string($this->con,$kundeId)."\",\"".mysqli_escape_string($this->con,$foto)."\",\"".mysqli_escape_string($this->con,$dienstleistungId)."\",\"".mysqli_escape_string($this->con,$haartypId)."\"");
 	}
 	
 	
@@ -974,7 +974,7 @@ class DB_Con {
 	
 	
 	function call($name, $params){
-		return $this->query("CALL ".$name."(".$params.");");
+		return $this->query("CALL ".$name."(".$params.", @out);SELECT @out");
 	}
 	
 	function selectQuery($name, $fields, $where_clause){
@@ -990,7 +990,7 @@ class DB_Con {
 	}
 	
 	function query($query_string){
-		//var_dump($query_string);
+		var_dump($query_string);
 		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
 		else
@@ -1030,5 +1030,7 @@ class DB_Con {
 	
 		return $array;
 	}
+	
+	
 }
 ?>
