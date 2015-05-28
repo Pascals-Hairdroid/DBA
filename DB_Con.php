@@ -974,7 +974,8 @@ class DB_Con {
 	
 	
 	function call($name, $params){
-		return $this->query("CALL ".$name."(".$params.", @out);SELECT @out");
+		$this->query("CALL ".$name."(".$params.", @out);");
+		return $this->query("SELECT @out");
 	}
 	
 	function selectQuery($name, $fields, $where_clause){
@@ -990,9 +991,11 @@ class DB_Con {
 	}
 	
 	function query($query_string){
-		var_dump($query_string);
-		if(isset($this->con))
+// 		var_dump($query_string);
+		if(isset($this->con)){
+// 			echo "mocht";
 			return mysqli_query($this->con, $query_string);
+		}
 		else
 			throw new DB_Exception(503, "Keine Datenbankverbindung! Fehlermessage: {".$this->con->error."}", DB_ERR_VIEW_NO_CONNECTION);
 	}
