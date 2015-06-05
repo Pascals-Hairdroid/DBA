@@ -926,8 +926,8 @@ class DB_Con {
 		return $res;
 	}
 	
-	function getAllMitarbeiter(){
-		$abf = $this->selectQueryField(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR);
+	function getAllMitarbeiter($pw = true, $svnr = true){
+		$abf = $this->selectQuery(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR, ($pw?DB_F_MITARBEITER_PASSWORT." IS NOT NULL":"").($pw&&$svnr?" AND ":"").($svnr?DB_F_MITARBEITER_PK_SVNR." > 1000010100":""));
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
@@ -991,11 +991,9 @@ class DB_Con {
 	}
 	
 	function query($query_string){
-// 		var_dump($query_string);
-		if(isset($this->con)){
-// 			echo "mocht";
+		// var_dump($query_string);
+		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
-		}
 		else
 			throw new DB_Exception(503, "Keine Datenbankverbindung! Fehlermessage: {".$this->con->error."}", DB_ERR_VIEW_NO_CONNECTION);
 	}
