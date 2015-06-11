@@ -10,6 +10,7 @@ include_once 'conf/notification_service_const.php';
 // 	echo json_encode(new DB_Exception(400, "Kein Datum gegeben.", DB_ERR_VIEW_PARAM_FAIL));
 // 	exit(1);
 // }
+// var_dump($_POST);
 try{
   $date = new DateTime();
 	if(!isset($_GET[NS_DATE]))
@@ -29,10 +30,12 @@ try{
 $db = new DB_Con(DB_DEFAULT_CONF_FILE, true, "utf8");
 $res = array(false);
 try{
-	if(isset($_GET[NS_INTERESSEN])){
+	if(isset($_POST[NS_INTERESSEN])){
 		$interessen = array();
-		foreach($_GET[NS_INTERESSEN] as $id)
-			array_push($interessen, new Interesse($id, ""));
+		foreach($_POST[NS_INTERESSEN] as $id)
+			if($id != "")
+        array_push($interessen, new Interesse($id, ""));
+		// var_dump($interessen);
 		$res=$db->getAllWerbung($date, $interessen);
 	}
 	else
@@ -44,5 +47,5 @@ try{
 	echo json_encode(new DB_Exception(500, "MESSAGE: ".$e->getMessage(), utf8_encode(DB_ERR_VIEW_UK_FAIL)));
 	exit(1);
 }
-echo json_encode(array(werbungen => $res, lastSync => date('U')+""));
+echo json_encode(array(werbungen => $res, lastSync => date('U').""));
 ?>
