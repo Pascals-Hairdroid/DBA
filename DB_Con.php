@@ -991,7 +991,7 @@ class DB_Con {
 	}
 	
 	function query($query_string){
-		 var_dump($query_string);
+		 //var_dump($query_string);
 		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
 		else
