@@ -11,10 +11,14 @@ include_once 'conf/notification_service_const.php';
 // 	exit(1);
 // }
 try{
+  $date = new DateTime();
 	if(!isset($_GET[NS_DATE]))
-		throw new DB_Exception(400, "Kein Datum angegeben.", utf8_encode(DB_ERR_VIEW_PARAM_FAIL));
-	$date = new DateTime();
-	$date->setTimestamp($_GET[NS_DATE]);
+    if(!isset($_POST[NS_DATE]))
+      throw new DB_Exception(400, "Kein Datum angegeben.", utf8_encode(DB_ERR_VIEW_PARAM_FAIL));
+    else
+      $date->setTimestamp($_POST[NS_DATE]);
+  else
+    $date->setTimestamp($_GET[NS_DATE]);
 }catch(DB_Exception $e){
 	echo json_encode($e);
 	exit(1);
