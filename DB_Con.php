@@ -935,6 +935,15 @@ class DB_Con {
 		return $res;
 	}
 	
+	function getAllNoMitarbeiter($svnr = true){
+		$abf = $this->selectQuery(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR, "(".DB_F_MITARBEITER_PASSWORT." IS NULL OR ".DB_F_MITARBEITER_PASSWORT."=\"\")".($svnr?" AND ".DB_F_MITARBEITER_PK_SVNR." > 1000010100":""));
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getMitarbeiter($row[DB_F_MITARBEITER_PK_SVNR]));
+		return $res;
+	}
+	
 	function getAllWerbung(DateTime $abdatum = null, array $interessen = null){
 		$abf = $abdatum==null?$this->selectQueryField(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER):$this->selectQuery(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER, DB_F_WERBUNG_DATUM.">=\"".$abdatum->format(DB_FORMAT_DATETIME)."\"");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
