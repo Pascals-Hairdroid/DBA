@@ -876,7 +876,7 @@ class DB_Con {
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
-			array_push($res,$this->getArbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID]));
+			array_push($res,$this->getArbeitsplatzausstattung($row[DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN]));
 		return $res;
 	}
 	
