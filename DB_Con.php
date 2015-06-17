@@ -704,7 +704,7 @@ class DB_Con {
 			array_push($ausstattungen, $this->getArbeitsplatzausstattung($row[DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN]));
 		}
 		
-		return new Arbeitsplatz($nummer, $main[DB_F_ARBEITSPLATZRESSOURCEN_NAME], $ausstattung);
+		return new Arbeitsplatz($nummer, $main[DB_F_ARBEITSPLATZRESSOURCEN_NAME], $ausstattungen);
 	}
 	
 	function getDienstleistung($kuerzel,Haartyp $haartyp){
