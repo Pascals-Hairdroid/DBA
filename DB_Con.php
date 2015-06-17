@@ -433,8 +433,8 @@ class DB_Con {
 		$success = true;
 		$arbeitsplatz_alt=$this->getArbeitsplatz($arbeitsplatz->getNummer());
 		$ausstattungenIds_alt = array();
-		foreach ($werbung_alt->getInteressen() as $interesse_alt)
-			array_push($interessenIds_alt,$interesse_alt->getId());
+		foreach ($arbeitsplatz_alt->getAusstattung() as $ausstattung_alt)
+			array_push($ausstattungenIds_alt,$ausstattung_alt->getId());
 		$ausstattungen_neu="";
 		foreach ($arbeitsplatz->getAusstattung() as $ausstattung){
 			if($ausstattung instanceof Arbeitsplatzausstattung){
