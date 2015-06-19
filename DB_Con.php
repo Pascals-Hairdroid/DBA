@@ -704,7 +704,7 @@ class DB_Con {
 			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
 		}
 		
-		return new Arbeitsplatz($nummer, $main[DB_F_ARBEITSPLATZRESSOURCEN_NAME], $ausstattung);
+		return new Arbeitsplatz($nummer, $main[DB_F_ARBEITSPLATZRESSOURCEN_NAME], $ausstattungen);
 	}
 	
 	function getDienstleistung($kuerzel,Haartyp $haartyp){
@@ -1034,6 +1034,80 @@ class DB_Con {
 		return $array;
 	}
 	
+	function checkArbeitsplatzFree(DateTime $von, DateTime $bis, array $dienstleistungen) {
+		$ausstattungen = array();
+		var_dump($dienstleistungen);
+		foreach($dienstleistungen as $dienstleistung)
+			foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
+				$a = false;
+				foreach ($ausstattungen as $av)
+					if($av->getId() == $ausstattung->getId())
+						$a=true;
+				if(!a)array_push($ausstattungen, $ausstattung);
+			}
+		$arbeitsplaetze = $this->getAllArbeitsplatz();
+		$arbeitsplaetzeOk = array();
+		foreach ($arbeitsplaetze as $arbeitsplatz){
+			$ok = true;
+			foreach ($ausstattungen as $ausstattung){
+				$a = false;
+				foreach ($arbeitsplatz->getAusstattung() as $auss)
+					if($auss->getId() == $ausstattung->getId())$a=true;
+				if(!$a)
+					$ok=false;
+			}
+			if($ok)
+				array_push($arbeitsplaetzeOk, $arbeitsplatz);
+		}
+		$ret = array();
+		foreach($arbeitsplaetzeOk as $arbeitsplatz){
+			$abf = $this->query("SELECT * FROM ".DB_TB_ZEITTABELLE." WHERE ".DB_F_ZEITTABELLE_ARBEITSPLATZ." = \"".$arbeitsplatz->getNummer()."\" AND ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." BETWEEN ".$von->format(DB_FORMAT_DATETIME)." AND ".$bis->format(DB_FORMAT_DATETIME));
+			if($abf->num_rows == 0)
+				array_push($ret, $arbeitsplatz);
+		}
+		return  $ret;
+	}
+	function getArbeitsplaetzeFuerDienstleistung(array $dienstleistungen) {
+		$ausstattungen = array();
+		var_dump($dienstleistungen);
+		foreach($dienstleistungen as $dienstleistung)
+		foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
+			$a = false;
+			foreach ($ausstattungen as $av)
+			if($av->getId() == $ausstattung->getId())
+				$a=true;
+			if(!a)array_push($ausstattungen, $ausstattung);
+		}
+		$arbeitsplaetze = $this->getAllArbeitsplatz();
+		$arbeitsplaetzeOk = array();
+		foreach ($arbeitsplaetze as $arbeitsplatz){
+			$ok = true;
+			foreach ($ausstattungen as $ausstattung){
+				$a = false;
+				foreach ($arbeitsplatz->getAusstattung() as $auss)
+				if($auss->getId() == $ausstattung->getId())$a=true;
+				if(!$a)
+					$ok=false;
+			}
+			if($ok)
+				array_push($arbeitsplaetzeOk, $arbeitsplatz);
+		}
+		return $arbeitsplaetzeOk;
+	}
+	function getBelegteZeitenVonArbeitsplaetzen(DateTime $von, DateTime $bis, $arbeitsplaetze){
+		$ret=array();
+		$frees = array();
+		foreach ($arbeitsplaetze as $arbeitsplatz){
+			$zeiten = array();
+			$abf = $this->query("SELECT ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." FROM ".DB_TB_ZEITTABELLE." WHERE ".DB_F_ZEITTABELLE_ARBEITSPLATZ."=\"".$arbeitsplatz->getNummer()."\" AND ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." BETWEEN ".$von->format(DB_FORMAT_DATETIME)." AND ".$bis->format(DB_FORMAT_DATETIME));
+			while($row=mysqli_fetch_assoc($abf))
+				array_push($zeiten, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
+			$frees[$arbeitsplatz->getNummer()]=$zeiten;
+		}
+		
+// 		die zeiten suchen die in allen vorkommen und in ret speichern und returnen
+		
+	}
 	
 }
 ?>
