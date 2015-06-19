@@ -419,7 +419,7 @@ class DB_Con {
 		$interessen_neu="";
 		foreach ($werbung->getInteressen() as $interesse){
 			if($interesse instanceof Interesse){
-				$interessen_neu = $interesen_neu.", \"".$interesse->getId()."\"";
+				$interessen_neu = $interessen_neu.", \"".$interesse->getId()."\"";
 				if(!in_array($interesse->getId(),$interessenIds_alt))
 					$success=$success?$this->interesseWerbungZuweisen($interesse, $werbung):$success;
 			}
@@ -1077,7 +1077,7 @@ class DB_Con {
 	
 	function getArbeitsplaetzeFuerDienstleistung(array $dienstleistungen) {
 		$ausstattungen = array();
-		var_dump($dienstleistungen);
+//		var_dump($dienstleistungen);
 		foreach($dienstleistungen as $dienstleistung)
 		foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
 			$a = false;
@@ -1118,6 +1118,26 @@ class DB_Con {
 	
 	}
 	
+	function getMitarbeiterMitSkills(array $dienstleistungen) {
+		//select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (1,2,3) group by svnr having count(*) = 3
+	}
+	function getNotFreeMitarbeiterMitSkills(array $dienstleistungen) {
+ 		$abf = $this->query("select svnr, zeitstempel from (select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (1,2,3) group by svnr having count(*) = 3) as cm inner join zeittabelle on svnr = zeittabelle.mitarbeiter left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel");
+		$array = array();
+		while($row=mysqli_fetch_assoc($abf)){
+			if(!isset($array[$row[DB_F_ZEITTABELLE_PK_MITARBEITER]])){
+				$array[$row[DB_F_ZEITTABELLE_PK_MITARBEITER]] = array();
+			}
+			$array[$row[DB_F_ZEITTABELLE_PK_MITARBEITER]][] = new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]);
+		}
+	}
+	
+	function getNotFreeArbeitsplatzMitAustattungen()
+	 {
+// 		select arbeitsplatznr, zeitstempel from (select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in (6) group by arbeitsplatznr having count(*) = 1) as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel
+	
+	}
+
 	
 }
 ?>
