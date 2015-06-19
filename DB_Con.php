@@ -788,7 +788,7 @@ class DB_Con {
 			array_push($urlaube, new Urlaub(new DateTime($row[DB_F_URLAUBE_PK_BEGINN]), new DateTime($row[DB_F_URLAUBE_ENDE])));
 		}
 		
-		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\"");
+		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\" ORDER BY CASE ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." WHEN 'MO' THEN 1 WHEN 'DI' THEN 2 WHEN 'MI' THEN 3 WHEN 'DO' THEN 4 WHEN 'FR' THEN 5 WHEN 'SA' THEN 6 WHEN 'SO' THEN 7 END ASC");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$dienstzeiten = array();
 		while ($row = mysqli_fetch_assoc($abf)){
