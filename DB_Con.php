@@ -1040,6 +1040,7 @@ class DB_Con {
 	
 		return $array;
 	}
+	
 	function checkArbeitsplatzFree(DateTime $von, DateTime $bis, array $dienstleistungen) {
 		$ausstattungen = array();
 		var_dump($dienstleistungen);
@@ -1073,6 +1074,7 @@ class DB_Con {
 		}
 		return  $ret;
 	}
+	
 	function getArbeitsplaetzeFuerDienstleistung(array $dienstleistungen) {
 		$ausstattungen = array();
 		var_dump($dienstleistungen);
@@ -1100,6 +1102,7 @@ class DB_Con {
 		}
 		return $arbeitsplaetzeOk;
 	}
+	
 	function getBelegteZeitenVonArbeitsplaetzen(DateTime $von, DateTime $bis, $arbeitsplaetze){
 		$ret=array();
 		$frees = array();
