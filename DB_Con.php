@@ -412,7 +412,7 @@ class DB_Con {
 	
 	function werbungUpdaten(Werbung $werbung){
 		$werbung_alt=$this->getWerbung($werbung->getNummer());
-		$success = $this->query("UPDATE ".DB_TB_WERBUNG." SET ".DB_F_WERBUNG_DATUM." = \"" .$this->con, $werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", ".DB_F_WERBUNG_TITEL." = \"" .mysqli_escape_string($this->con, $werbung->getTitel())."\", ".DB_F_WERBUNG_TEXT." = \"".mysqli_escape_string($this->con, $werbung->getText())."\" WHERE ".DB_F_WERBUNG_PK_NUMMER." = \"".$werbung->getNummer()."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_WERBUNG." SET ".DB_F_WERBUNG_DATUM." = \"".$werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", ".DB_F_WERBUNG_TITEL." = \"" .mysqli_escape_string($this->con, $werbung->getTitel())."\", ".DB_F_WERBUNG_TEXT." = \"".mysqli_escape_string($this->con, $werbung->getText())."\" WHERE ".DB_F_WERBUNG_PK_NUMMER." = \"".$werbung->getNummer()."\"")===TRUE;
 		$interessenIds_alt = array();
 		foreach ($werbung_alt->getInteressen() as $interesse_alt)
 			array_push($interessenIds_alt,$interesse_alt->getId());
