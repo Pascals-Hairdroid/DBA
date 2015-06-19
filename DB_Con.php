@@ -433,8 +433,8 @@ class DB_Con {
 		$success = true;
 		$arbeitsplatz_alt=$this->getArbeitsplatz($arbeitsplatz->getNummer());
 		$ausstattungenIds_alt = array();
-		foreach ($werbung_alt->getInteressen() as $interesse_alt)
-			array_push($interessenIds_alt,$interesse_alt->getId());
+		foreach ($arbeitsplatz_alt->getAusstattung() as $ausstattung_alt)
+			array_push($ausstattungenIds_alt,$ausstattung_alt->getId());
 		$ausstattungen_neu="";
 		foreach ($arbeitsplatz->getAusstattung() as $ausstattung){
 			if($ausstattung instanceof Arbeitsplatzausstattung){
@@ -701,7 +701,7 @@ class DB_Con {
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$ausstattungen = array();
 		while ($row = mysqli_fetch_assoc($abf)){
-			array_push($ausstattungen, new Arbeitsplatzausstattung($row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_PK_ID], $row[DB_F_ARBEITSPLATZAUSSTATTUNGEN_NAME]));
+			array_push($ausstattungen, $this->getArbeitsplatzausstattung($row[DB_F_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN]));
 		}
 		
 		return new Arbeitsplatz($nummer, $main[DB_F_ARBEITSPLATZRESSOURCEN_NAME], $ausstattungen);
@@ -788,7 +788,7 @@ class DB_Con {
 			array_push($urlaube, new Urlaub(new DateTime($row[DB_F_URLAUBE_PK_BEGINN]), new DateTime($row[DB_F_URLAUBE_ENDE])));
 		}
 		
-		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\"");
+		$abf = $this->selectQuery(DB_TB_DIENSTZEITEN, "*", DB_F_DIENSTZEITEN_PK_MITARBEITER." = \"".$svnr."\" ORDER BY CASE ".DB_F_DIENSTZEITEN_PK_WOCHENTAGE." WHEN 'MO' THEN 1 WHEN 'DI' THEN 2 WHEN 'MI' THEN 3 WHEN 'DO' THEN 4 WHEN 'FR' THEN 5 WHEN 'SA' THEN 6 WHEN 'SO' THEN 7 END ASC");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$dienstzeiten = array();
 		while ($row = mysqli_fetch_assoc($abf)){
@@ -926,8 +926,17 @@ class DB_Con {
 		return $res;
 	}
 	
-	function getAllMitarbeiter(){
-		$abf = $this->selectQueryField(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR);
+	function getAllMitarbeiter($pw = true, $svnr = true){
+		$abf = $this->selectQuery(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR, ($pw?DB_F_MITARBEITER_PASSWORT." IS NOT NULL AND ".DB_F_MITARBEITER_PASSWORT."!=\"\"":"").($pw&&$svnr?" AND ":"").($svnr?DB_F_MITARBEITER_PK_SVNR." > 1000010100":""));
+		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
+		$res = array();
+		while($row = mysqli_fetch_assoc($abf))
+			array_push($res,$this->getMitarbeiter($row[DB_F_MITARBEITER_PK_SVNR]));
+		return $res;
+	}
+	
+	function getAllNoMitarbeiter($svnr = true){
+		$abf = $this->selectQuery(DB_TB_MITARBEITER, DB_F_MITARBEITER_PK_SVNR, "(".DB_F_MITARBEITER_PASSWORT." IS NULL OR ".DB_F_MITARBEITER_PASSWORT."=\"\")".($svnr?" AND ".DB_F_MITARBEITER_PK_SVNR." > 1000010100":""));
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
@@ -991,11 +1000,9 @@ class DB_Con {
 	}
 	
 	function query($query_string){
-// 		var_dump($query_string);
-		if(isset($this->con)){
-// 			echo "mocht";
+		 //var_dump($query_string);
+		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
-		}
 		else
 			throw new DB_Exception(503, "Keine Datenbankverbindung! Fehlermessage: {".$this->con->error."}", DB_ERR_VIEW_NO_CONNECTION);
 	}
@@ -1033,18 +1040,17 @@ class DB_Con {
 	
 		return $array;
 	}
-	
 	function checkArbeitsplatzFree(DateTime $von, DateTime $bis, array $dienstleistungen) {
 		$ausstattungen = array();
 		var_dump($dienstleistungen);
 		foreach($dienstleistungen as $dienstleistung)
-			foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
-				$a = false;
-				foreach ($ausstattungen as $av)
-					if($av->getId() == $ausstattung->getId())
-						$a=true;
-				if(!a)array_push($ausstattungen, $ausstattung);
-			}
+		foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
+			$a = false;
+			foreach ($ausstattungen as $av)
+			if($av->getId() == $ausstattung->getId())
+				$a=true;
+			if(!a)array_push($ausstattungen, $ausstattung);
+		}
 		$arbeitsplaetze = $this->getAllArbeitsplatz();
 		$arbeitsplaetzeOk = array();
 		foreach ($arbeitsplaetze as $arbeitsplatz){
@@ -1052,7 +1058,7 @@ class DB_Con {
 			foreach ($ausstattungen as $ausstattung){
 				$a = false;
 				foreach ($arbeitsplatz->getAusstattung() as $auss)
-					if($auss->getId() == $ausstattung->getId())$a=true;
+				if($auss->getId() == $ausstattung->getId())$a=true;
 				if(!$a)
 					$ok=false;
 			}
@@ -1104,10 +1110,11 @@ class DB_Con {
 				array_push($zeiten, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
 			$frees[$arbeitsplatz->getNummer()]=$zeiten;
 		}
-		
-// 		die zeiten suchen die in allen vorkommen und in ret speichern und returnen
-		
+	
+		// 		die zeiten suchen die in allen vorkommen und in ret speichern und returnen
+	
 	}
+	
 	
 }
 ?>
