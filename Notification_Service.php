@@ -30,12 +30,15 @@ try{
 $db = new DB_Con(DB_DEFAULT_CONF_FILE, true, "utf8");
 $res = array(false);
 try{
-	if(isset($_POST[NS_INTERESSEN])){
+	if(isset($_POST[NS_INTERESSEN])||isset($_POST[NS_EMAIL])){
 		$interessen = array();
-		foreach($_POST[NS_INTERESSEN] as $id)
-			if($id != "")
-        array_push($interessen, new Interesse($id, ""));
-		// var_dump($interessen);
+		if(isset($_POST[NS_INTERESSEN]))
+			foreach($_POST[NS_INTERESSEN] as $id)
+				if($id != "")
+        			array_push($interessen, new Interesse($id, ""));
+		else 
+			$interessen = $db->getKunde($_POST[NS_EMAIL])->getInteressen();
+		
 		$res=$db->getAllWerbung($date, $interessen);
 	}
 	else
