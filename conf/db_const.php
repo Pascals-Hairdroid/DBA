@@ -188,7 +188,7 @@ const DB_PC_TERMIN_STORNIEREN = "TerminStornieren";
 
 // Namenskonvention: ( Pfadaufbau: $beginn.$id.$mitte.$counter.$ende   ; wobei: $counter = $counter_zero bis n;
 // $kunde->$id = md5($kunde->getEmail())
-const NK_COUNTER_ZERO = 1;
+const NK_COUNTER_ZERO = 0;
 define("NK_Bild_Formate", serialize(array("jpg", "jpeg", "png", "gif")));
 // Werbung:
 const NK_Werbung_Bild_Width = 1024;
