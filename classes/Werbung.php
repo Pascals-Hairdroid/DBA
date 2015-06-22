@@ -115,16 +115,32 @@ class Werbung {
 		$exist=true;
 		while($exist){
 			$one = false;
-			foreach($formate as $format){
-				if(!$one){
-          $foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende.$format;
-					$one=$exist=exists($foto);
-					if($one)
-						array_push($this->fotos, utf8_encode($foto));
-				}
+			if(!$one){
+          		$foto=(string) NK_Pfad_Werbung_Bild_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende;
+				$one=$exist=exists($foto);
+				if($one)
+					array_push($this->fotos, utf8_encode($foto));
 			}
 			$i++;
  		}
+	}
+	
+	function fotosLoeschen(){
+		$success = true;
+		$i=NK_COUNTER_ZERO;
+		$formate=unserialize(NK_Bild_Formate);
+		$exist=true;
+		while($exist){
+			$one = false;
+			if(!$one){
+				$foto=(string) NK_Pfad_Werbung_Bildupload_beginn.$this->nummer.NK_Pfad_Werbung_Bild_mitte.$i.NK_Pfad_Werbung_Bild_ende;
+				$one=$exist=file_exists($foto);
+				if($one && $success)
+					$success=unlink($foto);
+			}
+			$i++;
+		}
+		return $success;
 	}
 }
 ?>
