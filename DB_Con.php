@@ -35,7 +35,7 @@ class DB_Con {
 	
 	private $authKunde_Id;
 	
-	private $con;
+	public $con;
 	
 	
 	function __construct($conf_file, $admin, $charset="latin1"){
@@ -188,7 +188,7 @@ class DB_Con {
 	}	
 	
 	function werbungEntfernen(Werbung $werbung){
-		$success = true;
+		$success = $werbung->fotosLoeschen();
 		foreach ($werbung->getInteressen() as $interesse){
 			if($interesse instanceof Interesse)
 				$success=$success?$this->interesseWerbungZuweisungEntfernen($interesse, $werbung):$success;
@@ -317,6 +317,7 @@ class DB_Con {
 
 	function werbungEintragen(Werbung $werbung){
 		$success = $this->query("INSERT INTO ".DB_TB_WERBUNG." (".DB_F_WERBUNG_PK_NUMMER.", ".DB_F_WERBUNG_DATUM.", ".DB_F_WERBUNG_TITEL.", ".DB_F_WERBUNG_TEXT.") VALUES (\"".$werbung->getNummer()."\", \"".$werbung->getDatum()->format(DB_FORMAT_DATETIME)."\", \"".mysqli_escape_string($this->con, $werbung->getTitel())."\", \"".mysqli_escape_string($this->con, $werbung->getText())."\")")===TRUE;
+		//var_dump(mysqli_error($this->con));
 		foreach ($werbung->getInteressen() as $interesse){
 			if($interesse instanceof Interesse)
 				$success=$success?$this->interesseWerbungZuweisen($interesse, $werbung):$success;
@@ -945,7 +946,7 @@ class DB_Con {
 	}
 	
 	function getAllWerbung(DateTime $abdatum = null, array $interessen = null){
-		$abf = $abdatum==null?$this->selectQueryField(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER):$this->selectQuery(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER, DB_F_WERBUNG_DATUM.">=\"".$abdatum->format(DB_FORMAT_DATETIME)."\"");
+		$abf = $abdatum==null?$this->selectQueryField(DB_TB_WERBUNG." ORDER BY ".DB_F_WERBUNG_PK_NUMMER." DESC", DB_F_WERBUNG_PK_NUMMER):$this->selectQuery(DB_TB_WERBUNG, DB_F_WERBUNG_PK_NUMMER, DB_F_WERBUNG_DATUM.">=\"".$abdatum->format(DB_FORMAT_DATETIME)."\""." ORDER BY ".DB_F_WERBUNG_PK_NUMMER." DESC");
 		if($abf==false) throw new DB_Exception(500, "Datenbankfehler: Abfrage nicht möglich! Fehlermessage: ".$this->con->error, DB_ERR_VIEW_DB_FAIL);
 		$res = array();
 		while($row = mysqli_fetch_assoc($abf))
@@ -1000,7 +1001,7 @@ class DB_Con {
 	}
 	
 	function query($query_string){
-		 //var_dump($query_string);
+// 		 var_dump($query_string);
 		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
 		else
@@ -1043,7 +1044,7 @@ class DB_Con {
 	
 	function checkArbeitsplatzFree(DateTime $von, DateTime $bis, array $dienstleistungen) {
 		$ausstattungen = array();
-		var_dump($dienstleistungen);
+// 		var_dump($dienstleistungen);
 		foreach($dienstleistungen as $dienstleistung)
 		foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
 			$a = false;
@@ -1077,7 +1078,7 @@ class DB_Con {
 	
 	function getArbeitsplaetzeFuerDienstleistung(array $dienstleistungen) {
 		$ausstattungen = array();
-//		var_dump($dienstleistungen);
+		var_dump($dienstleistungen);
 		foreach($dienstleistungen as $dienstleistung)
 		foreach ($dienstleistung->getArbeitsplatzausstattungen() as $ausstattung){
 			$a = false;
@@ -1103,41 +1104,111 @@ class DB_Con {
 		return $arbeitsplaetzeOk;
 	}
 	
-	function getBelegteZeitenVonArbeitsplaetzen(DateTime $von, DateTime $bis, $arbeitsplaetze){
+	function getBelegteZeitenVonArbeitsplaetzen(DateTime $von, DateTime $bis, array $arbeitsplaetze){
 		$ret=array();
 		$frees = array();
 		foreach ($arbeitsplaetze as $arbeitsplatz){
 			$zeiten = array();
-			$abf = $this->query("SELECT ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." FROM ".DB_TB_ZEITTABELLE." WHERE ".DB_F_ZEITTABELLE_ARBEITSPLATZ."=\"".$arbeitsplatz->getNummer()."\" AND ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." BETWEEN ".$von->format(DB_FORMAT_DATETIME)." AND ".$bis->format(DB_FORMAT_DATETIME));
+			$abf = $this->query("SELECT ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." FROM ".DB_TB_ZEITTABELLE." WHERE ".DB_F_ZEITTABELLE_ARBEITSPLATZ."=\"".$arbeitsplatz->getNummer()."\" AND ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." BETWEEN \"".$von->format(DB_FORMAT_DATETIME)."\" AND \"".$bis->format(DB_FORMAT_DATETIME)."\"");
+			var_dump(mysqli_error($this->con));
 			while($row=mysqli_fetch_assoc($abf))
 				array_push($zeiten, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
 			$frees[$arbeitsplatz->getNummer()]=$zeiten;
-		}
-	
-		// 		die zeiten suchen die in allen vorkommen und in ret speichern und returnen
-	
+		}	
+		return $frees;
 	}
 	
 	function getMitarbeiterMitSkills(array $dienstleistungen) {
-		//select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (1,2,3) group by svnr having count(*) = 3
-	}
-	function getNotFreeMitarbeiterMitSkills(array $dienstleistungen) {
- 		$abf = $this->query("select svnr, zeitstempel from (select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (1,2,3) group by svnr having count(*) = 3) as cm inner join zeittabelle on svnr = zeittabelle.mitarbeiter left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel");
+		$skill = $this->getSkillFuerDienstleistung($dienstleistungen);
+		$skillz = "\"".implode("\", \"", $skill)."\"";
+// 		var_dump($skillz);
+		$abf = $this->query("select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (".$skillz.") group by svnr having count(*) = ".count($skill)."");
 		$array = array();
 		while($row=mysqli_fetch_assoc($abf)){
-			if(!isset($array[$row[DB_F_ZEITTABELLE_PK_MITARBEITER]])){
-				$array[$row[DB_F_ZEITTABELLE_PK_MITARBEITER]] = array();
-			}
-			$array[$row[DB_F_ZEITTABELLE_PK_MITARBEITER]][] = new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]);
+			if(!isset($array[$row["svnr"]]))
+				$array[$row["svnr"]]=array(new DateTime($row["zeitstempel"]));
+			else
+				array_push($array[$row["svnr"]], new DateTime($row["zeitstempel"]));
 		}
+		return $array;
 	}
 	
-	function getNotFreeArbeitsplatzMitAustattungen()
-	 {
-// 		select arbeitsplatznr, zeitstempel from (select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in (6) group by arbeitsplatznr having count(*) = 1) as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel
+	function getArbeitsplatzMitAusstattung (array $dienstleistung)
+	{
+		$arbeitsplatzId = $this->getArbeitsplatzausstattungenFuerDienstleistungen($dienstleistungen);
+		$platz = "\"".implode("\", \"", $arbeitsplatzId)."\"";
+		$abf = $this->query("SELECT DISTINCT ArbeitsplatzNr FROM View_Arbeitsplatzressourcen_Arbeitplatzausstattung WHERE Arbeitsplatzausstattungen_ID in (".$platz."");
+		$array = array();
+		while($row=mysqli_fetch_assoc($abf)){
+			var_dump(true, $row);
+			array_push($array, $row[DB_VIEW_ARBEITSPLATZAUSSTATTUNGEN_ARBEITSPLATZRESSOURCEN]);
+		}
+		return $array;
+	}
+		
 	
+	function getNotFreeMitarbeiterMitSkills(array $dienstleistungen) 
+	{
+		$skill = $this->getSkillFuerDienstleistung($dienstleistungen);
+		$skillz = "\"".implode("\", \"", $skill)."\"";
+// 		var_dump($skillz);
+ 		$abf = $this->query("select svnr, zeitstempel from (select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (".$skillz.") group by svnr having count(*) = ".count($skill).") as cm inner join zeittabelle on svnr = zeittabelle.mitarbeiter left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel");
+		$array = array();
+		while($row=mysqli_fetch_assoc($abf)){
+			if(!isset($array[$row["svnr"]]))
+				$array[$row["svnr"]]=array(new DateTime($row["zeitstempel"]));
+			else
+				array_push($array[$row["svnr"]], new DateTime($row["zeitstempel"]));
+		}
+		return $array;
+	}
+	
+	function getNotFreeArbeitsplatzMitAustattungen(array $dienstleistungen)
+	 {
+	 	$arbeitsplatzId = $this->getArbeitsplatzausstattungenFuerDienstleistungen($dienstleistungen);
+// 	 	var_dump($arbeitsplatzId);
+	 	$platz = "\"".implode("\", \"", $arbeitsplatzId)."\"";
+// 	 	var_dump($platz, "select ArbeitsplatzNr, zeitstempel from (select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in ($platz) group by arbeitsplatznr having count(*) = ".count($arbeitsplatzId).") as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel");
+	 	
+		$abf = $this->query("select ArbeitsplatzNr, zeitstempel from (select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in ($platz) group by arbeitsplatznr having count(*) = ".count($arbeitsplatzId).") as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel");
+		//$asdf = "select ".DB_F_ZEITTABELLE_ARBEITSPLATZ.", ".DB_F_ZEITTABELLE_PK_ZEITSTEMPEL." from (select ".DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER." from ".DB_TB_ARBEITSPLATZRESSOURCEN." inner join ".DB_TB_ARBEITSPLATZRESSOURCEN_ARBEITSPLATZAUSSTATTUNGEN." on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in (6) group by arbeitsplatznr having count(*) = 1) as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel";
+// 		var_dump($abf,mysqli_error($this->con));
+		$array = array();
+		while($row=mysqli_fetch_assoc($abf)){
+// 			var_dump($row["zeitstempel"]);
+			
+			if($array[$row[DB_F_ZEITTABELLE_ARBEITSPLATZ]]==null)
+				$array[$row[DB_F_ZEITTABELLE_ARBEITSPLATZ]]=array(new DateTime($row["zeitstempel"]));
+			else
+				array_push($array[$row[DB_F_ZEITTABELLE_ARBEITSPLATZ]], new DateTime($row["zeitstempel"]));
+		}
+		return $array;
 	}
 
+	function getSkillFuerDienstleistung (array $dienstleistungen)
+	{
+		$kString = "\"".implode("\", \"", $dienstleistungen)."\"";
+		$abf = $this->query("SELECT DISTINCT skills_id FROM View_Dienstleistungen_Skills WHERE kuerzel IN ($kString)");
+		$array = array();
+		while($row=mysqli_fetch_assoc($abf)){
+			array_push($array, $row[DB_F_DIENSTLEISTUNGEN_SKILLS_PK_SKILLS]);
+		}
+		return $array;
+	}
+	
+	function getArbeitsplatzausstattungenFuerDienstleistungen (array $dienstleistungen)
+	{
+		$kString = "\"".implode("\", \"", $dienstleistungen)."\"";
+// 		var_dump($kString);
+		$abf = $this->query("SELECT DISTINCT arbeitsplatzausstattungen_id FROM View_Dienstleistungen_Arbeitplatzausstattung WHERE kuerzel IN ($kString)");
+		$array = array();
+		while($row=mysqli_fetch_assoc($abf)){
+			var_dump(true, $row);
+			array_push($array, $row[DB_F_DIENSTLEISTUNGEN_ARBEITSPLATZAUSSTATTUNGEN_PK_ARBEITSPLATZAUSSTATTUNGEN]);
+		}
+// 		var_dump($array);
+		return $array;
+	}
 	
 }
 ?>
