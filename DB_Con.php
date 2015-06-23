@@ -1136,10 +1136,19 @@ class DB_Con {
 	{
 		$arbeitsplatzId = $this->getArbeitsplatzausstattungenFuerDienstleistungen($dienstleistung);
 		$platz = "\"".implode("\", \"", $arbeitsplatzId)."\"";
-		$abf = $this->query("SELECT DISTINCT ArbeitsplatzNr FROM View_Arbeitsplatzressourcen_Arbeitplatzausstattung WHERE Arbeitsplatzausstattungen_ID in (".$platz.")");
 		$array = array();
-		while($row=mysqli_fetch_assoc($abf)){
-			array_push($array, $row[DB_F_ZEITTABELLE_ARBEITSPLATZ]);
+		if($platz=="\"\""){
+			$abf= $this->query("SELECT ".DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER." FROM ".DB_TB_ARBEITSPLATZRESSOURCEN.";");
+			while($row=mysqli_fetch_assoc($abf)){
+				array_push($array, $row[DB_F_ARBEITSPLATZRESSOURCEN_PK_NUMMER]);
+			}	
+		}
+		else{
+			$abf = $this->query("SELECT DISTINCT ArbeitsplatzNr FROM View_Arbeitsplatzressourcen_Arbeitplatzausstattung WHERE Arbeitsplatzausstattungen_ID in (".$platz.")");
+			
+			while($row=mysqli_fetch_assoc($abf)){
+				array_push($array, $row["ArbeitsplatzNr"]);
+			}
 		}
 		return $array;
 	}
