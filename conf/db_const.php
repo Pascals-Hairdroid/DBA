@@ -213,7 +213,5 @@ const NK_Pfad_Frisur_Bild_ende = ".jpg";
 
 
 //Pascal als Konstante
-const Priority_Mitarbeiter = "1713270187";
-
-
+const PRIORITY_MITARBEITER = "1713270187";
 ?>
