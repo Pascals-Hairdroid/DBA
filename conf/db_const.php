@@ -211,4 +211,9 @@ const NK_Pfad_Frisur_Bild_beginn = "http://www.pascals.at/v2/Bilder/Frisurwunsch
 const NK_Pfad_Frisur_Bild_mitte = "_";
 const NK_Pfad_Frisur_Bild_ende = ".jpg";
 
+
+//Pascal als Konstante
+const Priority_Mitarbeiter = "1713270187";
+
+
 ?>
