@@ -554,7 +554,7 @@ class DB_Con {
 		
 		$skillsIds_alt = array();
 		
-		foreach ($dienstleistung->getSkills() as $skill_alt)
+		foreach ($dienstleistung_alt->getSkills() as $skill_alt)
 			array_push($skillsIds_alt,$skill_alt->getId());
 		
 		$skills_neu="";
