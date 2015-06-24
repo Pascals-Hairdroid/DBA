@@ -524,7 +524,7 @@ class DB_Con {
 	
 	function kundeUpdaten(Kunde $kunde){
 		$kunde_alt=$this->getKunde($kunde->getEmail());
-		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto()!=null?$kunde->getFoto():$kunde_alt->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname()!=null?$kunde->getVorname():$kunde_alt->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname()!=null?$kunde->getNachname():$kunde_alt->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr()!=null?$kunde->getTelNr():$kunde_alt->getTelNr())."\", ".DB_F_KUNDEN_FREISCHALTUNG." = \"".($kunde->getFreischaltung()!=null?($kunde->getFreischaltung()?1:0):($kunde_alt->getFreischaltung()?1:0))."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_KUNDEN." SET ".DB_F_KUNDEN_FOTO." = \"" .mysqli_escape_string($this->con, $kunde->getFoto()!=null?$kunde->getFoto():$kunde_alt->getFoto())."\", ".DB_F_KUNDEN_VORNAME." = \"".mysqli_escape_string($this->con, $kunde->getVorname()!=null?$kunde->getVorname():$kunde_alt->getVorname())."\", ".DB_F_KUNDEN_NACHNAME." = \"".mysqli_escape_string($this->con, $kunde->getNachname()!=null?$kunde->getNachname():$kunde_alt->getNachname())."\", ".DB_F_KUNDEN_TELNR." = \"".mysqli_escape_string($this->con, $kunde->getTelNr()!=null?$kunde->getTelNr():$kunde_alt->getTelNr())."\", ".DB_F_KUNDEN_FREISCHALTUNG." = \"".($kunde->getFreischaltung()?"1":"0")."\" WHERE ".DB_F_KUNDEN_PK_EMAIL." = \"".mysqli_escape_string($this->con, $kunde->getEmail())."\"")===TRUE;
 		
 		if(count($kunde->getInteressen())!=0){
 			$interessenIds_alt = array();
@@ -1001,7 +1001,7 @@ class DB_Con {
 	}
 	
 	function query($query_string){
-// 		 var_dump($query_string);
+ 		// var_dump($query_string);
 		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
 		else
