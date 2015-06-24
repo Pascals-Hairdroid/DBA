@@ -550,7 +550,7 @@ class DB_Con {
 	
 	function dienstleistungUpdaten(Dienstleistung $dienstleistung){
 		$dienstleistung_alt=$this->getDienstleistung($dienstleistung->getKuerzel(), $dienstleistung->getHaartyp());
-		$success = $this->query("UPDATE ".DB_TB_DIENSTLEISTUNGEN." SET ".DB_F_DIENSTLEISTUNGEN_NAME." = \"" .mysqli_escape_string($this->con, $dienstleistung->getName())."\", ".DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getBenoetigteEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getPausenEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG." = ".$dienstleistung->getGruppierung()." WHERE ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())." AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".mysqli_escape_string($this->con, $dienstleistung->getHaartyp()->getKuerzel())."\"")===TRUE;
+		$success = $this->query("UPDATE ".DB_TB_DIENSTLEISTUNGEN." SET ".DB_F_DIENSTLEISTUNGEN_NAME." = \"" .mysqli_escape_string($this->con, $dienstleistung->getName())."\", ".DB_F_DIENSTLEISTUNGEN_BENOETIGTEEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getBenoetigteEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_PAUSENEINHEITEN." = \"".mysqli_escape_string($this->con, $dienstleistung->getPausenEinheiten())."\", ".DB_F_DIENSTLEISTUNGEN_GRUPPIERUNG." = ".$dienstleistung->getGruppierung()." WHERE ".DB_F_DIENSTLEISTUNGEN_PK_KUERZEL." = \"".mysqli_escape_string($this->con, $dienstleistung->getKuerzel())."\" AND ".DB_F_DIENSTLEISTUNGEN_PK_HAARTYP." = \"".mysqli_escape_string($this->con, $dienstleistung->getHaartyp()->getKuerzel())."\"")===TRUE;
 		
 		$skillsIds_alt = array();
 		
