@@ -102,8 +102,8 @@ function exists($url){
 }
 
 function umlaute_encode($str){
-	$a = array("ä", "ö", "ü", "Ä", "Ö", "Ü");
-	$b = array("&auml;", "&ouml;", "&uuml;", "&Auml;", "&Ouml;", "&Uuml;");
+	$a = array("ä", "ö", "ü", "Ä", "Ö", "Ü", "\n");
+	$b = array("&auml;", "&ouml;", "&uuml;", "&Auml;", "&Ouml;", "&Uuml;", "<br/>\n");
 	return str_replace($a,$b,$str);
 }
 ?>
