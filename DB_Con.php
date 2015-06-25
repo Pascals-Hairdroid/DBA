@@ -1122,13 +1122,16 @@ class DB_Con {
 		$skill = $this->getSkillFuerDienstleistung($dienstleistungen);
 		$skillz = "\"".implode("\", \"", $skill)."\"";
 // 		var_dump($skillz);
-		$abf = $this->query("select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (".$skillz.") group by svnr having count(*) = ".count($skill)."");
+		$abf = $this->query("select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE ".($skillz!="\"\""?"skills_bez in (".$skillz.") AND ":"").DB_F_MITARBEITER_PASSWORT." IS NOT NULL AND ".DB_F_MITARBEITER_PASSWORT."!=\"\" AND ".DB_F_MITARBEITER_PK_SVNR." > 1000010100 group by svnr having count(*) = ".count($skill)."");
 		$array = array();
 		while($row=mysqli_fetch_assoc($abf))
 		{
 // 			var_dump(true, $row);
 			array_push($array, $row["svnr"]);
 		}
+// 		echo "\n\n\n\nasdfasdfasdf\n";
+// 		var_dump($array);
+// 		echo "\n\n\n\n-------\n";
 		return $array;
 	}
 	
@@ -1159,18 +1162,27 @@ class DB_Con {
 		$skill = $this->getSkillFuerDienstleistung($dienstleistungen);
 		$skillz = "\"".implode("\", \"", $skill)."\"";
 // 		var_dump($skillz);
-		$abf = $this->query("select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE ".($skillz!="\"\""?"skills_bez in (".$skillz.") AND ":"").DB_F_MITARBEITER_PASSWORT." IS NOT NULL AND ".DB_F_MITARBEITER_PASSWORT."!=\"\" AND ".DB_F_MITARBEITER_PK_SVNR." > 1000010100 )group by svnr having count(*) = ".count($skill));
+		$abf = $this->query("select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE ".($skillz!="\"\""?"skills_bez in (".$skillz.") AND ":"").DB_F_MITARBEITER_PASSWORT." IS NOT NULL AND ".DB_F_MITARBEITER_PASSWORT."!=\"\" AND ".DB_F_MITARBEITER_PK_SVNR." > 1000010100 group by svnr having count(*) = ".count($skill));
+// 		echo "\n\n\n";
+// 		var_dump($abf, mysqli_error($this->con));
+// 		echo "\n\n\n";
 		$array = array();
 		if($abf!==false)
 			while($row=mysqli_fetch_assoc($abf))
 				$array[$row["svnr"]]=array();
- 		$abf = $this->query("select svnr, zeitstempel from (select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (".$skillz.") group by svnr having count(*) = ".count($skill).") as cm inner join zeittabelle on svnr = zeittabelle.mitarbeiter left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel AND zeitstempel BETWEEN \"".$von->format(DB_FORMAT_DATETIME)."\" AND \"".$bis->format(DB_FORMAT_DATETIME)."\"");
+// 		echo "\n\n\n\njklöjklöklö\n";
+// 		var_dump($array);
+//  	echo "\n\n\n\n";
+		$abf = $this->query("select svnr, zeitstempel from (select svnr from mitarbeiter inner join mitarbeiter_has_skills on svnr = mitarbeiter_svnr WHERE skills_bez in (".$skillz.") group by svnr having count(*) = ".count($skill).") as cm inner join zeittabelle on svnr = zeittabelle.mitarbeiter left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel AND zeitstempel BETWEEN \"".$von->format(DB_FORMAT_DATETIME)."\" AND \"".$bis->format(DB_FORMAT_DATETIME)."\"");
 		while($row=mysqli_fetch_assoc($abf)){
 			if(!isset($array[$row["svnr"]]))
 				$array[$row["svnr"]]=array(new DateTime($row["zeitstempel"]));
 			else
 				array_push($array[$row["svnr"]], new DateTime($row["zeitstempel"]));
 		}
+// 		echo "\n\n\n\n";
+// 		var_dump($array);
+// 		echo "\n\n\n\n------------\n";
 		return $array;
 	}
 	
@@ -1180,13 +1192,14 @@ class DB_Con {
 	 	$platz = "\"".implode("\", \"", $arbeitsplatzId)."\"";
 // 	 	var_dump($platz, "select ArbeitsplatzNr, zeitstempel from (select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in ($platz) group by arbeitsplatznr having count(*) = ".count($arbeitsplatzId).") as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel");
 // 	 	var_dump("select ArbeitsplatzNr, zeitstempel from (select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in ($platz) group by arbeitsplatznr having count(*) = ".count($arbeitsplatzId).") as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel");
-	 	$abf=$this->query("select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr".($platz!="\"\""?" WHERE Arbeitsplatzausstattungen_ID in (".$platz.")":"")." group by arbeitsplatznr".($platz!="\"\""?"having count(*) = ".count($arbeitsplatzId):""));
+	 	$abf=$this->query("select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr".($platz!="\"\""?" WHERE Arbeitsplatzausstattungen_ID in (".$platz.")":"")." group by arbeitsplatznr".($platz!="\"\""?" having count(*) = ".count($arbeitsplatzId):""));
 	 	$array = array();
+// 	 	var_dump($abf, mysqli_error($this->con));
 	 	if($abf!==false)
 	 	while($row=mysqli_fetch_assoc($abf))
 	 		$array[$row["arbeitsplatzressourcen_arbeitsplatznr"]]=array();
-// 	 	echo "\n\n\n\n\n";
-// 		var_dump($array);
+//  	 	echo "\n\n\n\n\n";
+//  		var_dump($array);
 	 	$abf = $this->query("select ArbeitsplatzNr, zeitstempel from (select arbeitsplatzressourcen_arbeitsplatznr from arbeitsplatzressourcen inner join arbeitsplatzressourcen_has_arbeitsplatzausstattungen on arbeitsplatznr = arbeitsplatzressourcen_arbeitsplatznr WHERE Arbeitsplatzausstattungen_ID in ($platz) group by arbeitsplatznr having count(*) = ".count($arbeitsplatzId).") as cm inner join zeittabelle on arbeitsplatzressourcen_arbeitsplatznr = arbeitsplatznr left join dienstleistungen on dienstleistungen_kuerzel = kuerzel and haartypen_kuerzel = Dienstleistungen_Haartypen_Kuerzel AND zeitstempel BETWEEN \"".$von->format(DB_FORMAT_DATETIME)."\" AND \"".$bis->format(DB_FORMAT_DATETIME)."\"");
 // 		var_dump($arbeitsplatzId, $dienstleistungen, "tryit", $platz,"Anzahl",count($arbeitsplatzId));
 // 		var_dump($abf,mysqli_error($this->con));
@@ -1201,9 +1214,9 @@ class DB_Con {
 			}
 		}
 // 		var_dump($array,"fuck you");
-// 		echo "\n\n\n\n\n";
-// 		var_dump($array);
-// 		echo "\n\n\n\n\n";
+//  		echo "\n\n\n\n\n";
+//  		var_dump($array);
+//  		echo "\n\n\n\n\n";
 		return $array;
 	}
 
@@ -1234,6 +1247,19 @@ class DB_Con {
 		}
 // 		var_dump($array);
 		return $array;
+	}
+	
+	function getTermineZeitstempelVonMitarbeiter(Kunde $kunde, DateTime $von){
+		if($kunde != null){
+			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$mitarbeiter."' AND Zeitstempel >= '".$von."'");
+			$return = array();
+			while($row = mysqli_fetch_assoc($abf)){
+				array_push($return, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
+			}
+		}
+		else
+			throw new DB_Exception(400, "Kunde darf nicht null sein!", DB_ERR_VIEW_NO_MA);
+		return $return;
 	}
 	
 }
