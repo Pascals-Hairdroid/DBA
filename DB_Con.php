@@ -1249,7 +1249,7 @@ class DB_Con {
 		return $array;
 	}
 	
-	function getTermineZeitstempelVonMitarbeiter(Kunde $kunde, DateTime $von){
+	function getTermineZeitstempelVonKunde(Kunde $kunde, DateTime $von){
 		if($kunde != null){
 			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$mitarbeiter."' AND Zeitstempel >= '".$von."'");
 			$return = array();
