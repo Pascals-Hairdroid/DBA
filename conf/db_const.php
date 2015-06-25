@@ -99,7 +99,7 @@ const DB_F_ZEITTABELLE_PK_MITARBEITER = "Mitarbeiter";
 const DB_F_ZEITTABELLE_ARBEITSPLATZ = "ArbeitsplatzNr";
 const DB_F_ZEITTABELLE_KUNDE = "Kunden_EMail";
 const DB_F_ZEITTABELLE_FRISURWUNSCH = "FrisurwunschFoto";
-const DB_F_ZEITTABELLE_DIENSTLEISTUNG = "Dienstleistung";
+const DB_F_ZEITTABELLE_DIENSTLEISTUNG = "Dienstleistungen_Kuerzel";
 const DB_F_ZEITTABELLE_DIENSTLEISTUNG_HAARTYP = "Dienstleistungen_Haartypen_Kuerzel";
 
 // M:N Zwischentabellen
