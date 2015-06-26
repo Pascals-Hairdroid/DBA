@@ -1255,6 +1255,20 @@ class DB_Con {
 			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$kunden_mail."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
 			$return = array();
 			while($row = mysqli_fetch_assoc($abf)){
+				array_push($return, new DateTime($row["zeitstempel"]));
+			}
+		}
+		else
+			throw new DB_Exception(400, "Kunde darf nicht null sein!", DB_ERR_VIEW_NO_MA);
+		return $return;
+	}
+	
+	function getTermineZeitstempelVon(Mitarbeiter $mitarbeiter, DateTime $von){
+		$mitarbeiter_svnr = $mitarbeiter->getSvnr();
+		if($kunde != null){
+			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$mitarbeiter_svnr."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
+			$return = array();
+			while($row = mysqli_fetch_assoc($abf)){
 				array_push($return, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
 			}
 		}
