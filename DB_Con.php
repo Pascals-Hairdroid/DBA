@@ -1263,10 +1263,10 @@ class DB_Con {
 		return $return;
 	}
 	
-	function getTermineZeitstempelVon(Mitarbeiter $mitarbeiter, DateTime $von){
+	function getTermineZeitstempelMitarbeiter(Mitarbeiter $mitarbeiter, DateTime $von){
 		$mitarbeiter_svnr = $mitarbeiter->getSvnr();
 		if($kunde != null){
-			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$mitarbeiter_svnr."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
+			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Mitarbeiter = '".$mitarbeiter_svnr."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
 			$return = array();
 			while($row = mysqli_fetch_assoc($abf)){
 				array_push($return, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
