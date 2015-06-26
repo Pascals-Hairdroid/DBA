@@ -1250,8 +1250,9 @@ class DB_Con {
 	}
 	
 	function getTermineZeitstempelVonKunde(Kunde $kunde, DateTime $von){
+		$kunden_mail = $kunde->getEmail();
 		if($kunde != null){
-			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$mitarbeiter."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
+			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$kunden_mail."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
 			$return = array();
 			while($row = mysqli_fetch_assoc($abf)){
 				array_push($return, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
