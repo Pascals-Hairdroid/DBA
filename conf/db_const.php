@@ -211,10 +211,10 @@ const NK_Pfad_Frisur_Bild_beginn = "http://www.pascals.at/v2/Bilder/Frisurwunsch
 const NK_Pfad_Frisur_Bild_mitte = "_";
 const NK_Pfad_Frisur_Bild_ende = ".jpg";
 // Produkt:
-const NK_Pfad_Produkt_Bild_beginn = "http://www.pascals.at/v2/Bilder/Produkte/";
+const NK_Pfad_Produkt_Bild_beginn = "http://www.pascals.at/v2/Bilder/Produkte/ESTELProdukte/";
 const NK_Pfad_Produkt_Bild_mitte = "_";
 const NK_Pfad_Produkt_Bild_ende = ".jpg";
-define("NK_Pfad_Produkt_Bildupload_beginn",$homepage_dir."/Bilder/Produkte/");
+define("NK_Pfad_Produkt_Bildupload_beginn",$homepage_dir."/Bilder/Produkte/ESTELProdukte/");
 
 
 //Pascal als Konstante
