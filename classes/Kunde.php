@@ -20,7 +20,7 @@ class Kunde {
 		$this->setInteressen($interessen);
 	}
 	
-	
+	// Setter
 	function setEmail($email){
 		try{
 			$email = (string)$email;
@@ -90,7 +90,7 @@ class Kunde {
 		$this->interessen = $interessen;
 	}
 	
-	
+	//Getter
 	function getEmail(){
 		return utf8_decode($this->email);
 	}

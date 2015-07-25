@@ -92,7 +92,7 @@ function resizeImage($image, $width, $height){
 function exists($url){
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,$url);
-	// don't download content
+	
 	curl_setopt($ch, CURLOPT_NOBODY, 1);
 	curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

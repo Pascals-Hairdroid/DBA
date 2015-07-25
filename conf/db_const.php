@@ -197,19 +197,24 @@ const NK_Pfad_Werbung_Bild_beginn = "http://www.pascals.at/v2/Bilder/Werbung/";
 const NK_Pfad_Werbung_Bild_mitte = "_";
 const NK_Pfad_Werbung_Bild_ende = ".jpg";
 define("NK_Pfad_Werbung_Bildupload_beginn",$homepage_dir."/Bilder/Werbung/");
-
+// Kunde:
 const NK_Kunde_Bild_Width = 1024;
 const NK_Kunde_Bild_Height = 768;
 const NK_Pfad_Kunde_Bild_beginn = "http://www.pascals.at/v2/Bilder/Profilbilder/";
 const NK_Pfad_Kunde_Bild_ende = ".jpg";
 define("NK_Pfad_Kunde_Bildupload_beginn",$homepage_dir."/Bilder/Profilbilder/");
 
-
+// Frisur:
 //pfad: NK_Pfad_Frisur_Bildupload_beginn.$mitarbeiter->getSvnr().NK_Pfad_Frisur_Bild_mitte.$timestamp.NK_Pfad_Frisur_Bild_ende
 define("NK_Pfad_Frisur_Bildupload_beginn",$homepage_dir."/Bilder/Frisurwunsch/");
 const NK_Pfad_Frisur_Bild_beginn = "http://www.pascals.at/v2/Bilder/Frisurwunsch/";
 const NK_Pfad_Frisur_Bild_mitte = "_";
 const NK_Pfad_Frisur_Bild_ende = ".jpg";
+// Produkt:
+const NK_Pfad_Produkt_Bild_beginn = "http://www.pascals.at/v2/Bilder/Produkte/";
+const NK_Pfad_Produkt_Bild_mitte = "_";
+const NK_Pfad_Produkt_Bild_ende = ".jpg";
+define("NK_Pfad_Produkt_Bildupload_beginn",$homepage_dir."/Bilder/Produkte/");
 
 
 //Pascal als Konstante

@@ -5,14 +5,7 @@ include_once 'conf/db_exception_const.php';
 include_once 'conf/login_const.php';
 include_once 'conf/dba_const.php';
 include_once "DB_Con.php";
-//var_dump($_POST, $_FILES);
-// Test:
-// echo json_encode("Hallo");
-// $res=true;
-// echo json_encode(array("res" => $res));
-// ---
 /**
- * 
  * @throws DB_Exception
  * @return Kunde
  */
@@ -33,6 +26,7 @@ function readKunde(){
 }
 
 $db = new DB_Con(DB_DEFAULT_CONF_FILE, true);
+// Session aufnehmen(login)
 if(isset($_POST[DBA_SESSION_ID])){
 	session_start($_POST[DBA_SESSION_ID]);
 	try{
@@ -51,7 +45,7 @@ if(isset($_POST[DBA_SESSION_ID])){
 		exit(1);
 	}
 }
-
+// Funktion einlesen
 if(!isset($_GET[DBA_FUNCTION])){
 	echo json_encode(new DB_Exception(400, "Keine Funktion angegeben!", DB_ERR_VIEW_NO_FUNCTION));
 	exit(1);
@@ -67,6 +61,7 @@ if(!in_array($function, $DBA_FUNCTIONS)){
 	die;
 }
 $res = true;
+// Nach Funktion handeln 
 switch ($function){
 	case DBA_F_GETKUNDEDATEN:
 		try{
@@ -143,6 +138,7 @@ switch ($function){
 		break;
 }
 $res = res?call_user_func_array(array($db,$function), $args):$res;
+// Zusatz für Passwortänderung
 if($function == DBA_F_KUNDEUPDATEN && isset($_POST[DBA_P_PASSWORT]) && $res){
 	try {
 		$res = $db->kundePwUpdaten(readKunde(), $_POST[DBA_P_PASSWORT]);
@@ -151,7 +147,7 @@ if($function == DBA_F_KUNDEUPDATEN && isset($_POST[DBA_P_PASSWORT]) && $res){
 		exit(1);
 	}
 }
-
+// Zusatz für Registrierung
 if($_GET[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
 	if($res){
 		$_POST[L_USERNAME] = readKunde()->getEmail();
@@ -160,7 +156,7 @@ if($_GET[DBA_FUNCTION]==DBA_F_KUNDEEINTRAGEN){
 		exit(0);
 	}
 }
-
+// Zusatz für Datenrücksendung bei Kundenupdate
 if($function == DBA_F_KUNDEUPDATEN && $res){
 	$foto = NK_Pfad_Kunde_Bildupload_beginn.md5($kunde->getEmail()).NK_Pfad_Kunde_Bild_ende;
 	$picdate = file_exists($foto)?filemtime($foto):0;

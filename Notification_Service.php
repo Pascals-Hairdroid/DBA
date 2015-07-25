@@ -4,13 +4,7 @@ include_once 'conf/db_const.php';
 include_once 'classes/DB_Exception.php';
 include_once 'conf/db_exception_const.php';
 include_once 'conf/notification_service_const.php';
-
-// if(!isset($_GET[NS_DATE])){
-// 	echo "test";
-// 	echo json_encode(new DB_Exception(400, "Kein Datum gegeben.", DB_ERR_VIEW_PARAM_FAIL));
-// 	exit(1);
-// }
-// var_dump($_POST);
+// Datumsparameter einlesen
 try{
 	$date = new DateTime();
 	if(isset($_GET[NS_DATE]))
@@ -29,6 +23,7 @@ try{
 }
 $db = new DB_Con(DB_DEFAULT_CONF_FILE, true, "utf8");
 $res = array(false);
+// Werbung holen
 try{
 	if(isset($_POST[NS_INTERESSEN])||isset($_POST[NS_EMAIL])){
 		$interessen = array();
@@ -50,5 +45,6 @@ try{
 	echo json_encode(new DB_Exception(500, "MESSAGE: ".$e->getMessage(), utf8_encode(DB_ERR_VIEW_UK_FAIL)));
 	exit(1);
 }
+// Antworten
 echo json_encode(array(werbungen => $res, lastSync => date('U').""));
 ?>
