@@ -1276,6 +1276,33 @@ class DB_Con {
 			throw new DB_Exception(400, "Kunde darf nicht null sein!", DB_ERR_VIEW_NO_MA);
 		return $return;
 	}
+	function getKundenFilter($term) 
+	{
+		$kunden = array();
+		//Alle Kunden holen, die in den Filter passen
+		$query = $this->query("select CONCAT(Vorname, ' ',Nachname) AS vollerName FROM kunden WHERE Vorname like '%".$term."%' OR Nachname like '%".$term."%'");
+		while($row = mysqli_fetch_assoc($query)){
+			$kunden[] = $row["vollerName"];
+		}
+		//Kunden returnen
+		return $kunden;
+	}
+	
+	function getEmailPerName ($vorname,$nachname)
+	{
+		$abf = $this->query("SELECT EMail FROM `kunden` WHERE Vorname = '".$vorname."' AND Nachname = '".$nachname."'");
+		while($row = mysqli_fetch_assoc($abf)){
+			$kunde = $row;
+		}
+		return $kunde;
+	}
+	
+	function getTerminDauer(array $dienstleistung)
+	{
+		
+		
+		
+	}
 	
 }
 ?>
