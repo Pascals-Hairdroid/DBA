@@ -80,6 +80,7 @@ switch ($function){
 	case DBA_F_KUNDEEINTRAGEN:
 		try {
 			$kunde = readKunde();
+			$kunde->setInteressen($db->getAllInteresse());
 			$kunde->setFreischaltung(false);
 			$res = $db->kundeEintragen($kunde);
 			if (!$res)
