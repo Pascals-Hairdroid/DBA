@@ -1001,7 +1001,7 @@ class DB_Con {
 	}
 	
 	function query($query_string){
- 		// var_dump($query_string);
+//  		var_dump($query_string);
 		if(isset($this->con))
 			return mysqli_query($this->con, $query_string);
 		else
@@ -1249,13 +1249,17 @@ class DB_Con {
 		return $array;
 	}
 	
-	function getTermineZeitstempelVonKunde(Kunde $kunde, DateTime $von){
-		$kunden_mail = $kunde->getEmail();
-		if($kunde != null){
-			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Kunden_EMail = '".$kunden_mail."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
+	function getTermineZeitstempelVonKunde($kunde, DateTime $von){
+// 			var_dump($kunde);
+			if($kunde != null){
+			$abf = $this->query("SELECT Zeitstempel, Mitarbeiter, Dienstleistungen_Kuerzel, Dienstleistungen_Haartypen_Kuerzel, ArbeitsplatzNr, Kunden_EMail FROM zeittabelle WHERE Kunden_EMail = '".$kunde."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
+// 			var_dump($kunde);
 			$return = array();
 			while($row = mysqli_fetch_assoc($abf)){
-				array_push($return, new DateTime($row["zeitstempel"]));
+				$row[Zeitstempel] = new DateTime($row[Zeitstempel]);
+				array_push($return, $row);
+// 				if(!isset($array[$row["Zeitstempel"]]))
+// 					$array[new DateTime($row["svnr"])]=array($row);
 			}
 		}
 		else
@@ -1265,11 +1269,14 @@ class DB_Con {
 	
 	function getTermineZeitstempelMitarbeiter(Mitarbeiter $mitarbeiter, DateTime $von){
 		$mitarbeiter_svnr = $mitarbeiter->getSvnr();
-		if($kunde != null){
-			$abf = $this->query("SELECT zeitstempel FROM zeittabelle WHERE Mitarbeiter = '".$mitarbeiter_svnr."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
+		if($mitarbeiter != null){
+			$abf = $this->query("SELECT Zeitstempel, Mitarbeiter, Dienstleistungen_Kuerzel, Dienstleistungen_Haartypen_Kuerzel, ArbeitsplatzNr, Kunden_EMail FROM zeittabelle WHERE Mitarbeiter = '".$mitarbeiter_svnr."' AND Zeitstempel >= '".$von->format(DB_FORMAT_DATETIME)."'");
 			$return = array();
-			while($row = mysqli_fetch_assoc($abf)){
-				array_push($return, new DateTime($row[DB_F_ZEITTABELLE_PK_ZEITSTEMPEL]));
+		while($row = mysqli_fetch_assoc($abf)){
+				$row[Zeitstempel] = new DateTime($row[Zeitstempel]);
+				array_push($return, $row);
+// 				if(!isset($array[$row["Zeitstempel"]]))
+// 					$array[new DateTime($row["svnr"])]=array($row);
 			}
 		}
 		else
@@ -1295,6 +1302,73 @@ class DB_Con {
 			$kunde = $row;
 		}
 		return $kunde;
+	}
+	
+	function getNummerPerName ($vorname,$nachname)
+	{
+		$abf = $this->query("SELECT TelNr FROM `kunden` WHERE Vorname = '".$vorname."' AND Nachname = '".$nachname."'");
+		while($row = mysqli_fetch_assoc($abf)){
+			$nr = $row;
+		}
+		return $nr;
+	}
+	
+	function terminDelete (DateTime $timestamp, $kunde, $arbeitsplatz)
+	{
+	$gibts = 1;
+	$anz = 1;
+	while ($gibts == 1)
+	{
+		$this->terminDeleteExecute($timestamp, $kunde, $arbeitsplatz);
+		$timestamp->modify('+15 minutes');
+		$abf = $this->query("SELECT * FROM `zeittabelle` WHERE Zeitstempel = '".$timestamp->format(DB_FORMAT_DATETIME)."' AND ArbeitsplatzNr = '".$arbeitsplatz."' AND Kunden_EMail = '".$kunde."'");
+		while($row = mysqli_fetch_assoc($abf)){
+			$return = $row;
+		}
+		if ($return == NULL)
+			$gibts = 0;
+// 		echo "<br> ".$anz." <br> ".$timestamp->format('d.m.Y H:i')." <br> gibts: ".$gibts." <br> return: ".var_dump($return)."";
+		unset($row);
+		unset($return);
+		unset($abf);
+		$anz++;
+	}
+		
+		return  $anz;
+	}
+	
+	function terminDeleteExecute (DateTime $timestamp, $person, $arbeitsplatz)
+	{
+		return $this->query("DELETE FROM zeittabelle WHERE Zeitstempel = '".$timestamp->format(DB_FORMAT_DATETIME)."' AND ArbeitsplatzNr = '".$arbeitsplatz."' AND Kunden_EMail = '".$person."'");
+	}
+	
+	function terminDeleteMitarbeiter (DateTime $timestamp, $mitarbeiter, $arbeitsplatz)
+	{
+		$z = 0;
+		$anz = 1;
+		while ($z <= 2)
+		{
+			$this->terminDeleteExecuteMitarbeiter($timestamp, $mitarbeiter, $arbeitsplatz);
+			$timestamp->modify('+15 minutes');
+			$abf = $this->query("SELECT * FROM `zeittabelle` WHERE Zeitstempel = '".$timestamp->format(DB_FORMAT_DATETIME)."' AND ArbeitsplatzNr = '".$arbeitsplatz."' AND Mitarbeiter = '".$mitarbeiter."'");
+			while($row = mysqli_fetch_assoc($abf)){
+				$return = $row;
+			}
+			if ($return == NULL)
+				$z++;
+			// 		echo "<br> ".$anz." <br> ".$timestamp->format('d.m.Y H:i')." <br> gibts: ".$gibts." <br> return: ".var_dump($return)."";
+			unset($row);
+			unset($return);
+			unset($abf);
+			$anz++;
+		}
+	
+		return  $anz;
+	}
+	
+	function terminDeleteExecuteMitarbeiter (DateTime $timestamp, $person, $arbeitsplatz)
+	{
+		return $this->query("DELETE FROM zeittabelle WHERE Zeitstempel = '".$timestamp->format(DB_FORMAT_DATETIME)."' AND ArbeitsplatzNr = '".$arbeitsplatz."' AND Mitarbeiter = '".$person."'");
 	}
 	
 	function getTerminDauer(array $dienstleistung)
